@@ -1,0 +1,1 @@
+aria2c --enable-rpc=true --rpc-listen-port=6800 --rpc-secret=secret

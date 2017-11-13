@@ -18,5 +18,10 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "~1.7.8"
+  },
+  "dependencies": {
+    "rpc-websockets": "^3.5.0",
+    "simple-jsonrpc-js": "0.0.10",
+    "ws": "^3.3.1"
   }
 }
