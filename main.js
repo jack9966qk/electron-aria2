@@ -41,7 +41,6 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow()
-  console.log("hello world")
   ariaProc = exec('./aria2.sh', (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
