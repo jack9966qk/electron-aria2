@@ -13,7 +13,15 @@ function mapStateToProps(state) {
     }
 }
 
+let refreshLoopId
+
 function mapDispatchToProps(dispatch) {
+    const refreshTasks = (rpc) => {
+        rpc.getAllTasks().then(tasks => {
+            dispatch(arbitraryValChanged("tasks", tasks))
+        })
+    }
+
     return {
         setUp: (url, token) => {
             let rpc
@@ -23,11 +31,9 @@ function mapDispatchToProps(dispatch) {
                 return rpc.call("aria2.getVersion", [])
             }).then( ({version}) => {
                 dispatch(receivedVersion(version))
-                return rpc.getAllTasks()
-            }).then( tasks => {
-                dispatch(arbitraryValChanged("tasks", tasks))
+                refreshLoopId = setInterval(() => { refreshTasks(rpc) }, 500)
             })
-        }
+        },
     }
 }
   

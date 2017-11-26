@@ -12,7 +12,7 @@ export default class Control extends React.Component {
         super(props)
         this.state = {
             dialogOpen: false,
-            sidebarOpen: true
+            sidebarOpen: false
         }
     }
     

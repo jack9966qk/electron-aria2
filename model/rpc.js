@@ -31,8 +31,8 @@ export default class AriaJsonRPC {
     getAllTasks() {
         return Promise.all([
             this.call("aria2.tellActive", []),
-            this.call("aria2.tellWaiting", [0, 10]),
-            this.call("aria2.tellStopped", [0, 10])
+            this.call("aria2.tellWaiting", [0, 100]),
+            this.call("aria2.tellStopped", [0, 100])
         ]).then( values => {
             const tasks = values.reduce((a, b) => a.concat(b))
             console.log(tasks)
