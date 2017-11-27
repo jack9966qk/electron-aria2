@@ -19,7 +19,9 @@ const styles = theme => ({
         flexGrow: 1,
         paddingTop: 16,
         paddingBottom: 16,
-        marginTop: theme.spacing.unit * 1,
+        marginTop: theme.spacing.unit * 2,
+        marginLeft: theme.spacing.unit * 1,
+        marginRight: theme.spacing.unit * 1,
     }),
     text: {}
 })
@@ -67,15 +69,15 @@ class TaskListItem extends React.Component {
                         ""
                     }
                     {
-                    status === "removed" ?
-                    <Grid item xs={1}>
-                        <IconButton onClick={this.props.handlePermDeleteTask}>
-                            <DeleteForeverIcon />
-                        </IconButton>
-                    </Grid> :
+                    status === "active" ?
                     <Grid item xs={1}>
                         <IconButton onClick={this.props.handleDeleteTask}>
                             <DeleteIcon />
+                        </IconButton>
+                    </Grid> :
+                    <Grid item xs={1}>
+                        <IconButton onClick={this.props.handlePermDeleteTask}>
+                            <DeleteForeverIcon />
                         </IconButton>
                     </Grid>
                     }

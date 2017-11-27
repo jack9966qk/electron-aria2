@@ -3,10 +3,12 @@ import List from 'material-ui/List'
 import { withStyles } from 'material-ui/styles'
 
 import TaskListItem from './taskListItem.jsx'
+import { filterTasks } from './taskCategory'
 
 const styles = theme => ({
     root: {
-        width: '100%',
+        // width: '100%',
+        // margin: 10
         // maxWidth: 360,
         // background: theme.palette.background.paper,
     },
@@ -18,10 +20,12 @@ class TaskList extends React.Component {
     }
 
     render() {
+        const tasks = filterTasks(this.props.tasks, this.props.category)
+
         return (
         <div className={this.props.classes.root}>
             {
-            this.props.tasks.map(task =>
+            tasks.map(task =>
                 <TaskListItem
                     key={task.gid}
                     task={task}

@@ -1,7 +1,7 @@
 import { connect } from "react-redux"
 
 // HACK: use window.require to avoid error when browserify is used
-// import { shell } from 'electron'
+// import { shell } from 'electron'  <-- this doesn't work
 const shell = window.require('electron').shell
 
 import TaskList from "./taskList.jsx"
@@ -35,11 +35,11 @@ function mapDispatchToProps(dispatch) {
         permDeleteTask: (rpc, gid) => {
             rpc.call("aria2.removeDownloadResult", [gid]).then(() => {refreshList(rpc)})
         },
-        purgeTasks: (rpc) => {
-            rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshList(rpc)})            
-        },
         revealFile: (path) => {
             shell.showItemInFolder(path)
+        },
+        openFile: (path) => {
+            shell.openItem(path)
         },
     }
 }

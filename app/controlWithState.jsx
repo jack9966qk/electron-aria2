@@ -34,6 +34,9 @@ function mapDispatchToProps(dispatch) {
                 refreshLoopId = setInterval(() => { refreshTasks(rpc) }, 500)
             })
         },
+        purgeTasks: (rpc) => {
+            rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshList(rpc)})            
+        },
     }
 }
   

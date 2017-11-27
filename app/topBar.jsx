@@ -10,7 +10,6 @@ import MenuIcon from 'material-ui-icons/Menu'
 
 const styles = theme => ({
     root: {
-        marginTop: theme.spacing.unit * 3,
         width: '100%',
         display: 'flex',
         flex: 'auto'
@@ -26,8 +25,6 @@ const styles = theme => ({
   
 
 function TopBar(props) {
-    const connectionStatus = props.rpc === undefined ? "Connecting..." : "Connected"
-    const versionStatus = props.version === undefined ? "" : "Version: " + props.version
     return (
         <div className={props.classes.root}>
             <AppBar position="static">
@@ -41,7 +38,7 @@ function TopBar(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography type="title" color="inherit" className={props.classes.flex}>
-                        Aria2 Control ({connectionStatus}, {versionStatus})
+                        Aria2 Control
                     </Typography>
                     <Button color="contrast" onClick={props.showAddNewTask}>New Task</Button>
                 </Toolbar>
