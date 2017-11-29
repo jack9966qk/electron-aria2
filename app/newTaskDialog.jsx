@@ -7,6 +7,7 @@ import Dialog, {
     DialogContentText,
     DialogTitle,
 } from 'material-ui/Dialog'
+import Input from 'material-ui/Input'
 
 class NewTaskDialog extends React.Component {
     constructor(props) {
@@ -25,6 +26,21 @@ class NewTaskDialog extends React.Component {
     onAddClicked = () => {
         this.props.addTask(this.props.rpc, this.state.uri, this.props.defaultDir)
         this.props.onRequestClose()
+    }
+
+    handleFileSelect = (event) => {
+        const getBase64 = (file) => new Promise( (res, rej) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file)
+            reader.onload = () => { res(reader.result.split(",")[1]) }
+            reader.onerror = (error) => { rej(error) }
+        })
+         
+        getBase64(event.target.files[0]).then( base64 => {
+            console.log(base64)
+            this.props.addTorrent(this.props.rpc, base64, this.props.defaultDir)
+            this.props.onRequestClose()
+        })
     }
 
     render() {
@@ -48,6 +64,20 @@ class NewTaskDialog extends React.Component {
                         onChange={this.updateUri}
                         fullWidth
                     />
+                    <DialogContentText style={{marginTop: 20, marginBottom: 5}}>
+                    Or choose a torrent file:
+                    </DialogContentText>
+                    <input
+                        style={{display: "none"}}
+                        type="file"
+                        id="file-input"
+                        onChange={this.handleFileSelect}
+                    />
+                    <label htmlFor="file-input">
+                        <Button Raised color="primary" component="span">
+                            Select File
+                        </Button>
+                    </label>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.onRequestClose} color="primary">

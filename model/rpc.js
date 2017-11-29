@@ -23,8 +23,8 @@ export default class AriaJsonRPC {
     }
     
     call(method, args) {
-        console.log(method)
-        console.log([`token:${this.token}`].concat(args))
+        // console.log(method)
+        // console.log([`token:${this.token}`].concat(args))
         return this.jrpc.call(method, [`token:${this.token}`].concat(args))
     }
     
@@ -35,7 +35,7 @@ export default class AriaJsonRPC {
             this.call("aria2.tellStopped", [0, 100])
         ]).then( values => {
             const tasks = values.reduce((a, b) => a.concat(b))
-            console.log(tasks)
+            // console.log(tasks)
             return tasks
         })
     }

@@ -4,6 +4,7 @@ import Snackbar from 'material-ui/Snackbar'
 
 import AriaJsonRPC from '../model/rpc'
 import NewTaskDialogWithState from './newTaskDialogWithState.jsx'
+import SettingsDialogWithState from './settingsDialogWithState.jsx'
 import TaskListWithState from './taskListWithState.jsx'
 import TopBar from './topBar.jsx'
 import SideBarWithState from './sideBarWithState.jsx'
@@ -11,13 +12,22 @@ import withStyles from 'material-ui/styles/withStyles'
 import { ACTIVE, WAITING, COMPLETED, STOPPED } from './taskCategory'
 
 const styles = theme => ({
+    taskList: {
+        [theme.breakpoints.up('sm')]: {
+            marginTop: 80
+        },
+        [theme.breakpoints.down('sm')]: {
+            marginTop: 64
+        }
+    }
 })
 
 class Control extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            dialogOpen: false,
+            newTaskDialogOpen: false,
+            settingsOpen: false,
             sidebarOpen: false,
             snackbarOpen: false,
             category: ACTIVE
@@ -25,11 +35,11 @@ class Control extends React.Component {
     }
     
     handleDialogOpen = () => {
-        this.setState({ dialogOpen: true })
+        this.setState({ newTaskDialogOpen: true })
     }
     
     handleDialogClose = () => {
-        this.setState({ dialogOpen: false })
+        this.setState({ newTaskDialogOpen: false })
     }
 
     handleSidebarOpen = () => {
@@ -46,6 +56,14 @@ class Control extends React.Component {
 
     handleCategorySelect = (category) => {
         this.setState({ category, sidebarOpen: false })
+    }
+
+    handleSettingsOpen = () => {
+        this.setState({ settingsOpen: true })  
+    }
+
+    handleSettingsClose = () => {
+        this.setState({ settingsOpen: false })        
     }
 
     componentDidMount() {
@@ -67,6 +85,7 @@ class Control extends React.Component {
                 <TopBar
                     showAddNewTask={this.handleDialogOpen}
                     showMenu={this.handleSidebarOpen}
+                    showSettings={this.handleSettingsOpen}
                 />
                 <SideBarWithState
                     open={this.state.sidebarOpen}
@@ -75,11 +94,16 @@ class Control extends React.Component {
                     category={this.state.category}
                 />
                 <TaskListWithState
+                    className={classes.taskList}
                     category={this.state.category}
                 />
                 <NewTaskDialogWithState
-                    open={this.state.dialogOpen}
+                    open={this.state.newTaskDialogOpen}
                     onRequestClose={this.handleDialogClose}
+                />
+                <SettingsDialogWithState
+                    open={this.state.settingsOpen}
+                    onRequestClose={this.handleSettingsClose}
                 />
                 <Snackbar
                     open={this.state.snackbarOpen}

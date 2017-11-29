@@ -1,4 +1,7 @@
 import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED } from './actions'
+const app = window.require('electron').remote.app
+// console.log(window.require('electron'))
+// const {app} = require('electron')
 
 import AriaJsonRPC from '../model/rpc'
 
@@ -7,7 +10,8 @@ export const initialState = {
     token: "secret",
     rpc: undefined,
     version: undefined,
-    defaultDir: "/Users/Jack/Documents/GitHub/electron-aria2/testDownload",
+    // defaultDir: "/Users/Jack/Documents/GitHub/electron-aria2/testDownload",
+    defaultDir: app.getPath("downloads") ,
     tasks: []
 }
 

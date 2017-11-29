@@ -23,7 +23,17 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit * 1,
         marginRight: theme.spacing.unit * 1,
     }),
-    text: {}
+    progressBar: {
+        marginTop: theme.spacing.unit,
+        marginBottom: theme.spacing.unit
+    },
+    progressText: {
+    },
+    filenameGrid: {
+        [theme.breakpoints.up('sm')]: {
+            lineHeight: "48px"
+        },
+    }
 })
 
 class TaskListItem extends React.Component {
@@ -32,62 +42,127 @@ class TaskListItem extends React.Component {
     }
     
     render() {
-        const { status, files, dir, completedLength, totalLength } = this.props.task
-        console.log(files)
+        const { status, files, dir, downloadSpeed, completedLength, totalLength } = this.props.task
         const description = `Task: ${status}, ${files[0].path}`
+        const taskName = this.props.task.bittorrent === undefined ?
+            files[0].path.replace(dir + "/", "") :
+            this.props.task.bittorrent.info.name
+
+        const pauseButton = (
+            <IconButton onClick={this.props.handlePauseTask}>
+                <PauseIcon />
+            </IconButton>
+        )
+
+        const resumeButton = (
+            <IconButton onClick={this.props.handleResumeTask}>
+                <PlayArrowIcon />
+            </IconButton>
+        )
+
+        const deleteButton = (
+            status === "active" ?
+            <IconButton onClick={this.props.handleDeleteTask}>
+                <DeleteIcon />
+            </IconButton> :
+            <IconButton onClick={this.props.handlePermDeleteTask}>
+                <DeleteForeverIcon />
+            </IconButton>
+        )
+
+        const progress = (
+            <LinearProgress
+            className={this.props.classes.progressBar}
+            mode="determinate"
+            value={completedLength * 100.0 / totalLength} />
+        )
+
         return (
             <Paper className={this.props.classes.root}>
-                <Grid container justify="center">
-                    <Grid item xs={5}>
-                        <Typography type="body1" component="span" className={this.props.classes.text}>
-                            {files[0].path.replace(dir + "/", "")}
+                <Grid container justify="space-between">
+                    <Grid item xs={6} sm={9} className={this.props.classes.filenameGrid}>
+                        <Typography
+                            style={{display: "block", verticalAlign: "middle"}}
+                            type="subheading"
+                            align="left"
+                            component="span"
+                            className={this.props.classes.text}
+                        >
+                            {taskName}
                         </Typography>
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Typography type="body1" component="span" className={this.props.classes.text}>
+                        <Typography
+                            style={{display: "block", verticalAlign: "middle"}}
+                            type="body1"
+                            align="left"
+                            component="span"
+                            className={this.props.classes.text}
+                        >
                             {status}
                         </Typography>
                     </Grid>
-                    <Grid item xs={2}>
+                    {/* <Grid item xs={6} sm={2} style={{lineHeight: "48px"}}>
+                        <Typography
+                            style={{display: "inline-block", verticalAlign: "middle"}}
+                            type="body1"
+                            align="left"
+                            component="span"
+                            className={this.props.classes.text}
+                        >
+                            {status}
+                        </Typography>
+                    </Grid> */}
+                    {/* <Grid item sm={2} style={{lineHeight: 48, verticalAlign: "middle"}}>
                         <Typography type="body1" component="span" className={this.props.classes.text}>
                             {filesize(totalLength)}
                         </Typography>
+                    </Grid> */}
+                    <Grid item xs={6} sm={3}>
+                        <Grid container spacing={0} justify="flex-end">
+                            {
+                            status === "active" ?
+                                <Grid item sm={4}> {pauseButton} </Grid> :
+                            status === "paused" ?
+                                <Grid item sm={4}> {resumeButton} </Grid> : ""
+                            }
+                            <Grid item sm={4}>
+                                { deleteButton }
+                            </Grid>
+                            <Grid item sm={4}>
+                                <IconButton onClick={this.props.handleRevealFile}>
+                                    <FolderIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                    {
-                    status === "active" ?
-                        <Grid item xs={1}>
-                            <IconButton onClick={this.props.handlePauseTask}>
-                                <PauseIcon />
-                            </IconButton>
-                        </Grid> :
-                        status === "paused" ? 
-                        <Grid item xs={1}>
-                            <IconButton onClick={this.props.handleResumeTask}>
-                                <PlayArrowIcon />
-                            </IconButton>
-                        </Grid> :
-                        ""
-                    }
-                    {
-                    status === "active" ?
-                    <Grid item xs={1}>
-                        <IconButton onClick={this.props.handleDeleteTask}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid> :
-                    <Grid item xs={1}>
-                        <IconButton onClick={this.props.handlePermDeleteTask}>
-                            <DeleteForeverIcon />
-                        </IconButton>
-                    </Grid>
-                    }
-                    <Grid item xs={1}>
+                    {/* <Grid item xs={6} sm={3}>
+                        {
+                        status === "active" ?
+                            pauseButton :
+                        status === "paused" ?
+                            resumeButton : ""
+                        }
+                        { deleteButton }
                         <IconButton onClick={this.props.handleRevealFile}>
                             <FolderIcon />
                         </IconButton>
+                    </Grid> */}
+                </Grid>
+                { status === "complete" ? "" : progress }
+                <Grid container justify="center" spacing={0} className={this.props.classes.progressText}>
+                    <Grid item xs={6} sm={6}>
+                        <Typography type="caption" align="left">
+                            {status === "active" ?
+                                `${filesize(completedLength)}/${filesize(totalLength)}` :
+                                `${filesize(totalLength)}`
+                            }
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={6}>
+                        <Typography type="caption" align="right">
+                            {status === "active" ? `${filesize(downloadSpeed)}/s` : ""}
+                        </Typography>
                     </Grid>
                 </Grid>
-                <LinearProgress mode="determinate" value={completedLength * 100.0 / totalLength} />
             </Paper>
             // <ListItem button>
             //     <ListItemText primary={description} />

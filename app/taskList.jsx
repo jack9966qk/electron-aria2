@@ -9,7 +9,9 @@ const styles = theme => ({
     root: {
         // width: '100%',
         // margin: 10
-        // maxWidth: 360,
+        maxWidth: 800,
+        marginLeft: 'auto',
+        marginRight: 'auto',
         // background: theme.palette.background.paper,
     },
 })
@@ -21,9 +23,8 @@ class TaskList extends React.Component {
 
     render() {
         const tasks = filterTasks(this.props.tasks, this.props.category)
-
         return (
-        <div className={this.props.classes.root}>
+        <div className={this.props.classes.root} {...this.props}>
             {
             tasks.map(task =>
                 <TaskListItem

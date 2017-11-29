@@ -20,7 +20,15 @@ function mapDispatchToProps(dispatch) {
             }).then(tasks => {
                 dispatch(arbitraryValChanged("tasks", tasks))                
             })
-        }
+        },
+        addTorrent: (rpc, torrent, dir) => {
+            rpc.call("aria2.addTorrent", [torrent, [], {dir}]).then(gid => {
+                console.log("gid for new task: " + gid)
+                return rpc.getAllTasks()
+            }).then(tasks => {
+                dispatch(arbitraryValChanged("tasks", tasks))                
+            })
+        },
     }
 }
   
