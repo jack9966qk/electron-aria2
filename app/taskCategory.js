@@ -3,6 +3,13 @@ export const WAITING = "WAITING"
 export const COMPLETED = "COMPLETED"
 export const STOPPED = "STOPPED"
 
+export const description = {
+    ACTIVE: "Active",
+    WAITING: "Waiting",
+    COMPLETED: "Completed",
+    STOPPED: "Stopped"
+}
+
 export function filterTasks(tasks, category) {
     switch (category) {
         case ACTIVE:

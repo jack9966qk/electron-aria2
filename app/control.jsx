@@ -8,8 +8,9 @@ import SettingsDialogWithState from './settingsDialogWithState.jsx'
 import TaskListWithState from './taskListWithState.jsx'
 import TopBar from './topBar.jsx'
 import SideBarWithState from './sideBarWithState.jsx'
+import TaskCategoryTabsWithState from './taskCategoryTabsWithState.jsx'
 import withStyles from 'material-ui/styles/withStyles'
-import { ACTIVE, WAITING, COMPLETED, STOPPED } from './taskCategory'
+import { ACTIVE, WAITING, COMPLETED, STOPPED, description } from './taskCategory'
 
 const styles = theme => ({
     taskList: {
@@ -17,7 +18,7 @@ const styles = theme => ({
             marginTop: 80
         },
         [theme.breakpoints.down('sm')]: {
-            marginTop: 64
+            marginTop: 120
         }
     }
 })
@@ -86,6 +87,11 @@ class Control extends React.Component {
                     showAddNewTask={this.handleDialogOpen}
                     showMenu={this.handleSidebarOpen}
                     showSettings={this.handleSettingsOpen}
+                    title={description[this.state.category]}
+                    tabs={<TaskCategoryTabsWithState
+                        onCategorySelected={this.handleCategorySelect}
+                        category={this.state.category}
+                    />}
                 />
                 <SideBarWithState
                     open={this.state.sidebarOpen}
@@ -93,10 +99,9 @@ class Control extends React.Component {
                     onCategorySelected={this.handleCategorySelect}
                     category={this.state.category}
                 />
-                <TaskListWithState
-                    className={classes.taskList}
-                    category={this.state.category}
-                />
+                <div className={classes.taskList}>
+                    <TaskListWithState category={this.state.category} />
+                </div>
                 <NewTaskDialogWithState
                     open={this.state.newTaskDialogOpen}
                     onRequestClose={this.handleDialogClose}

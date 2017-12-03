@@ -44,7 +44,8 @@ class TaskListItem extends React.Component {
     render() {
         const { status, files, dir, downloadSpeed, completedLength, totalLength } = this.props.task
         const description = `Task: ${status}, ${files[0].path}`
-        const taskName = this.props.task.bittorrent === undefined ?
+        const bittorrent = this.props.task.bittorrent
+        const taskName = bittorrent === undefined || bittorrent.info === undefined ?
             files[0].path.replace(dir + "/", "") :
             this.props.task.bittorrent.info.name
 
@@ -86,6 +87,7 @@ class TaskListItem extends React.Component {
                             type="subheading"
                             align="left"
                             component="span"
+                            noWrap
                             className={this.props.classes.text}
                         >
                             {taskName}

@@ -42,6 +42,7 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow()
+  scriptPath = process.platform === 'win32' ? './aria2.bat' : './aria2.sh'
   ariaProc = exec('./aria2.sh', (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)

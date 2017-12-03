@@ -1,6 +1,7 @@
 import React from 'React'
 import List from 'material-ui/List'
 import { withStyles } from 'material-ui/styles'
+import classNames from 'classnames'
 
 import TaskListItem from './taskListItem.jsx'
 import { filterTasks } from './taskCategory'
@@ -23,8 +24,9 @@ class TaskList extends React.Component {
 
     render() {
         const tasks = filterTasks(this.props.tasks, this.props.category)
+        const { root } = this.props.classes
         return (
-        <div className={this.props.classes.root} {...this.props}>
+        <div className={root}>
             {
             tasks.map(task =>
                 <TaskListItem

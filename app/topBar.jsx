@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
+import Hidden from 'material-ui/Hidden'
 import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
@@ -32,16 +33,18 @@ function TopBar(props) {
         <div className={props.classes.root}>
             <AppBar position="fixed">
                 <Toolbar>
-                    <IconButton
-                        color="contrast"
-                        aria-label="Menu"
-                        className={props.classes.menuButton}
-                        onClick={props.showMenu}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+                    <Hidden smDown implementation="css">    
+                        <IconButton
+                            color="contrast"
+                            aria-label="Menu"
+                            className={props.classes.menuButton}
+                            onClick={props.showMenu}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Hidden>
                     <Typography type="title" color="inherit" className={props.classes.flex}>
-                        Aria2 Control
+                        {props.title}
                     </Typography>
                     <IconButton color="contrast" onClick={props.showSettings}>
                         <SettingsIcon/>
@@ -50,6 +53,9 @@ function TopBar(props) {
                         <AddIcon/>
                     </IconButton>
                 </Toolbar>
+                <Hidden smUp implementation="css">
+                    {props.tabs}
+                </Hidden>
             </AppBar>
         </div>
     )

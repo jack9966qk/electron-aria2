@@ -62,6 +62,7 @@ class NewTaskDialog extends React.Component {
                         label="Task URL"
                         type="url"
                         onChange={this.updateUri}
+                        multiline
                         fullWidth
                     />
                     <DialogContentText style={{marginTop: 20, marginBottom: 5}}>

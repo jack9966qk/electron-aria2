@@ -48,6 +48,7 @@ class SettingsDialog extends React.Component {
                         type="url"
                         value={this.state.dir}
                         onChange={this.handleDirInput}
+                        multiline
                         fullWidth
                     />
                 </DialogContent>

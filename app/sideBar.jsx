@@ -15,7 +15,7 @@ import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
 import blue from 'material-ui/colors/blue'
 import classNames from 'classnames'
 
-import { ACTIVE, WAITING, COMPLETED, STOPPED, filterTasks } from './taskCategory'
+import { ACTIVE, WAITING, COMPLETED, STOPPED, filterTasks, description } from './taskCategory'
 
 const styles = theme => ({
     listItemIcon: {
@@ -28,13 +28,6 @@ const styles = theme => ({
 
 class SideBar extends React.Component {
     render() {
-        const description = {
-            ACTIVE: "Active",
-            WAITING: "Waiting",
-            COMPLETED: "Completed",
-            STOPPED: "Stopped"
-        }
-
         const { blueIcon } = this.props.classes
         const { tasks } = this.props
 
