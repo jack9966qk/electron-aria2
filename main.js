@@ -18,6 +18,9 @@ function createWindow () {
   // mainWindow = new BrowserWindow({titleBarStyle: "hidden", width: 800, height: 600, minWidth: 320})
   mainWindow = new BrowserWindow({width: 800, height: 600, minWidth: 360, minHeight: 400})
 
+  // disable menu bar
+  mainWindow.setMenuBarVisibility(false)
+
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'index.html'),
@@ -42,8 +45,8 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow()
-  scriptPath = process.platform === 'win32' ? './aria2.bat' : './aria2.sh'
-  ariaProc = exec('./aria2.sh', (error, stdout, stderr) => {
+  scriptName = process.platform === 'win32' ? 'aria2.bat' : 'aria2.sh'
+  ariaProc = exec(path.join(__dirname, scriptName), (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
       return
