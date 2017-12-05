@@ -61,8 +61,18 @@ class TaskListItem extends React.Component {
             </IconButton>
         )
 
+        // const deleteButton = (
+        //     status === "active" ?
+        //     <IconButton onClick={this.props.handleDeleteTask}>
+        //         <DeleteIcon />
+        //     </IconButton> :
+        //     <IconButton onClick={this.props.handlePermDeleteTask}>
+        //         <DeleteForeverIcon />
+        //     </IconButton>
+        // )
+
         const deleteButton = (
-            status === "active" ?
+        status !== "error" && status !== "removed" && status !== "complete" ?
             <IconButton onClick={this.props.handleDeleteTask}>
                 <DeleteIcon />
             </IconButton> :
@@ -71,12 +81,16 @@ class TaskListItem extends React.Component {
             </IconButton>
         )
 
-        const progress = (
+        const progress = totalLength === undefined ?
             <LinearProgress
-            className={this.props.classes.progressBar}
-            mode="determinate"
-            value={completedLength * 100.0 / totalLength} />
-        )
+                className={this.props.classes.progressBar}
+                mode="indeterminate"
+            /> :
+            <LinearProgress
+                className={this.props.classes.progressBar}
+                mode="determinate"
+                value={completedLength * 100.0 / totalLength}
+            />
 
         return (
             <Paper className={this.props.classes.root}>
@@ -102,22 +116,6 @@ class TaskListItem extends React.Component {
                             {status}
                         </Typography>
                     </Grid>
-                    {/* <Grid item xs={6} sm={2} style={{lineHeight: "48px"}}>
-                        <Typography
-                            style={{display: "inline-block", verticalAlign: "middle"}}
-                            type="body1"
-                            align="left"
-                            component="span"
-                            className={this.props.classes.text}
-                        >
-                            {status}
-                        </Typography>
-                    </Grid> */}
-                    {/* <Grid item sm={2} style={{lineHeight: 48, verticalAlign: "middle"}}>
-                        <Typography type="body1" component="span" className={this.props.classes.text}>
-                            {filesize(totalLength)}
-                        </Typography>
-                    </Grid> */}
                     <Grid item xs={6} sm={3}>
                         <Grid container spacing={0} justify="flex-end">
                             {
@@ -136,24 +134,12 @@ class TaskListItem extends React.Component {
                             </Grid>
                         </Grid>
                     </Grid>
-                    {/* <Grid item xs={6} sm={3}>
-                        {
-                        status === "active" ?
-                            pauseButton :
-                        status === "paused" ?
-                            resumeButton : ""
-                        }
-                        { deleteButton }
-                        <IconButton onClick={this.props.handleRevealFile}>
-                            <FolderIcon />
-                        </IconButton>
-                    </Grid> */}
                 </Grid>
                 { status === "complete" ? "" : progress }
                 <Grid container justify="center" spacing={0} className={this.props.classes.progressText}>
                     <Grid item xs={6} sm={6}>
                         <Typography type="caption" align="left">
-                            {status === "active" ?
+                            {status === "active" || status === "paused" ?
                                 `${filesize(completedLength)}/${filesize(totalLength)}` :
                                 `${filesize(totalLength)}`
                             }

@@ -23,16 +23,23 @@ function mapDispatchToProps(dispatch) {
     }
 
     return {
-        setUp: (url, token) => {
+        setUp: (url, token, onRes, onErr) => {
             let rpc
             return AriaJsonRPC.connectToServer(url, token).then(jrpc => {
                 dispatch(connected(jrpc))
                 rpc = jrpc
+                rpc.addResponseCallback(onRes)
+                rpc.addErrorCallback(onErr)
                 return rpc.call("aria2.getVersion", [])
             }).then( ({version}) => {
                 dispatch(receivedVersion(version))
                 refreshLoopId = setInterval(() => { refreshTasks(rpc) }, 500)
             })
+        },
+        tearDown: (rpc, onRes, onErr) => {
+            clearInterval(refreshLoopId)
+            rpc.removeResponseCallback(onErr)
+            rpc.removeErrorCallback(onErr)
         },
         purgeTasks: (rpc) => {
             rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshList(rpc)})            

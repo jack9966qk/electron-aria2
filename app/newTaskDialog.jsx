@@ -65,7 +65,7 @@ class NewTaskDialog extends React.Component {
                         multiline
                         fullWidth
                     />
-                    <DialogContentText style={{marginTop: 20, marginBottom: 5}}>
+                    <DialogContentText style={{marginTop: 30}}>
                     Or choose a torrent file:
                     </DialogContentText>
                     <input
@@ -75,13 +75,13 @@ class NewTaskDialog extends React.Component {
                         onChange={this.handleFileSelect}
                     />
                     <label htmlFor="file-input">
-                        <Button Raised color="primary" component="span">
+                        <Button Raised color="primary" component="span" style={{width: "100%", marginTop: 10}}>
                             Select File
                         </Button>
                     </label>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={this.props.onRequestClose} color="primary">
+                    <Button onClick={this.props.onRequestClose}>
                         Cancel
                     </Button>
                     <Button onClick={this.onAddClicked} color="primary">

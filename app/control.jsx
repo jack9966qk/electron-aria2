@@ -69,14 +69,70 @@ class Control extends React.Component {
 
     componentDidMount() {
         console.log("Control did mount")
-        this.props.setUp(this.props.hostUrl, this.props.token)
+        this.props.setUp(
+            this.props.hostUrl,
+            this.props.token,
+            this.onRpcResponse,
+            this.onRpcError
+        )
+    }
+
+    componentWillUnmount() {
+        console.log("Control will unmount")
+        this.props.tearDown(
+            this.props.rpc,
+            this.onRpcResponse,
+            this.onRpcError
+        )
     }
 
     componentWillUpdate = (nextProps) => {
-        if (nextProps.version !== this.props.version &&
-            nextProps.version !== undefined) {
-            this.setState({ snackbarOpen: true })
+        // if (nextProps.version !== this.props.version &&
+        //     nextProps.version !== undefined) {
+        //     this.setState({
+        //         snackbarOpen: true,
+        //         snackbarText: `Connected, version: ${this.props.version}`
+        //     })
+        // }
+    }
+
+    onRpcResponse = (method, args, response) => {
+        switch(method) {
+            case "aria2.getVersion":
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarText: `Connected, version: ${response.version}`
+                })
+                break
+            case "aria2.unpause":
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarText: `Task unpaused`
+                })
+                break
+            case "aria2.pause":
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarText: `Task paused`
+                })
+                break
+            case "aria2.addUri":
+                this.setState({
+                    snackbarOpen: true,
+                    snackbarText: `Task added`
+                })
+                break
+            default:
+                console.log(method)
+                console.log(response)
+                this.setState({ snackbarOpen: true, snackbarText: `${method.replace("aria2.", "")} succeeded` })
+                // this.setState({ snackbarOpen: true, snackbarText: JSON.stringify(response) })
+                break
         }
+    }
+
+    onRpcError = (method, args, error) => {
+        this.setState({ snackbarOpen: true, snackbarText: "Error: " + error.message })
     }
     
     render() {
@@ -112,9 +168,9 @@ class Control extends React.Component {
                 />
                 <Snackbar
                     open={this.state.snackbarOpen}
-                    autoHideDuration={2000}
+                    autoHideDuration={5000}
                     onRequestClose={this.handleSnackbarClose}
-                    message={<span>Connected, version: {this.props.version}</span>}
+                    message={<span>{this.state.snackbarText}</span>}
                 />
             </div>
         )

@@ -19,11 +19,15 @@ export default function reducer(state=initialState, action) {
     switch(action.type) {
         case CONNECTED:
             return {...state, rpc: action.rpc}
+            break
         case RECEIVED_VERSION:
             return {...state, version: action.version}
+            break
         case ARBITRARY_VAL_CHANGED:
             return {...state, [action.key]: action.value}
+            break
         default:
             return state
+            break
     }
 }

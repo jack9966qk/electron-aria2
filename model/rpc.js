@@ -20,19 +20,55 @@ export default class AriaJsonRPC {
         this.token = token
         this.jrpc = jrpc
         this.socket = socket
+        this.responseCallbacks = new Set()
+        this.errorCallbacks = new Set()
+    }
+
+    addResponseCallback(func) {
+        this.responseCallbacks.add(func)
+    }
+
+    removeResponseCallback(func) {
+        this.responseCallbacks.delete(func)
+    }
+
+    addErrorCallback(func) {
+        this.errorCallbacks.add(func)
+    }
+
+    removeErrorCallback(func) {
+        this.errorCallbacks.delete(func)
     }
     
-    call(method, args) {
+    call(method, args, silent=false) {
         // console.log(method)
         // console.log([`token:${this.token}`].concat(args))
-        return this.jrpc.call(method, [`token:${this.token}`].concat(args))
+        const callback = (funcs, args) => {
+            if (!silent) {
+                console.log(funcs)
+                for (let f of funcs) {
+                    f(...args)
+                }
+            }
+        }
+
+        return new Promise((res, rej) => {
+            this.jrpc.call(method, [`token:${this.token}`].concat(args))
+                .then(result => {
+                    callback(this.responseCallbacks, [method, args, result])
+                    res(result)
+                }).catch(error => {
+                    callback(this.errorCallbacks, [method, args, error])
+                    rej(error)
+                })
+        })
     }
     
     getAllTasks() {
         return Promise.all([
-            this.call("aria2.tellActive", []),
-            this.call("aria2.tellWaiting", [0, 100]),
-            this.call("aria2.tellStopped", [0, 100])
+            this.call("aria2.tellActive", [], true),
+            this.call("aria2.tellWaiting", [0, 100], true),
+            this.call("aria2.tellStopped", [0, 100], true)
         ]).then( values => {
             const tasks = values.reduce((a, b) => a.concat(b))
             // console.log(tasks)
