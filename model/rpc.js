@@ -71,7 +71,7 @@ export default class AriaJsonRPC {
             this.call("aria2.tellStopped", [0, 100], true)
         ]).then( values => {
             const tasks = values.reduce((a, b) => a.concat(b))
-            // console.log(tasks)
+            console.log(tasks)
             return tasks
         })
     }

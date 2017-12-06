@@ -81,7 +81,7 @@ class TaskListItem extends React.Component {
             </IconButton>
         )
 
-        const progress = totalLength === undefined ?
+        const progress = totalLength === "0" ?
             <LinearProgress
                 className={this.props.classes.progressBar}
                 mode="indeterminate"
