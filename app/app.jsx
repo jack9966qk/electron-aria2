@@ -4,7 +4,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
 import reducer, { initialState } from './reducer'
-import ControlWithState from './controlWithState.jsx'
+import ControlWithState from './containers/controlWithState.jsx'
 
 const store = createStore(reducer, initialState)
 

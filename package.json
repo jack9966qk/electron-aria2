@@ -4,12 +4,12 @@
   "description": "Aria2 Client",
   "main": "main.js",
   "scripts": {
-    "start": "browserify app/app.jsx -t babelify -o public/js/bundle.js --debug --verbose && electron main.js",
+    "start": "electron .",
     "watch": "watchify app/app.jsx -t babelify -o public/js/bundle.js --debug --verbose"
   },
   "keywords": [],
   "author": "Jack",
-  "license": "MIT",
+  "license": "GPL-3.0+",
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",

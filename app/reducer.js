@@ -3,7 +3,7 @@ const app = window.require('electron').remote.app
 // console.log(window.require('electron'))
 // const {app} = require('electron')
 
-import AriaJsonRPC from '../model/rpc'
+import AriaJsonRPC from './model/rpc'
 
 export const initialState = {
     hostUrl: "ws://localhost:6800/jsonrpc",
