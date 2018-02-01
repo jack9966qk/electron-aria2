@@ -1,1 +1,1 @@
-.\bin\win64\aria2c.exe --enable-rpc=true --rpc-listen-port=6800 --rpc-secret=secret
+%~dp0bin\win64\aria2c.exe --enable-rpc=true --rpc-listen-port=6800 --rpc-secret=secret --dht-file-path=%~dp0dht.dat
