@@ -10,17 +10,24 @@ export const description = {
     STOPPED: "Stopped"
 }
 
-export function filterTasks(tasks, category) {
-    switch (category) {
-        case ACTIVE:
-            return tasks.filter(e => ["active", "paused"].includes(e.status))
-        case WAITING:
-            return tasks.filter(e => ["waiting"].includes(e.status))
-        case COMPLETED:
-            return tasks.filter(e => ["complete"].includes(e.status))
-        case STOPPED:
-            return tasks.filter(e => ["error", "removed"].includes(e.status))
-        default:
-            return []
+function getCategory(task) {
+    if (["active", "paused"].includes(task.status)) {
+        return task.completedLength < task.totalLength ? ACTIVE : COMPLETED
     }
+
+    if (["waiting"].includes(task.status)) {
+        return WAITING
+    }
+
+    if (["complete"].includes(task.status)) {
+        return COMPLETED
+    }
+
+    if (["error", "removed"].includes(task.status)) {
+        return STOPPED
+    }
+}
+
+export function filterTasks(tasks, category) {
+    return tasks.filter(e => getCategory(e) === category)
 }

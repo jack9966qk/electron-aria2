@@ -47,7 +47,8 @@ class TaskListItem extends React.Component {
     
     render() {
         const { classes } = this.props
-        const { status, files, dir, downloadSpeed, completedLength, totalLength } = this.props.task
+        const { status, files, dir, downloadSpeed,
+                completedLength, totalLength } = this.props.task
         const description = `Task: ${status}, ${files[0].path}`
         const bittorrent = this.props.task.bittorrent
         const taskName = bittorrent === undefined || bittorrent.info === undefined ?
