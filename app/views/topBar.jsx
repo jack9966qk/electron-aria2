@@ -37,7 +37,7 @@ function TopBar(props) {
                 <Toolbar>
                     <Hidden smDown implementation="css">    
                         <IconButton
-                            color="contrast"
+                            color="primary"
                             aria-label="Menu"
                             className={props.classes.menuButton}
                             onClick={props.showMenu}
@@ -49,12 +49,12 @@ function TopBar(props) {
                         {props.title}
                     </Typography>
                     <SmallTooltip title="Settings">
-                        <IconButton color="contrast" onClick={props.showSettings}>
+                        <IconButton color="inherit" onClick={props.showSettings}>
                             <SettingsIcon/>
                         </IconButton>
                     </SmallTooltip>
                     <SmallTooltip title="New task">
-                        <IconButton color="contrast" onClick={props.showAddNewTask}>
+                        <IconButton color="inherit" onClick={props.showAddNewTask}>
                             <AddIcon/>
                         </IconButton>
                     </SmallTooltip>

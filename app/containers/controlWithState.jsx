@@ -25,7 +25,10 @@ function mapDispatchToProps(dispatch) {
     return {
         setUp: (url, token, onRes, onErr) => {
             let rpc
-            return AriaJsonRPC.connectToServer(url, token).then(jrpc => {
+            return AriaJsonRPC.connectToServer(url, token).catch(e => {
+                console.log("caught connection error", e)
+                onErr("Connection", "", e)
+            }).then(jrpc => {
                 dispatch(connected(jrpc))
                 rpc = jrpc
                 rpc.addResponseCallback(onRes)
@@ -38,6 +41,7 @@ function mapDispatchToProps(dispatch) {
         },
         tearDown: (rpc, onRes, onErr) => {
             clearInterval(refreshLoopId)
+            rpc.call("aria2.shutdown", [])
             rpc.removeResponseCallback(onErr)
             rpc.removeErrorCallback(onErr)
         },

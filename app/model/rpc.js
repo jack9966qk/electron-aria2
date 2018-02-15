@@ -2,16 +2,20 @@ import JsonRPC from 'simple-jsonrpc-js'
 
 export default class AriaJsonRPC {
     static connectToServer(url, token) {
-        const jrpc = new JsonRPC()
-        const socket = new WebSocket(url)
-        
-        jrpc.toStream = (_msg) => { socket.send(_msg) }
-        socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
-        socket.onclose = (event) => { console.log("connection closed") }
-        return new Promise(res => {
-            socket.onopen = () => {
-                res(new AriaJsonRPC(url, token, jrpc, socket))
+        return new Promise((res, rej) => {
+            const jrpc = new JsonRPC()
+            try {
+                const socket = new WebSocket(url)
+                jrpc.toStream = (_msg) => { socket.send(_msg) }
+                socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
+                socket.onclose = (event) => { console.log("connection closed") }
+                socket.onopen = () => {
+                    res(new AriaJsonRPC(url, token, jrpc, socket))
+                }
+            } catch(e) {
+                rej(e)
             }
+            
         })
     }
     
