@@ -1,6 +1,6 @@
 # electron-aria2
 
-A simple Aria2 client built using Electron, built for fun (and some web developement practice).
+A simple Aria2 client built using Electron, built for fun (and some web development practice).
 
 ## Usage
 
