@@ -1,7 +1,5 @@
 import React from 'React'
-import List from 'material-ui/List'
 import { withStyles } from 'material-ui/styles'
-import classNames from 'classnames'
 
 import TaskListItem from './taskListItem.jsx'
 import { filterTasks } from '../model/taskCategory'

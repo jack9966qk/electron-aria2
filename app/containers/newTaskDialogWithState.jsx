@@ -2,7 +2,6 @@ import { connect } from "react-redux"
 
 import NewTaskDialog from "../views/newTaskDialog.jsx"
 import { arbitraryValChanged } from "../actions"
-import AriaJsonRPC from '../model/rpc'
 
 function mapStateToProps(state) {
     return {

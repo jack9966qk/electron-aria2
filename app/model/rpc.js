@@ -8,7 +8,7 @@ export default class AriaJsonRPC {
                 const socket = new WebSocket(url)
                 jrpc.toStream = (_msg) => { socket.send(_msg) }
                 socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
-                socket.onclose = (event) => { console.log("connection closed") }
+                socket.onclose = (_event) => { console.log("connection closed") }
                 socket.onopen = () => {
                     res(new AriaJsonRPC(url, token, jrpc, socket))
                 }

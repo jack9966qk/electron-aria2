@@ -14,7 +14,7 @@ function mapStateToProps(state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(_dispatch) {
 
     const refreshList = (rpc) => {
         rpc.getAllTasks().then(tasks => {

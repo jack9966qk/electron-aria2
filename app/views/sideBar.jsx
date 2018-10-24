@@ -1,8 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { withStyles } from 'material-ui/styles'
 import Drawer from 'material-ui/Drawer'
-import Button from 'material-ui/Button'
 import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
 import List from 'material-ui/List'
@@ -13,7 +11,6 @@ import ScheduleIcon from 'material-ui-icons/Schedule'
 import BlockIcon from 'material-ui-icons/Block'
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
 import blue from 'material-ui/colors/blue'
-import classNames from 'classnames'
 
 import { ACTIVE, WAITING, COMPLETED, STOPPED, filterTasks, description } from '../model/taskCategory'
 

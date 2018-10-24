@@ -1,8 +1,8 @@
 export default {
-    "aria2.getVersion": (args, response) =>
+    "aria2.getVersion": (_args, response) =>
         `Connected, version: ${response.version}`,
-    "aria2.unpause": (args, response) => "Task resumed",
-    "aria2.pause": (args, response) => "Task paused",
-    "aria2.addUri": (args, response) => "Task added",
-    "aria2.addTorrent": (args, response) => "Torrent added",
+    "aria2.unpause": (_args, _response) => "Task resumed",
+    "aria2.pause": (_args, _response) => "Task paused",
+    "aria2.addUri": (_args, _response) => "Task added",
+    "aria2.addTorrent": (_args, _response) => "Torrent added",
 }

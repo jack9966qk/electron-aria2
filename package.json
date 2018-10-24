@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Aria2 Client",
   "main": "main.js",
+  "private": true,
   "scripts": {
     "start": "electron .",
     "watch": "watchify app/app.jsx -t babelify -o public/js/bundle.js --debug --verbose"
@@ -13,9 +14,11 @@
   "devDependencies": {
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "electron": "^1.7.12"
+    "electron": "^3.0.5"
   },
   "dependencies": {
+    "@material-ui/core": "^3.3.1",
+    "@material-ui/icons": "^3.0.1",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
@@ -25,16 +28,14 @@
     "classnames": "^2.2.5",
     "electron-packager": "^10.1.0",
     "filesize": "^3.5.11",
-    "material-ui": "^1.0.0-beta.21",
-    "material-ui-icons": "^1.0.0-beta.17",
-    "react": "^0.14.9",
+    "react": "^16.6.0",
     "react-autocomplete": "^1.0.0-rc2",
-    "react-dom": "^0.14.9",
+    "react-dom": "^16.6.0",
     "react-redux": "^5.0.6",
-    "react-sound": "^0.4.0",
     "redux": "^3.7.2",
     "rpc-websockets": "^3.5.0",
     "simple-jsonrpc-js": "0.0.10",
+    "soundmanager2": "^2.97.20170602",
     "typeface-roboto": "0.0.45",
     "ws": "^3.3.1"
   }

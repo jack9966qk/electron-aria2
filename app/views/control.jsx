@@ -1,9 +1,7 @@
 import React from 'React'
-import Button from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import withStyles from 'material-ui/styles/withStyles'
 
-import AriaJsonRPC from '../model/rpc'
 import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState.jsx'
 import SettingsDialogWithState from '../containers/settingsDialogWithState.jsx'
@@ -108,7 +106,7 @@ class Control extends React.Component {
         }
     }
 
-    onRpcError = (method, args, error) => {
+    onRpcError = (_method, _args, error) => {
         this.setState({ snackbarOpen: true, snackbarText: "Error: " + error.message })
     }
     

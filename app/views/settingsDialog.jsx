@@ -7,7 +7,6 @@ import Dialog, {
     DialogContentText,
     DialogTitle,
 } from 'material-ui/Dialog'
-import Input from 'material-ui/Input'
 
 class SettingsDialog extends React.Component {
     constructor(props) {

@@ -39,7 +39,7 @@ function mapDispatchToProps(dispatch) {
                 refreshLoopId = setInterval(() => { refreshTasks(rpc) }, 500)
             })
         },
-        tearDown: (rpc, onRes, onErr) => {
+        tearDown: (rpc, _onRes, onErr) => {
             clearInterval(refreshLoopId)
             rpc.call("aria2.shutdown", [])
             rpc.removeResponseCallback(onErr)
