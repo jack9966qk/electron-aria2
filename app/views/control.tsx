@@ -1,4 +1,4 @@
-import * as React from 'React'
+import * as React from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import withStyles from '@material-ui/core/styles/withStyles'
 
@@ -109,8 +109,6 @@ class Control extends React.Component<ControlProps, ControlState> {
     }
 
     onRpcResponse = (method, args, response) => {
-        console.log(args)
-        console.log(response)
         const func = AriaMessages[method]
         if (func !== undefined) {
             this.setState({

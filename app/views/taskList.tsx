@@ -1,4 +1,4 @@
-import * as React from 'React'
+import * as React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 
 import TaskListItem from './taskListItem'

@@ -56,9 +56,6 @@ export default class AriaJsonRPC {
         // console.log([`token:${this.token}`].concat(args))
         const callback = (funcs, args) => {
             if (!silent) {
-                // funcs = Array.from(funcs.values())
-                console.log(funcs)
-                console.log(funcs.size)
                 for (let f of funcs) {
                     f(...args)
                 }

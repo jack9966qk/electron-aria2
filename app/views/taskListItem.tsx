@@ -1,4 +1,4 @@
-import * as React from 'React'
+import * as React from 'react'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
