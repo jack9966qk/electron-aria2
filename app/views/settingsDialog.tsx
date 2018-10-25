@@ -1,14 +1,23 @@
-import React from 'react'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
-import Dialog, {
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-} from 'material-ui/Dialog'
+import * as React from 'react'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
-class SettingsDialog extends React.Component {
+interface SettingsDialogProps {
+    setDefaultDir: (string) => void
+    onRequestClose: () => void
+    open: boolean
+}
+
+interface SettingsDialogState {
+    dir: string
+}
+
+class SettingsDialog extends React.Component<SettingsDialogProps, SettingsDialogState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -31,7 +40,7 @@ class SettingsDialog extends React.Component {
         return (
             <Dialog
                 open={this.props.open}
-                onRequestClose={this.props.onRequestClose}
+                onClose={this.props.onRequestClose}
                 fullWidth={true}
             >
                 <DialogTitle>Settings</DialogTitle>

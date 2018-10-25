@@ -1,14 +1,26 @@
-import React from 'react'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
-import Dialog, {
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-} from 'material-ui/Dialog'
+import * as React from 'react'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
-class NewTaskDialog extends React.Component {
+interface NewTaskDialogProps {
+    rpc: any
+    defaultDir: string
+    open: boolean
+    addTask: Function
+    addTorrent: Function
+    onRequestClose: () => void
+}
+
+interface NewTaskDialogState {
+    uri: string
+}
+
+class NewTaskDialog extends React.Component<NewTaskDialogProps, NewTaskDialogState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -31,7 +43,7 @@ class NewTaskDialog extends React.Component {
         const getBase64 = (file) => new Promise( (res, rej) => {
             const reader = new FileReader();
             reader.readAsDataURL(file)
-            reader.onload = () => { res(reader.result.split(",")[1]) }
+            reader.onload = () => { res((reader.result as string).split(",")[1]) }
             reader.onerror = (error) => { rej(error) }
         })
          
@@ -46,7 +58,7 @@ class NewTaskDialog extends React.Component {
         return (
             <Dialog
                 open={this.props.open}
-                onRequestClose={this.props.onRequestClose}
+                onClose={this.props.onRequestClose}
                 fullWidth={true}
             >
                 <DialogTitle>New Task</DialogTitle>
@@ -74,7 +86,12 @@ class NewTaskDialog extends React.Component {
                         onChange={this.handleFileSelect}
                     />
                     <label htmlFor="file-input">
-                        <Button Raised color="primary" component="span" style={{width: "100%", marginTop: 10}}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            component="span"
+                            style={{width: "100%", marginTop: 10}}
+                        >
                             Select File
                         </Button>
                     </label>

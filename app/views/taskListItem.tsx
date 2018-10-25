@@ -1,18 +1,18 @@
-import React from 'React'
-import { LinearProgress } from 'material-ui/Progress'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
-import PauseIcon from 'material-ui-icons/Pause'
-import PlayArrowIcon from 'material-ui-icons/PlayArrow'
-import DeleteIcon from 'material-ui-icons/Delete'
-import DeleteForeverIcon from 'material-ui-icons/DeleteForever'
-import FolderIcon from 'material-ui-icons/Folder'
-import { withStyles } from 'material-ui/styles'
-import Grid from 'material-ui/Grid'
+import * as React from 'React'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import PauseIcon from '@material-ui/icons/Pause'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import DeleteIcon from '@material-ui/icons/Delete'
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
+import FolderIcon from '@material-ui/icons/Folder'
+import { withStyles } from '@material-ui/core/styles'
+import Grid from '@material-ui/core/Grid'
 import filesize from 'filesize'
 
-import SmallTooltip from './smallTooltip.jsx'
+import SmallTooltip from './smallTooltip'
 
 const styles = theme => ({
     root: theme.mixins.gutters({
@@ -40,7 +40,21 @@ const styles = theme => ({
     },
 })
 
-class TaskListItem extends React.Component {
+interface TaskListItemProps {
+    classes: any
+    task: any
+    handlePauseTask: any
+    handleResumeTask: any
+    handleDeleteTask: any
+    handlePermDeleteTask: any
+    handleRevealFile: any
+}
+
+interface TaskListItemState {
+
+}
+
+class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState> {
     constructor(props) {
         super(props)
     }
@@ -113,11 +127,11 @@ class TaskListItem extends React.Component {
         const progress = totalLength === "0" ?
             <LinearProgress
                 className={classes.progressBar}
-                mode="indeterminate"
+                variant="indeterminate"
             /> :
             <LinearProgress
                 className={classes.progressBar}
-                mode="determinate"
+                variant="determinate"
                 value={completedLength * 100.0 / totalLength}
             />
 
@@ -127,7 +141,7 @@ class TaskListItem extends React.Component {
                 <Grid container justify="space-between">
                     <Grid item xs={6} sm={9} className={classes.filenameGrid}>
                         <Typography
-                            type="subheading"
+                            variant="subtitle1"
                             align="left"
                             component="span"
                             noWrap
@@ -136,7 +150,7 @@ class TaskListItem extends React.Component {
                             {taskName}
                         </Typography>
                         <Typography
-                            type="body1"
+                            variant="body2"
                             align="left"
                             component="span"
                             className={classes.text}
@@ -153,7 +167,7 @@ class TaskListItem extends React.Component {
 
                 <Grid container justify="center" spacing={0} className={classes.progressText}>
                     <Grid item xs={6} sm={6}>
-                        <Typography type="caption" align="left">
+                        <Typography variant="caption" align="left">
                             {
                             status === "active" || status === "paused" ?
                                 `${filesize(completedLength)}/${filesize(totalLength)}` :
@@ -162,7 +176,7 @@ class TaskListItem extends React.Component {
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={6}>
-                        <Typography type="caption" align="right">
+                        <Typography variant="caption" align="right">
                             {status === "active" ? `${filesize(downloadSpeed)}/s` : ""}
                         </Typography>
                     </Grid>

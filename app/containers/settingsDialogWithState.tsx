@@ -1,6 +1,6 @@
 import { connect } from "react-redux"
 
-import SettingsDialog from "../views/settingsDialog.jsx"
+import SettingsDialog from "../views/settingsDialog"
 import { arbitraryValChanged } from "../actions"
 
 function mapStateToProps(state) {

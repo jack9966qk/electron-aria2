@@ -1,10 +1,6 @@
 import { connect } from "react-redux"
-
-// HACK: use window.require to avoid error when browserify is used
-// import { shell } from 'electron'  <-- this doesn't work
-const shell = window.require('electron').shell
-
-import TaskList from "../views/taskList.jsx"
+import { shell } from 'electron'
+import TaskList from "../views/taskList"
 import { arbitraryValChanged } from '../actions'
 
 function mapStateToProps(state) {

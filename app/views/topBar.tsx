@@ -1,23 +1,23 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { withStyles } from 'material-ui/styles'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Hidden from 'material-ui/Hidden'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
-import MenuIcon from 'material-ui-icons/Menu'
-import AddIcon from 'material-ui-icons/Add'
-import SettingsIcon from 'material-ui-icons/Settings'
+import * as React from 'react'
+import * as PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Hidden from '@material-ui/core/Hidden'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import AddIcon from '@material-ui/icons/Add'
+import SettingsIcon from '@material-ui/icons/Settings'
 
-import SmallTooltip from './smallTooltip.jsx'
+import SmallTooltip from './smallTooltip'
 
 const styles = theme => ({
     root: {
         width: '100%',
         display: 'flex',
-        flex: 'auto',
-        WebkitUserSelect: 'none'
+        flex: 'auto'
+        // WebkitUserSelect: 'none'
     },
     flex: {
         flex: 1,
@@ -44,7 +44,7 @@ function TopBar(props) {
                             <MenuIcon />
                         </IconButton>
                     </Hidden>
-                    <Typography type="title" color="inherit" className={props.classes.flex}>
+                    <Typography variant="h6" color="inherit" className={props.classes.flex}>
                         {props.title}
                     </Typography>
                     <SmallTooltip title="Settings">

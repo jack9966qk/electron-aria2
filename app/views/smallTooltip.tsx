@@ -1,6 +1,6 @@
-import React from 'react'
-import Tooltip from 'material-ui/Tooltip'
-import { withStyles } from 'material-ui/styles'
+import * as React from 'react'
+import Tooltip from '@material-ui/core/Tooltip'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
     // same tooltip size for all windows sizes
@@ -12,7 +12,7 @@ const styles = theme => ({
     },
     // same tooltip margin for all windows sizes,
     // smaller margin than default
-    tooltipBottom: {
+    tooltipPlacementBottom: {
         margin: `${theme.spacing.unit * 0.8}px 0`,
     },
 })

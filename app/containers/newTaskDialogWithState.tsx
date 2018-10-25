@@ -1,6 +1,6 @@
 import { connect } from "react-redux"
 
-import NewTaskDialog from "../views/newTaskDialog.jsx"
+import NewTaskDialog from "../views/newTaskDialog"
 import { arbitraryValChanged } from "../actions"
 
 function mapStateToProps(state) {

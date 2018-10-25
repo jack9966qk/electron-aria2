@@ -1,7 +1,7 @@
-import React from 'React'
-import { withStyles } from 'material-ui/styles'
+import * as React from 'React'
+import { withStyles } from '@material-ui/core/styles'
 
-import TaskListItem from './taskListItem.jsx'
+import TaskListItem from './taskListItem'
 import { filterTasks } from '../model/taskCategory'
 
 const styles = theme => ({
@@ -15,7 +15,23 @@ const styles = theme => ({
     },
 })
 
-class TaskList extends React.Component {
+interface TaskListProps {
+    tasks: any[]
+    category: string
+    classes: any
+    rpc: any
+    pauseTask: Function
+    resumeTask: Function
+    deleteTask: Function
+    permDeleteTask: Function
+    revealFile: Function
+}
+
+interface TaskListState {
+
+}
+
+class TaskList extends React.Component<TaskListProps, TaskListState> {
     constructor(props) {
         super(props)
     }

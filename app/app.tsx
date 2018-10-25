@@ -1,10 +1,10 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
 import reducer, { initialState } from './reducer'
-import ControlWithState from './containers/controlWithState.jsx'
+import ControlWithState from './containers/controlWithState'
 
 const store = createStore(reducer, initialState)
 

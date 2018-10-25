@@ -1,3 +1,5 @@
+// Entry point of the program to be called with electron 
+
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app

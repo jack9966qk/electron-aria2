@@ -1,4 +1,4 @@
-import JsonRPC from 'simple-jsonrpc-js'
+import * as JsonRPC from 'simple-jsonrpc-js'
 
 export default class AriaJsonRPC {
     static connectToServer(url, token) {
@@ -18,6 +18,13 @@ export default class AriaJsonRPC {
             
         })
     }
+
+    url: string
+    token: string
+    jrpc: any
+    socket: any
+    responseCallbacks: Set<() => void>
+    errorCallbacks: Set<() => void>
     
     constructor(url, token, jrpc, socket) {
         this.url = url
@@ -49,7 +56,9 @@ export default class AriaJsonRPC {
         // console.log([`token:${this.token}`].concat(args))
         const callback = (funcs, args) => {
             if (!silent) {
-                // console.log(funcs)
+                // funcs = Array.from(funcs.values())
+                console.log(funcs)
+                console.log(funcs.size)
                 for (let f of funcs) {
                     f(...args)
                 }
@@ -74,7 +83,7 @@ export default class AriaJsonRPC {
             this.call("aria2.tellWaiting", [0, 100], true),
             this.call("aria2.tellStopped", [0, 100], true)
         ]).then( values => {
-            const tasks = values.reduce((a, b) => a.concat(b))
+            const tasks = (values as any).reduce((a, b) => a.concat(b))
             // console.log(tasks)
             return tasks
         })

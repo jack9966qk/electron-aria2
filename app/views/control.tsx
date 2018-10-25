@@ -1,14 +1,14 @@
-import React from 'React'
-import Snackbar from 'material-ui/Snackbar'
-import withStyles from 'material-ui/styles/withStyles'
+import * as React from 'React'
+import Snackbar from '@material-ui/core/Snackbar'
+import withStyles from '@material-ui/core/styles/withStyles'
 
 import AriaMessages from '../model/ariaMessages'
-import NewTaskDialogWithState from '../containers/newTaskDialogWithState.jsx'
-import SettingsDialogWithState from '../containers/settingsDialogWithState.jsx'
-import TaskListWithState from '../containers/taskListWithState.jsx'
-import TopBar from './topBar.jsx'
-import SideBarWithState from '../containers/sideBarWithState.jsx'
-import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState.jsx'
+import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
+import SettingsDialogWithState from '../containers/settingsDialogWithState'
+import TaskListWithState from '../containers/taskListWithState'
+import TopBar from './topBar'
+import SideBarWithState from '../containers/sideBarWithState'
+import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
 import { ACTIVE, WAITING, COMPLETED, STOPPED, description } from '../model/taskCategory'
 
 const styles = theme => ({
@@ -22,7 +22,25 @@ const styles = theme => ({
     }
 })
 
-class Control extends React.Component {
+interface ControlProps {
+    hostUrl: string
+    token: string
+    setUp: Function
+    tearDown: Function
+    classes: any
+    rpc: any
+}
+
+interface ControlState {
+    newTaskDialogOpen: boolean
+    settingsOpen: boolean
+    sidebarOpen: boolean
+    snackbarOpen: boolean
+    category: string
+    snackbarText: string
+}
+
+class Control extends React.Component<ControlProps, ControlState> {
     constructor(props) {
         super(props)
         this.state = {
@@ -30,6 +48,7 @@ class Control extends React.Component {
             settingsOpen: false,
             sidebarOpen: false,
             snackbarOpen: false,
+            snackbarText: undefined,
             category: ACTIVE
         }
     }
@@ -90,6 +109,8 @@ class Control extends React.Component {
     }
 
     onRpcResponse = (method, args, response) => {
+        console.log(args)
+        console.log(response)
         const func = AriaMessages[method]
         if (func !== undefined) {
             this.setState({
@@ -144,7 +165,7 @@ class Control extends React.Component {
                 <Snackbar
                     open={this.state.snackbarOpen}
                     autoHideDuration={5000}
-                    onRequestClose={this.handleSnackbarClose}
+                    onClose={this.handleSnackbarClose}
                     message={<span>{this.state.snackbarText}</span>}
                 />
             </div>

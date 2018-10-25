@@ -1,16 +1,18 @@
-import React from 'react'
-import { withStyles } from 'material-ui/styles'
-import Drawer from 'material-ui/Drawer'
-import Divider from 'material-ui/Divider'
-import IconButton from 'material-ui/IconButton'
-import List from 'material-ui/List'
-import { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import CheckCircleIcon from 'material-ui-icons/CheckCircle'
-import FileDownloadIcon from 'material-ui-icons/FileDownload'
-import ScheduleIcon from 'material-ui-icons/Schedule'
-import BlockIcon from 'material-ui-icons/Block'
-import ChevronLeftIcon from 'material-ui-icons/ChevronLeft'
-import blue from 'material-ui/colors/blue'
+import * as React from 'react'
+import { withStyles } from '@material-ui/core/styles'
+import Drawer from '@material-ui/core/Drawer'
+import Divider from '@material-ui/core/Divider'
+import IconButton from '@material-ui/core/IconButton'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import FileDownloadIcon from '@material-ui/icons/CloudDownload'
+import ScheduleIcon from '@material-ui/icons/Schedule'
+import BlockIcon from '@material-ui/icons/Block'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import blue from '@material-ui/core/colors/blue'
 
 import { ACTIVE, WAITING, COMPLETED, STOPPED, filterTasks, description } from '../model/taskCategory'
 
@@ -23,7 +25,18 @@ const styles = theme => ({
     }
 })
 
-class SideBar extends React.Component {
+interface SideBarProps {
+    classes: any
+    tasks: any
+    category: any
+    open: boolean
+    onCategorySelected: (any) => void
+    onClose: () => void
+}
+
+interface SideBarState {}
+
+class SideBar extends React.Component<SideBarProps, SideBarState> {
     render() {
         const { blueIcon } = this.props.classes
         const { tasks } = this.props
@@ -42,7 +55,7 @@ class SideBar extends React.Component {
 
         return (
             <Drawer
-                type="persistent"
+                // type="persistent"
                 anchor="left"
                 open={this.props.open}
             >

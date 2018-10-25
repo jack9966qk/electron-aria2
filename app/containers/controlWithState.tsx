@@ -1,6 +1,6 @@
 import { connect } from "react-redux"
 
-import Control from "../views/control.jsx"
+import Control from "../views/control"
 import { connected, receivedVersion, arbitraryValChanged } from "../actions"
 import AriaJsonRPC from '../model/rpc'
 
@@ -26,7 +26,6 @@ function mapDispatchToProps(dispatch) {
         setUp: (url, token, onRes, onErr) => {
             let rpc
             return AriaJsonRPC.connectToServer(url, token).catch(e => {
-                console.log("caught connection error", e)
                 onErr("Connection", "", e)
             }).then(jrpc => {
                 dispatch(connected(jrpc))
@@ -46,7 +45,7 @@ function mapDispatchToProps(dispatch) {
             rpc.removeErrorCallback(onErr)
         },
         purgeTasks: (rpc) => {
-            rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshList(rpc)})            
+            rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshTasks(rpc)})            
         },
     }
 }

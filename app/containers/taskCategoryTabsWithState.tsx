@@ -1,11 +1,11 @@
 import { connect } from "react-redux"
 
-import SideBar from "../views/sideBar.jsx"
+import TaskCategoryTabs from "../views/taskCategoryTabs"
 
 function mapStateToProps(state) {
     return {
         tasks: state.tasks
     }
 }
-
-export default connect(mapStateToProps)(SideBar)
+  
+export default connect(mapStateToProps)(TaskCategoryTabs)

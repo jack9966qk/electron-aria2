@@ -1,21 +1,30 @@
 import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED } from './actions'
-const app = window.require('electron').remote.app
-// console.log(window.require('electron'))
-// const {app} = require('electron')
-
+// const app = window.require('electron').remote.app
+import * as Electron from 'electron'
 import AriaJsonRPC from './model/rpc'
 
-export const initialState = {
+// let app = Electron.remote.require("app")
+
+export interface RootState {
+    hostUrl: string
+    token: string
+    rpc: any
+    version: any
+    defaultDir: string
+    tasks: object[]
+}
+
+export const initialState: RootState = {
     hostUrl: "ws://localhost:6800/jsonrpc",
     token: "secret",
     rpc: undefined,
     version: undefined,
-    // defaultDir: "/Users/Jack/Documents/GitHub/electron-aria2/testDownload",
-    defaultDir: app.getPath("downloads") ,
+    defaultDir: "/Users/Jack/Downloads",
+    // defaultDir: app.getPath("downloads") ,
     tasks: []
 }
 
-export default function reducer(state=initialState, action) {
+export default function reducer(state: RootState=initialState, action) {
     switch(action.type) {
         case CONNECTED:
             return {...state, rpc: action.rpc}
