@@ -1,12 +1,9 @@
 import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED } from './actions'
-// const app = window.require('electron').remote.app
 import * as Electron from 'electron'
 import AriaJsonRPC from './model/rpc'
 import { Token } from './model/rpc'
 import { Reducer } from 'redux'
 import { RootAction } from './actions'
-
-// let app = Electron.remote.require("app")
 
 export type RootState = {
     readonly hostUrl: string
@@ -22,8 +19,7 @@ export const initialState: RootState = {
     token: "secret",
     rpc: undefined,
     version: undefined,
-    defaultDir: "/Users/Jack/Downloads",
-    // defaultDir: app.getPath("downloads") ,
+    defaultDir: Electron.remote.app.getPath("downloads"),
     tasks: []
 }
 

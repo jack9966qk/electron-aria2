@@ -8,7 +8,8 @@ const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
 const url = require('url')
-const { exec } = require('child_process')
+const { exec, spawn } = require('child_process')
+const psTree = require('ps-tree')
 var ariaProc
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -48,7 +49,9 @@ function createWindow () {
 app.on('ready', () => {
   createWindow()
   scriptName = process.platform === 'win32' ? 'aria2.bat' : 'aria2.sh'
-  ariaProc = exec(path.join(__dirname, scriptName), (error, stdout, stderr) => {
+  ariaProc = exec(
+    path.join(__dirname, scriptName),
+    (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`)
       return
@@ -59,7 +62,16 @@ app.on('ready', () => {
 })
 
 app.on('before-quit', () => {
-  ariaProc.kill()
+  // kill aria2 process, ariaProc.kill() fdoes not work
+  // because it only kills the sh process
+  psTree(ariaProc.pid, (_err, children) => {
+    const pids = children.map((p) => p.PID)
+    if (process.platform === 'win32') {
+      spawn('Taskkill', ['/PID'].concat(pids))
+    } else {
+      spawn('kill', ['-9'].concat(pids))
+    }
+  })
 })
 
 // Quit when all windows are closed.
