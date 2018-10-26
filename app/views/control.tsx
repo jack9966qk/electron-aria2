@@ -9,7 +9,8 @@ import TaskListWithState from '../containers/taskListWithState'
 import TopBar from './topBar'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import { ACTIVE, WAITING, COMPLETED, STOPPED, description } from '../model/taskCategory'
+import { TaskCategory, description } from '../model/taskCategory'
+import AriaJsonRPC from '../model/rpc'
 
 const styles = theme => ({
     taskList: {
@@ -22,25 +23,35 @@ const styles = theme => ({
     }
 })
 
-interface ControlProps {
-    hostUrl: string
-    token: string
-    setUp: Function
-    tearDown: Function
+interface ViewProps {
     classes: any
-    rpc: any
 }
 
-interface ControlState {
+export interface DispatchProps {
+    setUp: Function
+    tearDown: Function
+    purgeTasks: Function
+}
+
+export interface StoreProps {
+    rpc: AriaJsonRPC
+    version: string
+    hostUrl: string
+    token: string
+}
+
+type Props = ViewProps & DispatchProps & StoreProps
+
+interface State {
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
     snackbarOpen: boolean
-    category: string
+    category: TaskCategory
     snackbarText: string
 }
 
-class Control extends React.Component<ControlProps, ControlState> {
+class Control extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
@@ -49,7 +60,7 @@ class Control extends React.Component<ControlProps, ControlState> {
             sidebarOpen: false,
             snackbarOpen: false,
             snackbarText: undefined,
-            category: ACTIVE
+            category: TaskCategory.Active
         }
     }
     

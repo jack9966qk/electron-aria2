@@ -7,20 +7,31 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-interface NewTaskDialogProps {
-    rpc: any
-    defaultDir: string
+interface ViewProps {
     open: boolean
-    addTask: Function
-    addTorrent: Function
     onRequestClose: () => void
 }
 
-interface NewTaskDialogState {
+export interface DispatchProps {
+    addTask: Function
+    addTorrent: Function
+}
+
+export interface StoreProps {
+    rpc: any
+    defaultDir: string
+}
+
+type Props =
+    ViewProps &
+    DispatchProps &
+    StoreProps
+
+interface State {
     uri: string
 }
 
-class NewTaskDialog extends React.Component<NewTaskDialogProps, NewTaskDialogState> {
+class NewTaskDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
@@ -35,7 +46,10 @@ class NewTaskDialog extends React.Component<NewTaskDialogProps, NewTaskDialogSta
     }
 
     onAddClicked = () => {
-        this.props.addTask(this.props.rpc, this.state.uri, this.props.defaultDir)
+        this.props.addTask(
+            this.props.rpc,
+            this.state.uri,
+            this.props.defaultDir)
         this.props.onRequestClose()
     }
 

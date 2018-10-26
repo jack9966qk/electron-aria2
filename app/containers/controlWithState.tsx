@@ -1,10 +1,11 @@
 import { connect } from "react-redux"
 
-import Control from "../views/control"
+import Control, { DispatchProps, StoreProps } from "../views/control"
 import { connected, receivedVersion, arbitraryValChanged } from "../actions"
 import AriaJsonRPC from '../model/rpc'
+import { RootState } from "../reducer"
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState): StoreProps {
     return {
         rpc: state.rpc,
         version: state.version,
@@ -13,9 +14,9 @@ function mapStateToProps(state) {
     }
 }
 
-let refreshLoopId
+let refreshLoopId: number
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch): DispatchProps {
     const refreshTasks = (rpc) => {
         rpc.getAllTasks().then(tasks => {
             dispatch(arbitraryValChanged("tasks", tasks))
@@ -28,14 +29,14 @@ function mapDispatchToProps(dispatch) {
             return AriaJsonRPC.connectToServer(url, token).catch(e => {
                 onErr("Connection", "", e)
             }).then(jrpc => {
-                dispatch(connected(jrpc))
+                dispatch(connected(jrpc as AriaJsonRPC))
                 rpc = jrpc
                 rpc.addResponseCallback(onRes)
                 rpc.addErrorCallback(onErr)
                 return rpc.call("aria2.getVersion", [])
             }).then( ({version}) => {
                 dispatch(receivedVersion(version))
-                refreshLoopId = setInterval(() => { refreshTasks(rpc) }, 500)
+                refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
             })
         },
         tearDown: (rpc, _onRes, onErr) => {

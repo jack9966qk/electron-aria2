@@ -14,7 +14,7 @@ import BlockIcon from '@material-ui/icons/Block'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import blue from '@material-ui/core/colors/blue'
 
-import { ACTIVE, WAITING, COMPLETED, STOPPED, filterTasks, description } from '../model/taskCategory'
+import { TaskCategory, filterTasks, description } from '../model/taskCategory'
 
 const styles = theme => ({
     listItemIcon: {
@@ -25,18 +25,29 @@ const styles = theme => ({
     }
 })
 
-interface SideBarProps {
+interface ViewProps {
     classes: any
-    tasks: any
     category: any
     open: boolean
     onCategorySelected: (any) => void
     onClose: () => void
 }
 
-interface SideBarState {}
+export interface DispatchProps {
+}
 
-class SideBar extends React.Component<SideBarProps, SideBarState> {
+export interface StoreProps {
+    tasks: any
+}
+
+type Props =
+    ViewProps &
+    DispatchProps &
+    StoreProps
+
+interface State {}
+
+class SideBar extends React.Component<Props, State> {
     render() {
         const { blueIcon } = this.props.classes
         const { tasks } = this.props
@@ -64,10 +75,10 @@ class SideBar extends React.Component<SideBarProps, SideBarState> {
                 </IconButton>
                 <Divider />
                 <List>
-                    {makeListItem(FileDownloadIcon, ACTIVE, 1)}
-                    {makeListItem(ScheduleIcon, WAITING, 1)}
-                    {makeListItem(CheckCircleIcon, COMPLETED, 1)}
-                    {makeListItem(BlockIcon, STOPPED, 1)}
+                    {makeListItem(FileDownloadIcon, TaskCategory.Active, 1)}
+                    {makeListItem(ScheduleIcon, TaskCategory.Waiting, 1)}
+                    {makeListItem(CheckCircleIcon, TaskCategory.Completed, 1)}
+                    {makeListItem(BlockIcon, TaskCategory.Stopped, 1)}
                 </List>
             </Drawer>
         )

@@ -1,7 +1,11 @@
 import * as JsonRPC from 'simple-jsonrpc-js'
 
+export type MethodName = string
+export type Token = string
+type JsonRPC = any
+
 export default class AriaJsonRPC {
-    static connectToServer(url, token) {
+    static connectToServer(url: string, token: string): Promise<AriaJsonRPC> {
         return new Promise((res, rej) => {
             const jrpc = new JsonRPC()
             try {
@@ -15,18 +19,17 @@ export default class AriaJsonRPC {
             } catch(e) {
                 rej(e)
             }
-            
         })
     }
 
     url: string
-    token: string
-    jrpc: any
-    socket: any
+    token: Token
+    jrpc: JsonRPC
+    socket: WebSocket
     responseCallbacks: Set<() => void>
     errorCallbacks: Set<() => void>
     
-    constructor(url, token, jrpc, socket) {
+    constructor(url: string, token: Token, jrpc: JsonRPC, socket: WebSocket) {
         this.url = url
         this.token = token
         this.jrpc = jrpc
@@ -35,26 +38,26 @@ export default class AriaJsonRPC {
         this.errorCallbacks = new Set()
     }
 
-    addResponseCallback(func) {
+    addResponseCallback(func: () => void) {
         this.responseCallbacks.add(func)
     }
 
-    removeResponseCallback(func) {
+    removeResponseCallback(func: () => void) {
         this.responseCallbacks.delete(func)
     }
 
-    addErrorCallback(func) {
+    addErrorCallback(func: () => void) {
         this.errorCallbacks.add(func)
     }
 
-    removeErrorCallback(func) {
+    removeErrorCallback(func: () => void) {
         this.errorCallbacks.delete(func)
     }
     
-    call(method, args, silent=false) {
+    call(method: MethodName, args: any[], silent=false) {
         // console.log(method)
         // console.log([`token:${this.token}`].concat(args))
-        const callback = (funcs, args) => {
+        const callback = (funcs: Set<(...args: any[]) => void>, args: any[]) => {
             if (!silent) {
                 for (let f of funcs) {
                     f(...args)
@@ -74,7 +77,7 @@ export default class AriaJsonRPC {
         })
     }
     
-    getAllTasks() {
+    getAllTasks(): Promise<object[]> {
         return Promise.all([
             this.call("aria2.tellActive", [], true),
             this.call("aria2.tellWaiting", [0, 100], true),

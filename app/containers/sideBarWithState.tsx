@@ -1,8 +1,8 @@
 import { connect } from "react-redux"
 
-import SideBar from "../views/sideBar"
+import SideBar, { StoreProps } from "../views/sideBar"
 
-function mapStateToProps(state) {
+function mapStateToProps(state): StoreProps {
     return {
         tasks: state.tasks
     }

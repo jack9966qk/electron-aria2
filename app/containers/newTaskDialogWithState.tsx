@@ -1,16 +1,17 @@
 import { connect } from "react-redux"
 
-import NewTaskDialog from "../views/newTaskDialog"
+import NewTaskDialog, { DispatchProps, StoreProps } from "../views/newTaskDialog"
 import { arbitraryValChanged } from "../actions"
+import { RootState } from "../reducer"
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState): StoreProps {
     return {
         rpc: state.rpc,
         defaultDir: state.defaultDir
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch): DispatchProps {
     return {
         addTask: (rpc, uri, dir) => {
             rpc.call("aria2.addUri", [[uri], {dir}]).then(gid => {

@@ -1,30 +1,32 @@
-export const ACTIVE = "ACTIVE"
-export const WAITING = "WAITING"
-export const COMPLETED = "COMPLETED"
-export const STOPPED = "STOPPED"
-
-export const description = {
-    ACTIVE: "Active",
-    WAITING: "Waiting",
-    COMPLETED: "Completed",
-    STOPPED: "Stopped"
+export enum TaskCategory {
+    Active = "ACTIVE",
+    Waiting = "WAITING",
+    Completed = "COMPLETED",
+    Stopped = "STOPPED"
 }
 
-function getCategory(task) {
+export const description = {
+    [TaskCategory.Active]: "Active",
+    [TaskCategory.Waiting]: "Waiting",
+    [TaskCategory.Completed]: "Completed",
+    [TaskCategory.Stopped]: "Stopped"
+}
+
+function getCategory(task: any): TaskCategory {
     if (["active", "paused"].includes(task.status)) {
-        return task.completedLength < task.totalLength ? ACTIVE : COMPLETED
+        return task.completedLength < task.totalLength ? TaskCategory.Active : TaskCategory.Completed
     }
 
     if (["waiting"].includes(task.status)) {
-        return WAITING
+        return TaskCategory.Waiting
     }
 
     if (["complete"].includes(task.status)) {
-        return COMPLETED
+        return TaskCategory.Completed
     }
 
     if (["error", "removed"].includes(task.status)) {
-        return STOPPED
+        return TaskCategory.Stopped
     }
 }
 

@@ -7,17 +7,29 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
-interface SettingsDialogProps {
-    setDefaultDir: (string) => void
-    onRequestClose: () => void
+interface ViewProps {
     open: boolean
+    onRequestClose: () => void
 }
 
-interface SettingsDialogState {
+export interface DispatchProps {
+    setDefaultDir: (string) => void
+}
+
+export interface StoreProps {
+    defaultDir: string
+}
+
+type Props =
+    ViewProps &
+    DispatchProps &
+    StoreProps
+
+interface State {
     dir: string
 }
 
-class SettingsDialog extends React.Component<SettingsDialogProps, SettingsDialogState> {
+class SettingsDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {

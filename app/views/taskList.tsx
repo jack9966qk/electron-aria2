@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 
 import TaskListItem from './taskListItem'
 import { filterTasks } from '../model/taskCategory'
+import AriaJsonRPC from '../model/rpc'
 
 const styles = theme => ({
     root: {
@@ -15,23 +16,34 @@ const styles = theme => ({
     },
 })
 
-interface TaskListProps {
-    tasks: any[]
+interface ViewProps {
     category: string
     classes: any
-    rpc: any
+}
+
+export interface DispatchProps {
     pauseTask: Function
     resumeTask: Function
     deleteTask: Function
     permDeleteTask: Function
     revealFile: Function
+    openFile: Function
 }
 
-interface TaskListState {
-
+export interface StoreProps {
+    tasks: any[]
+    rpc: AriaJsonRPC
 }
 
-class TaskList extends React.Component<TaskListProps, TaskListState> {
+type Props =
+    ViewProps &
+    DispatchProps &
+    StoreProps
+
+interface State {
+}
+
+class TaskList extends React.Component<Props, State> {
     constructor(props) {
         super(props)
     }

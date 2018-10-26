@@ -95,32 +95,15 @@
 
 "use strict";
 
+// actions used along with redux
 Object.defineProperty(exports, "__esModule", { value: true });
+const typesafe_actions_1 = __webpack_require__(/*! typesafe-actions */ "./node_modules/typesafe-actions/dist/index.umd.js");
 exports.CONNECTED = "CONNECTED";
-function connected(rpc) {
-    return {
-        type: exports.CONNECTED,
-        rpc: rpc
-    };
-}
-exports.connected = connected;
+exports.connected = (rpc) => typesafe_actions_1.action(exports.CONNECTED, rpc);
 exports.RECEIVED_VERSION = "RECEIVED_VERSION";
-function receivedVersion(version) {
-    return {
-        type: exports.RECEIVED_VERSION,
-        version: version
-    };
-}
-exports.receivedVersion = receivedVersion;
+exports.receivedVersion = (version) => typesafe_actions_1.action(exports.RECEIVED_VERSION, version);
 exports.ARBITRARY_VAL_CHANGED = "ARBITRARY_VAL_CHANGED";
-function arbitraryValChanged(key, value) {
-    return {
-        type: exports.ARBITRARY_VAL_CHANGED,
-        key: key,
-        value: value
-    };
-}
-exports.arbitraryValChanged = arbitraryValChanged;
+exports.arbitraryValChanged = (key, value) => typesafe_actions_1.action(exports.ARBITRARY_VAL_CHANGED, { key, value });
 
 
 /***/ }),
@@ -134,6 +117,7 @@ exports.arbitraryValChanged = arbitraryValChanged;
 
 "use strict";
 
+// entry point of the app when being webpacked
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
@@ -195,7 +179,7 @@ function mapDispatchToProps(dispatch) {
                 return rpc.call("aria2.getVersion", []);
             }).then(({ version }) => {
                 dispatch(actions_1.receivedVersion(version));
-                refreshLoopId = setInterval(() => { refreshTasks(rpc); }, 500);
+                refreshLoopId = window.setInterval(() => { refreshTasks(rpc); }, 500);
             });
         },
         tearDown: (rpc, _onRes, onErr) => {
@@ -394,13 +378,14 @@ exports.default = react_redux_1.connect(mapStateToProps, mapDispatchToProps)(tas
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = {
+const messages = {
     "aria2.getVersion": (_args, response) => `Connected, version: ${response.version}`,
     "aria2.unpause": (_args, _response) => "Task resumed",
     "aria2.pause": (_args, _response) => "Task paused",
     "aria2.addUri": (_args, _response) => "Task added",
     "aria2.addTorrent": (_args, _response) => "Torrent added",
 };
+exports.default = messages;
 
 
 /***/ }),
@@ -502,28 +487,31 @@ exports.default = AriaJsonRPC;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ACTIVE = "ACTIVE";
-exports.WAITING = "WAITING";
-exports.COMPLETED = "COMPLETED";
-exports.STOPPED = "STOPPED";
+var TaskCategory;
+(function (TaskCategory) {
+    TaskCategory["Active"] = "ACTIVE";
+    TaskCategory["Waiting"] = "WAITING";
+    TaskCategory["Completed"] = "COMPLETED";
+    TaskCategory["Stopped"] = "STOPPED";
+})(TaskCategory = exports.TaskCategory || (exports.TaskCategory = {}));
 exports.description = {
-    ACTIVE: "Active",
-    WAITING: "Waiting",
-    COMPLETED: "Completed",
-    STOPPED: "Stopped"
+    [TaskCategory.Active]: "Active",
+    [TaskCategory.Waiting]: "Waiting",
+    [TaskCategory.Completed]: "Completed",
+    [TaskCategory.Stopped]: "Stopped"
 };
 function getCategory(task) {
     if (["active", "paused"].includes(task.status)) {
-        return task.completedLength < task.totalLength ? exports.ACTIVE : exports.COMPLETED;
+        return task.completedLength < task.totalLength ? TaskCategory.Active : TaskCategory.Completed;
     }
     if (["waiting"].includes(task.status)) {
-        return exports.WAITING;
+        return TaskCategory.Waiting;
     }
     if (["complete"].includes(task.status)) {
-        return exports.COMPLETED;
+        return TaskCategory.Completed;
     }
     if (["error", "removed"].includes(task.status)) {
-        return exports.STOPPED;
+        return TaskCategory.Stopped;
     }
 }
 function filterTasks(tasks, category) {
@@ -554,22 +542,23 @@ exports.initialState = {
     // defaultDir: app.getPath("downloads") ,
     tasks: []
 };
-function reducer(state = exports.initialState, action) {
+const reducer = (state = exports.initialState, action) => {
     switch (action.type) {
         case actions_1.CONNECTED:
-            return Object.assign({}, state, { rpc: action.rpc });
+            return Object.assign({}, state, { rpc: action.payload });
             break;
         case actions_1.RECEIVED_VERSION:
-            return Object.assign({}, state, { version: action.version });
+            return Object.assign({}, state, { version: action.payload });
             break;
         case actions_1.ARBITRARY_VAL_CHANGED:
-            return Object.assign({}, state, { [action.key]: action.value });
+            const { key, value } = action.payload;
+            return Object.assign({}, state, { [key]: value });
             break;
         default:
             return state;
             break;
     }
-}
+};
 exports.default = reducer;
 
 
@@ -661,7 +650,7 @@ class Control extends React.Component {
             sidebarOpen: false,
             snackbarOpen: false,
             snackbarText: undefined,
-            category: taskCategory_1.ACTIVE
+            category: taskCategory_1.TaskCategory.Active
         };
     }
     componentDidMount() {
@@ -856,10 +845,10 @@ class SideBar extends React.Component {
                 React.createElement(ChevronLeft_1.default, null)),
             React.createElement(Divider_1.default, null),
             React.createElement(List_1.default, null,
-                makeListItem(CloudDownload_1.default, taskCategory_1.ACTIVE, 1),
-                makeListItem(Schedule_1.default, taskCategory_1.WAITING, 1),
-                makeListItem(CheckCircle_1.default, taskCategory_1.COMPLETED, 1),
-                makeListItem(Block_1.default, taskCategory_1.STOPPED, 1))));
+                makeListItem(CloudDownload_1.default, taskCategory_1.TaskCategory.Active, 1),
+                makeListItem(Schedule_1.default, taskCategory_1.TaskCategory.Waiting, 1),
+                makeListItem(CheckCircle_1.default, taskCategory_1.TaskCategory.Completed, 1),
+                makeListItem(Block_1.default, taskCategory_1.TaskCategory.Stopped, 1))));
     }
 }
 exports.default = styles_1.withStyles(styles)(SideBar);
@@ -927,10 +916,10 @@ const Block_1 = __webpack_require__(/*! @material-ui/icons/Block */ "./node_modu
 const taskCategory_1 = __webpack_require__(/*! ../model/taskCategory */ "./app/model/taskCategory.ts");
 const TaskCategoryTabs = (props) => {
     const categories = [
-        [taskCategory_1.ACTIVE, CloudDownload_1.default],
-        [taskCategory_1.WAITING, Schedule_1.default],
-        [taskCategory_1.COMPLETED, CheckCircle_1.default],
-        [taskCategory_1.STOPPED, Block_1.default]
+        [taskCategory_1.TaskCategory.Active, CloudDownload_1.default],
+        [taskCategory_1.TaskCategory.Waiting, Schedule_1.default],
+        [taskCategory_1.TaskCategory.Completed, CheckCircle_1.default],
+        [taskCategory_1.TaskCategory.Stopped, Block_1.default]
     ];
     const onChange = (_, value) => {
         props.onCategorySelected(categories[value][0]);
@@ -59378,6 +59367,18 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (root)
     }
     else {}
 })(this);
+
+
+/***/ }),
+
+/***/ "./node_modules/typesafe-actions/dist/index.umd.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/typesafe-actions/dist/index.umd.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+!function(n,t){ true?t(exports):undefined}(this,function(n){"use strict";function t(n,t,e){return{type:n,payload:t,meta:e}}function e(n,t){if(void 0===t&&(t=1),null==n)throw new Error("Argument (#"+t+") is missing");if("string"!=typeof n&&"symbol"!=typeof n)throw new Error("Argument (#"+t+") should be of type: string | symbol")}function r(n,t){var e=null!=t?t(n):function(){return{type:n}};return Object.assign(e,{getType:function(){return n}})}n.action=t,n.createAction=function(n,r){e(n);var i=null==r?function(){return t(n)}:r(t.bind(null,n));return Object.assign(i,{getType:function(){return n}})},n.createStandardAction=function(n){return e(n),Object.assign(function(){return r(n,function(n){return function(t,e){return{type:n,payload:t,meta:e}}})},{map:function(t){return r(n,function(n){return function(e,r){return Object.assign(t(e,r),{type:n})}})}})},n.createAsyncAction=function(n,t,i){return[n,t,i].forEach(function(n,t){e(n,t+1)}),Object.assign(function(){return{request:r(n,function(t){return function(t){return{type:n,payload:t}}}),success:r(t,function(n){return function(n){return{type:t,payload:n}}}),failure:r(i,function(n){return function(n){return{type:i,payload:n}}})}},{})},n.getType=function(n){if(null==n)throw new Error("first argument is missing");if(null==n.getType)throw new Error('first argument is not an instance of "typesafe-actions"');return n.getType()},n.isOfType=function(n,t){e(n);var r=function(t){return t.type===n};return null==t?r:r(t)},n.isActionOf=function(n,t){if(null==n)throw new Error("first argument is missing");if(Array.isArray(n))n.forEach(function(n,t){if(null==n.getType)throw new Error('first argument contains element\n        that is not created with "typesafe-actions" at index ['+t+"]")});else if(null==n.getType)throw new Error('first argument is not created with "typesafe-actions"');var e=function(t){return(Array.isArray(n)?n:[n]).some(function(n,e){return n.getType()===t.type})};return null==t?e:e(t)},n.createActionDeprecated=function(n,t){var e;if(null!=t){if("function"!=typeof t)throw new Error("second argument is not a function");e=t}else e=function(){return{type:n}};if(null==n)throw new Error("first argument is missing");if("string"!=typeof n&&"symbol"!=typeof n)throw new Error("first argument should be type of: string | symbol");return e.getType=function(){return n},e},Object.defineProperty(n,"__esModule",{value:!0})});
 
 
 /***/ }),

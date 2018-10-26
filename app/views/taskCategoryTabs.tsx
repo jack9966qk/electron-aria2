@@ -6,19 +6,31 @@ import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import BlockIcon from '@material-ui/icons/Block'
 
-import { ACTIVE, WAITING, COMPLETED, STOPPED } from '../model/taskCategory'
+import { TaskCategory } from '../model/taskCategory'
 
-interface TaskCategoryTabsProps {
-    category: string
+interface ViewProps {
+    category: TaskCategory
     onCategorySelected: Function
 }
 
-const TaskCategoryTabs: React.SFC<TaskCategoryTabsProps> = (props) => {
+export interface DispatchProps {
+}
+
+export interface StoreProps {
+    tasks: any[]
+}
+
+type Props =
+    ViewProps &
+    DispatchProps &
+    StoreProps
+
+const TaskCategoryTabs: React.SFC<Props> = (props) => {
     const categories = [
-        [ACTIVE, FileDownloadIcon],
-        [WAITING, ScheduleIcon],
-        [COMPLETED, CheckCircleIcon],
-        [STOPPED, BlockIcon]
+        [TaskCategory.Active, FileDownloadIcon],
+        [TaskCategory.Waiting, ScheduleIcon],
+        [TaskCategory.Completed, CheckCircleIcon],
+        [TaskCategory.Stopped, BlockIcon]
     ]
     const onChange = (_, value) => {
         props.onCategorySelected(categories[value][0])

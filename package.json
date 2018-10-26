@@ -16,7 +16,9 @@
     "react-dom": "^16.6.0",
     "react-redux": "^5.0.7",
     "redux": "^4.0.1",
-    "simple-jsonrpc-js": "0.0.10"
+    "simple-jsonrpc-js": "0.0.10",
+    "typesafe-actions": "^2.0.4",
+    "utility-types": "^2.1.0"
   },
   "devDependencies": {
     "@types/electron": "^1.6.10",

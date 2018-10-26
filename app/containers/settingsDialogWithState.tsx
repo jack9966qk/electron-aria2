@@ -1,15 +1,15 @@
 import { connect } from "react-redux"
 
-import SettingsDialog from "../views/settingsDialog"
+import SettingsDialog, { DispatchProps, StoreProps } from "../views/settingsDialog"
 import { arbitraryValChanged } from "../actions"
 
-function mapStateToProps(state) {
+function mapStateToProps(state): StoreProps {
     return {
         defaultDir: state.defaultDir
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch): DispatchProps {
     return {
         setDefaultDir: (dir) => {
             dispatch(arbitraryValChanged("defaultDir", dir))

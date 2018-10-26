@@ -1,16 +1,17 @@
 import { connect } from "react-redux"
 import { shell } from 'electron'
-import TaskList from "../views/taskList"
+import TaskList, { DispatchProps, StoreProps } from "../views/taskList"
 import { arbitraryValChanged } from '../actions'
+import { RootState } from "../reducer"
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState): StoreProps {
     return {
         tasks: state.tasks,
         rpc: state.rpc
     }
 }
 
-function mapDispatchToProps(_dispatch) {
+function mapDispatchToProps(_dispatch): DispatchProps {
 
     const refreshList = (rpc) => {
         rpc.getAllTasks().then(tasks => {

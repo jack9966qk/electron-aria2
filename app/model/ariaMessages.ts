@@ -1,4 +1,4 @@
-export default {
+const messages: { [key: string]: (...any) => string } = {
     "aria2.getVersion": (_args, response) =>
         `Connected, version: ${response.version}`,
     "aria2.unpause": (_args, _response) => "Task resumed",
@@ -6,3 +6,5 @@ export default {
     "aria2.addUri": (_args, _response) => "Task added",
     "aria2.addTorrent": (_args, _response) => "Torrent added",
 }
+
+export default messages
