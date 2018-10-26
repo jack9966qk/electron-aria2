@@ -1,4 +1,4 @@
-const messages: { [key: string]: (...any) => string } = {
+const messages: { [key: string]: (args: any, response: any) => string } = {
     "aria2.getVersion": (_args, response) =>
         `Connected, version: ${response.version}`,
     "aria2.unpause": (_args, _response) => "Task resumed",

@@ -1,7 +1,8 @@
 import { connect } from "react-redux"
+import { Dispatch } from "redux"
 
 import Control, { DispatchProps, StoreProps } from "../views/control"
-import { connected, receivedVersion, arbitraryValChanged } from "../actions"
+import { connected, receivedVersion, arbitraryValChanged, RootAction } from "../actions"
 import AriaJsonRPC from '../model/rpc'
 import { RootState } from "../reducer"
 
@@ -16,7 +17,7 @@ function mapStateToProps(state: RootState): StoreProps {
 
 let refreshLoopId: number
 
-function mapDispatchToProps(dispatch): DispatchProps {
+function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc) => {
         rpc.getAllTasks().then(tasks => {
             dispatch(arbitraryValChanged("tasks", tasks))

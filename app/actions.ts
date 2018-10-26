@@ -17,7 +17,7 @@ export const arbitraryValChanged = (key: string, value: any) =>
     action(ARBITRARY_VAL_CHANGED, {key, value})
 
 
-export type AriaAction =
+export type RootAction =
     ReturnType<typeof connected> |
     ReturnType<typeof receivedVersion> |
     ReturnType<typeof arbitraryValChanged>

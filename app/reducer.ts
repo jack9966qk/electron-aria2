@@ -3,19 +3,18 @@ import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED } from './actions'
 import * as Electron from 'electron'
 import AriaJsonRPC from './model/rpc'
 import { Token } from './model/rpc'
-import { DeepReadonly } from 'utility-types'
 import { Reducer } from 'redux'
-import { AriaAction } from './actions'
+import { RootAction } from './actions'
 
 // let app = Electron.remote.require("app")
 
 export type RootState = {
-    hostUrl: string
-    token: Token
-    rpc: AriaJsonRPC
-    version: string
-    defaultDir: string
-    tasks: object[]
+    readonly hostUrl: string
+    readonly token: Token
+    readonly rpc: AriaJsonRPC
+    readonly version: string
+    readonly defaultDir: string
+    readonly tasks: object[]
 }
 
 export const initialState: RootState = {
@@ -28,7 +27,7 @@ export const initialState: RootState = {
     tasks: []
 }
 
-const reducer: Reducer<RootState, AriaAction> =
+const reducer: Reducer<RootState, RootAction> =
     (state=initialState, action) => {
     switch(action.type) {
         case CONNECTED:
