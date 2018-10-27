@@ -28,9 +28,19 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    setUp: Function
-    tearDown: Function
-    purgeTasks: Function
+    launchLocal: () => void
+    connect: (
+        url: string,
+        token: string,
+        onRes: Function,
+        onErr: Function
+        ) => void
+    disconnect: (
+        rpc: AriaJsonRPC,
+        onRes: Function,
+        onErr: Function
+        ) => void
+    purgeTasks: (AriaJsonRPC) => void
 }
 
 export interface StoreProps {
@@ -98,25 +108,41 @@ class Control extends React.Component<Props, State> {
 
     componentDidMount() {
         console.log("Control did mount")
-        this.props.setUp(
-            this.props.hostUrl,
-            this.props.token,
-            this.onRpcResponse,
-            this.onRpcError
-        )
+        if (this.props.hostUrl && this.props.token) {
+            console.log("Found a remote server on mount, connect")
+            this.props.connect(
+                this.props.hostUrl,
+                this.props.token,
+                this.onRpcResponse,
+                this.onRpcError
+            )
+        } else {
+            console.log("Attempt to start local aria2 from control")
+            this.props.launchLocal()
+        }
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.hostUrl && this.props.token &&
+            !prevProps.hostUrl && !prevProps.token) {
+            // got a new server, connect
+            console.log("componentDidUpdate found a new server, connect")
+            this.props.connect(
+                this.props.hostUrl,
+                this.props.token,
+                this.onRpcResponse,
+                this.onRpcError
+            )
+        }
     }
 
     componentWillUnmount() {
         console.log("Control will unmount")
-        this.props.tearDown(
+        this.props.disconnect(
             this.props.rpc,
             this.onRpcResponse,
             this.onRpcError
         )
-    }
-
-    componentWillUpdate = (nextProps) => {
-
     }
 
     onRpcResponse = (method, args, response) => {

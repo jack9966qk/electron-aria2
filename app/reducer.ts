@@ -1,8 +1,9 @@
-import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED } from './actions'
+import { Reducer } from 'redux'
 import * as Electron from 'electron'
+
+import { CONNECTED, RECEIVED_VERSION, ARBITRARY_VAL_CHANGED, SET_ARIA_REMOTE, DISCONNECTED } from './actions'
 import AriaJsonRPC from './model/rpc'
 import { Token } from './model/rpc'
-import { Reducer } from 'redux'
 import { RootAction } from './actions'
 
 export type RootState = {
@@ -15,8 +16,8 @@ export type RootState = {
 }
 
 export const initialState: RootState = {
-    hostUrl: "ws://localhost:6800/jsonrpc",
-    token: "secret",
+    hostUrl: undefined,
+    token: undefined,
     rpc: undefined,
     version: undefined,
     defaultDir: Electron.remote.app.getPath("downloads"),
@@ -29,6 +30,8 @@ const reducer: Reducer<RootState, RootAction> =
         case CONNECTED:
             return {...state, rpc: action.payload}
             break
+        case DISCONNECTED:
+            return {...state, rpc: undefined}
         case RECEIVED_VERSION:
             return {...state, version: action.payload}
             break
@@ -36,6 +39,9 @@ const reducer: Reducer<RootState, RootAction> =
             const {key, value} = action.payload
             return {...state, [key]: value}
             break
+        case SET_ARIA_REMOTE:
+            const {hostUrl, secret} = action.payload
+            return {...state, hostUrl, token: secret}
         default:
             return state
             break

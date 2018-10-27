@@ -26,8 +26,8 @@ export default class AriaJsonRPC {
     token: Token
     jrpc: JsonRPC
     socket: WebSocket
-    responseCallbacks: Set<() => void>
-    errorCallbacks: Set<() => void>
+    responseCallbacks: Set<Function>
+    errorCallbacks: Set<Function>
     
     constructor(url: string, token: Token, jrpc: JsonRPC, socket: WebSocket) {
         this.url = url
@@ -38,26 +38,26 @@ export default class AriaJsonRPC {
         this.errorCallbacks = new Set()
     }
 
-    addResponseCallback(func: () => void) {
+    addResponseCallback(func: Function) {
         this.responseCallbacks.add(func)
     }
 
-    removeResponseCallback(func: () => void) {
+    removeResponseCallback(func: Function) {
         this.responseCallbacks.delete(func)
     }
 
-    addErrorCallback(func: () => void) {
+    addErrorCallback(func: Function) {
         this.errorCallbacks.add(func)
     }
 
-    removeErrorCallback(func: () => void) {
+    removeErrorCallback(func: Function) {
         this.errorCallbacks.delete(func)
     }
     
     call(method: MethodName, args: any[], silent=false) {
         // console.log(method)
         // console.log([`token:${this.token}`].concat(args))
-        const callback = (funcs: Set<(...args: any[]) => void>, args: any[]) => {
+        const callback = (funcs: Set<Function>, args: any[]) => {
             if (!silent) {
                 for (let f of funcs) {
                     f(...args)
@@ -87,5 +87,9 @@ export default class AriaJsonRPC {
             // console.log(tasks)
             return tasks
         })
+    }
+
+    disconnect() {
+        this.socket.close()
     }
 }

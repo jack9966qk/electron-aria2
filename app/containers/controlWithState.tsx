@@ -1,10 +1,15 @@
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
+import * as Electron from "electron"
 
 import Control, { DispatchProps, StoreProps } from "../views/control"
-import { connected, receivedVersion, arbitraryValChanged, RootAction } from "../actions"
+import { connected, receivedVersion, arbitraryValChanged, setAriaRemote, RootAction } from "../actions"
 import AriaJsonRPC from '../model/rpc'
 import { RootState } from "../reducer"
+
+const mainFuncs = Electron.remote.require("./mainFuncs.js")
+console.log(Electron.remote)
+console.log(mainFuncs)
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
@@ -25,7 +30,18 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     }
 
     return {
-        setUp: (url, token, onRes, onErr) => {
+        launchLocal: () => {
+            if (mainFuncs.getAriaProc()) {
+                console.log("local aria is already running")
+            } else {
+                console.log("launch aria from application")
+                console.log(mainFuncs.launchAria)
+                mainFuncs.launchAria()
+            }
+            const {port, secret} = mainFuncs
+            dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
+        },
+        connect: (url, token, onRes, onErr) => {
             let rpc
             return AriaJsonRPC.connectToServer(url, token).catch(e => {
                 onErr("Connection", "", e)
@@ -37,14 +53,18 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                 return rpc.call("aria2.getVersion", [])
             }).then( ({version}) => {
                 dispatch(receivedVersion(version))
+                // get new task status every 500ms,
+                // can be improved with JSONRPC notifications
                 refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
             })
         },
-        tearDown: (rpc, _onRes, onErr) => {
+        disconnect: (rpc, _onRes, onErr) => {
             clearInterval(refreshLoopId)
-            rpc.call("aria2.shutdown", [])
+            // need a unified approach on how to and when to shut down
+            // rpc.call("aria2.shutdown", [])
             rpc.removeResponseCallback(onErr)
             rpc.removeErrorCallback(onErr)
+            rpc.disconnect()
         },
         purgeTasks: (rpc) => {
             rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshTasks(rpc)})            
