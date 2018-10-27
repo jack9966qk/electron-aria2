@@ -10,7 +10,10 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
-import filesize from 'filesize'
+
+// `import * as filesize` also works, but reported as error by tslint
+// `import filesize` passes lint, but triggers error at runtime
+import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
 

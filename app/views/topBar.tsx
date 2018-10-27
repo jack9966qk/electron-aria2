@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -27,16 +26,24 @@ const styles = theme => ({
         marginRight: 20,
     },
 });
-  
 
-function TopBar(props) {
+interface Props {
+    classes: any
+    title: string
+    tabs: JSX.Element
+    showMenu: (any) => void
+    showSettings: (any) => void
+    showAddNewTask: (any) => void
+}
+
+const TopBar: React.SFC<Props> = (props) => {
     return (
         <div className={props.classes.root}>
             <AppBar position="fixed">
                 <Toolbar>
-                    <Hidden smDown implementation="css">    
+                    <Hidden only="xs" implementation="css">
                         <IconButton
-                            color="primary"
+                            color="secondary"
                             aria-label="Menu"
                             className={props.classes.menuButton}
                             onClick={props.showMenu}
@@ -65,9 +72,5 @@ function TopBar(props) {
         </div>
     )
 }
-
-TopBar.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(TopBar)
