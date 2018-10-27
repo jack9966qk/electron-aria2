@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -11,17 +10,35 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import BlockIcon from '@material-ui/icons/Block'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import blue from '@material-ui/core/colors/blue'
+import classnames, * as classNames from 'classnames'
 
 import { TaskCategory, filterTasks, description } from '../model/taskCategory'
 
-const styles = theme => ({
+const styles = theme => createStyles({
+    paper: {
+        position: "static",
+        maxWidth: 250,
+        width: 210, // if set to "auto", transition will not work
+        height: "100%",
+        whiteSpace: 'nowrap', // to prevent sidebar text from wrapping
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        })
+    },
+    paperClosed: {
+        width: 68,
+        overflowX: "hidden",
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        })
+    },
     listItemIcon: {
         marginRight: 5
     },
-    blueIcon: {
-        fill: blue[500]
+    primaryIcon: {
+        fill: theme.palette.primary[theme.palette.type]
     }
 })
 
@@ -30,7 +47,6 @@ interface ViewProps {
     category: any
     open: boolean
     onCategorySelected: (any) => void
-    onClose: () => void
 }
 
 export interface DispatchProps {
@@ -49,15 +65,18 @@ interface State {}
 
 class SideBar extends React.Component<Props, State> {
     render() {
-        const { blueIcon } = this.props.classes
+        const { primaryIcon } = this.props.classes
         const { tasks } = this.props
+        const paperClass = classnames(
+            this.props.classes.paper,
+            !this.props.open && this.props.classes.paperClosed)
 
         const makeListItem = (icon, category, num) => (
             <ListItem button onClick={() => { this.props.onCategorySelected(category) }}>
                 <ListItemIcon className={this.props.classes.listItemIcon}>
                     {React.createElement(
                         icon,
-                        category === this.props.category ? {className: blueIcon} : {}
+                        category === this.props.category ? {className: primaryIcon} : {}
                     )}
                 </ListItemIcon>
                 <ListItemText primary={description[category] + ` (${filterTasks(tasks, category).length})`} />
@@ -66,13 +85,11 @@ class SideBar extends React.Component<Props, State> {
 
         return (
             <Drawer
-                // type="persistent"
+                variant="permanent"
                 anchor="left"
                 open={this.props.open}
+                classes={{paper: paperClass}}
             >
-                <IconButton onClick={this.props.onClose}>
-                    <ChevronLeftIcon />
-                </IconButton>
                 <Divider />
                 <List>
                     {makeListItem(FileDownloadIcon, TaskCategory.Active, 1)}

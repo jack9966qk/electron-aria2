@@ -14,8 +14,7 @@ import SmallTooltip from './smallTooltip'
 const styles = theme => ({
     root: {
         width: '100%',
-        display: 'flex',
-        flex: 'auto'
+        display: 'flex'
         // WebkitUserSelect: 'none'
     },
     flex: {
@@ -39,7 +38,7 @@ interface Props {
 const TopBar: React.SFC<Props> = (props) => {
     return (
         <div className={props.classes.root}>
-            <AppBar position="fixed">
+            <AppBar position="sticky">
                 <Toolbar>
                     <Hidden only="xs" implementation="css">
                         <IconButton

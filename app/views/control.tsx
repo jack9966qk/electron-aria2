@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import withStyles from '@material-ui/core/styles/withStyles'
+import createStyles from '@material-ui/core/styles/createStyles'
 
 import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
@@ -11,15 +12,18 @@ import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
 import { TaskCategory, description } from '../model/taskCategory'
 import AriaJsonRPC from '../model/rpc'
+import { Hidden } from '@material-ui/core';
 
-const styles = theme => ({
+const styles = theme => createStyles({
+    root: {
+        height: "100%"
+    },
     taskList: {
-        [theme.breakpoints.up('sm')]: {
-            marginTop: 80
-        },
-        [theme.breakpoints.down('sm')]: {
-            marginTop: 120
-        }
+        width: "100%"
+    },
+    content: {
+        height: "100%",
+        display: "flex"
     }
 })
 
@@ -82,12 +86,8 @@ class Control extends React.Component<Props, State> {
         this.setState({ newTaskDialogOpen: false })
     }
 
-    handleSidebarOpen = () => {
-        this.setState({ sidebarOpen: true })
-    }
-
-    handleSidebarClose = () => {
-        this.setState({ sidebarOpen: false })
+    toggleSidebarOpen = () => {
+        this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
     handleSnackbarClose = () => {
@@ -95,7 +95,7 @@ class Control extends React.Component<Props, State> {
     }
 
     handleCategorySelect = (category) => {
-        this.setState({ category, sidebarOpen: false })
+        this.setState({ category })
     }
 
     handleSettingsOpen = () => {
@@ -169,10 +169,10 @@ class Control extends React.Component<Props, State> {
     render() {
         const { classes } = this.props
         return (
-            <div>
+            <div className={classes.root}>
                 <TopBar
                     showAddNewTask={this.handleDialogOpen}
-                    showMenu={this.handleSidebarOpen}
+                    showMenu={this.toggleSidebarOpen}
                     showSettings={this.handleSettingsOpen}
                     title={description[this.state.category]}
                     tabs={<TaskCategoryTabsWithState
@@ -180,14 +180,18 @@ class Control extends React.Component<Props, State> {
                         category={this.state.category}
                     />}
                 />
-                <SideBarWithState
-                    open={this.state.sidebarOpen}
-                    onClose={this.handleSidebarClose}
-                    onCategorySelected={this.handleCategorySelect}
-                    category={this.state.category}
-                />
-                <div className={classes.taskList}>
-                    <TaskListWithState category={this.state.category} />
+                
+                <div className={classes.content}>
+                    <Hidden only="xs">
+                        <SideBarWithState
+                            open={this.state.sidebarOpen}
+                            onCategorySelected={this.handleCategorySelect}
+                            category={this.state.category}
+                        />
+                    </Hidden>
+                    <div className={classes.taskList}>
+                        <TaskListWithState category={this.state.category} />
+                    </div>
                 </div>
                 <NewTaskDialogWithState
                     open={this.state.newTaskDialogOpen}

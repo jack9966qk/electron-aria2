@@ -7,12 +7,7 @@ import AriaJsonRPC from '../model/rpc'
 
 const styles = theme => ({
     root: {
-        // width: '100%',
-        // margin: 10
-        maxWidth: 800,
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        // background: theme.palette.background.paper,
+        margin: 10
     },
 })
 
