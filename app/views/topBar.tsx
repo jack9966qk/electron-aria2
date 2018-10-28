@@ -13,16 +13,11 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import SmallTooltip from './smallTooltip'
 
 const styles = (theme: Theme) => createStyles({
-    appBar: {
-        position: "static",
-        zIndex: theme.zIndex.drawer + 1
-    },
     root: {
-        width: '100%',
-        // WebkitUserSelect: 'none'
+        position: "static"
     },
     flex: {
-        flex: 1,
+        flex: 1, // for text to take as much width as possible
     },
     menuButton: {
         marginLeft: -12,
@@ -41,38 +36,36 @@ interface Props {
 
 const TopBar: React.SFC<Props> = (props) => {
     return (
-        <div className={props.classes.root}>
-            <AppBar className={props.classes.appBar}>
-                <Toolbar>
-                    <Hidden only="xs" implementation="css">
-                        <IconButton
-                            color="secondary"
-                            aria-label="Menu"
-                            className={props.classes.menuButton}
-                            onClick={props.showMenu}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                    </Hidden>
-                    <Typography variant="h6" color="inherit" className={props.classes.flex}>
-                        {props.title}
-                    </Typography>
-                    <SmallTooltip title="Settings">
-                        <IconButton color="inherit" onClick={props.showSettings}>
-                            <SettingsIcon/>
-                        </IconButton>
-                    </SmallTooltip>
-                    <SmallTooltip title="New task">
-                        <IconButton color="inherit" onClick={props.showAddNewTask}>
-                            <AddIcon/>
-                        </IconButton>
-                    </SmallTooltip>
-                </Toolbar>
-                <Hidden smUp implementation="css">
-                    {props.tabs}
+        <AppBar className={props.classes.root}>
+            <Toolbar>
+                <Hidden only="xs" implementation="css">
+                    <IconButton
+                        color="secondary"
+                        aria-label="Menu"
+                        className={props.classes.menuButton}
+                        onClick={props.showMenu}
+                    >
+                        <MenuIcon />
+                    </IconButton>
                 </Hidden>
-            </AppBar>
-        </div>
+                <Typography variant="h6" color="inherit" className={props.classes.flex}>
+                    {props.title}
+                </Typography>
+                <SmallTooltip title="Settings">
+                    <IconButton color="inherit" onClick={props.showSettings}>
+                        <SettingsIcon/>
+                    </IconButton>
+                </SmallTooltip>
+                <SmallTooltip title="New task">
+                    <IconButton color="inherit" onClick={props.showAddNewTask}>
+                        <AddIcon/>
+                    </IconButton>
+                </SmallTooltip>
+            </Toolbar>
+            <Hidden smUp implementation="css">
+                {props.tabs}
+            </Hidden>
+        </AppBar>
     )
 }
 

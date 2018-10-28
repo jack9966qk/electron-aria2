@@ -12,7 +12,6 @@ import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
 import { TaskCategory, description } from '../model/taskCategory'
 import AriaJsonRPC from '../model/rpc'
-import { Hidden } from '@material-ui/core'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
 const styles = (theme: Theme) => createStyles({
@@ -24,13 +23,20 @@ const styles = (theme: Theme) => createStyles({
         gridTemplateColumns: "auto 1fr"
     },
     topBar: {
-        gridColumnStart: 1,
-        gridColumnEnd: 3
+        zIndex: theme.zIndex.drawer + 1,
+        gridColumn: "1 / -1"
     },
     sideBar: {
+        [theme.breakpoints.down("xs")]: {
+            display: "none"
+        }
     },
     taskList: {
-        overflow: "auto"
+        overflow: "auto",
+        margin: "0px 10px",
+        [theme.breakpoints.down("xs")]: {
+            gridColumn: "1 / -1" // full width in compact view
+        }
     },
     toolBar: theme.mixins.toolbar
 })
@@ -189,14 +195,12 @@ class Control extends React.Component<Props, State> {
                             category={this.state.category}
                         />}
                     />
-                    <Hidden only="xs">
-                        <SideBarWithState
-                            open={this.state.sidebarOpen}
-                            onCategorySelected={this.handleCategorySelect}
-                            category={this.state.category}
-                            classes={{root: classes.sideBar}}
-                        />
-                    </Hidden>
+                    <SideBarWithState
+                        open={this.state.sidebarOpen}
+                        onCategorySelected={this.handleCategorySelect}
+                        category={this.state.category}
+                        classes={{root: classes.sideBar}}
+                    />
                     <TaskListWithState
                         category={this.state.category}
                         classes={{root: classes.taskList}}

@@ -8,7 +8,6 @@ import AriaJsonRPC from '../model/rpc'
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        margin: 10
     },
 })
 
