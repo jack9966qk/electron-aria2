@@ -14,8 +14,10 @@ module.exports.getAriaProc = () => {
 
 module.exports.launchAria = () => {
     console.log("launchAria get called")
-    dhtPath = path.join(__dirname, "dht.dat")
-    ariaProc = spawn("aria2c", [
+    const dhtPath = path.join(__dirname, "dht.dat")
+    const ariaPath = process.platform === 'win32' ?
+        path.join(__dirname, "bin", "win64", "aria2c.exe") : "aria2c"
+    ariaProc = spawn(ariaPath, [
         "--enable-rpc=true",
         `--rpc-listen-port=${port}`,
         `--rpc-secret=${secret}`,
