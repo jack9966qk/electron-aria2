@@ -51,7 +51,8 @@ export interface DispatchProps {
         url: string,
         token: string,
         onRes: Function,
-        onErr: Function
+        onErr: Function,
+        onConnErr: Function,
         ) => void
     disconnect: (
         rpc: AriaJsonRPC,
@@ -128,7 +129,8 @@ class Control extends React.Component<Props, State> {
                 this.props.hostUrl,
                 this.props.token,
                 this.onRpcResponse,
-                this.onRpcError
+                this.onRpcError,
+                this.onConnectionError
             )
         } else {
             console.log("Attempt to start local aria2 from control")
@@ -145,7 +147,8 @@ class Control extends React.Component<Props, State> {
                 this.props.hostUrl,
                 this.props.token,
                 this.onRpcResponse,
-                this.onRpcError
+                this.onRpcError,
+                this.onConnectionError
             )
         }
     }
@@ -178,6 +181,10 @@ class Control extends React.Component<Props, State> {
 
     onRpcError = (_method, _args, error) => {
         this.setState({ snackbarOpen: true, snackbarText: "Error: " + error.message })
+    }
+
+    onConnectionError = () => {
+        this.setState({ snackbarOpen: true, snackbarText: "Failed to connect to " + this.props.hostUrl})
     }
     
     render() {

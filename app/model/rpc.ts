@@ -12,7 +12,15 @@ export default class AriaJsonRPC {
                 const socket = new WebSocket(url)
                 jrpc.toStream = (_msg) => { socket.send(_msg) }
                 socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
-                socket.onclose = (_event) => { console.log("connection closed") }
+                socket.onclose = (event) => {
+                    if (event.code !== 3001) {
+                        rej(event)
+                    } else {
+                        console.log("rpc connection closed normally")
+                    }
+                }
+                // TODO: handle normal WS errors better
+                socket.onerror = (event) => { console.log(event) }
                 socket.onopen = () => {
                     res(new AriaJsonRPC(url, token, jrpc, socket))
                 }

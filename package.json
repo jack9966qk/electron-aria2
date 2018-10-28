@@ -11,6 +11,7 @@
   "author": "Jack",
   "license": "GPL-3.0+",
   "dependencies": {
+    "aria2": "^4.0.3",
     "classnames": "^2.2.6",
     "electron": "^3.0.6",
     "electron-devtools-installer": "^2.2.4",

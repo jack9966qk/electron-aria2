@@ -38,21 +38,22 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
             const {port, secret} = mainFuncs
             dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
         },
-        connect: (url, token, onRes, onErr) => {
+        connect: (url, token, onRes, onErr, onConnErr) => {
             let rpc
-            return AriaJsonRPC.connectToServer(url, token).catch(e => {
-                onErr("Connection", "", e)
-            }).then(jrpc => {
+            return AriaJsonRPC.connectToServer(url, token).then(jrpc => {
                 dispatch(connected(jrpc as AriaJsonRPC))
                 rpc = jrpc
                 rpc.addResponseCallback(onRes)
                 rpc.addErrorCallback(onErr)
-                return rpc.call("aria2.getVersion", [])
-            }).then( ({version}) => {
-                dispatch(receivedVersion(version))
-                // get new task status every 500ms,
-                // can be improved with JSONRPC notifications
-                refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
+                return rpc.call("aria2.getVersion", []).then( ({version}) => {
+                    dispatch(receivedVersion(version))
+                    // get new task status every 500ms,
+                    // can be improved with JSONRPC notifications
+                    refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
+                })
+            }).catch(e => {
+                console.log(e)
+                onConnErr()
             })
         },
         disconnect: (rpc, _onRes, onErr) => {
