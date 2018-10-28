@@ -10,11 +10,15 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import BlockIcon from '@material-ui/icons/Block'
-import classnames, * as classNames from 'classnames'
+import classnames from 'classnames'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
 import { TaskCategory, filterTasks, description } from '../model/taskCategory'
 
-const styles = theme => createStyles({
+const styles = (theme: Theme) => createStyles({
+    root: {
+        height: "100%"
+    },
     paper: {
         position: "static",
         maxWidth: 250,
@@ -65,7 +69,7 @@ interface State {}
 
 class SideBar extends React.Component<Props, State> {
     render() {
-        const { primaryIcon } = this.props.classes
+        const { root, primaryIcon } = this.props.classes
         const { tasks } = this.props
         const paperClass = classnames(
             this.props.classes.paper,
@@ -86,9 +90,11 @@ class SideBar extends React.Component<Props, State> {
         return (
             <Drawer
                 variant="permanent"
-                anchor="left"
                 open={this.props.open}
-                classes={{paper: paperClass}}
+                classes={{
+                    docked: root,
+                    paper: paperClass
+                }}
             >
                 <Divider />
                 <List>

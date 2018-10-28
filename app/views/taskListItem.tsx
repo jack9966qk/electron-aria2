@@ -8,7 +8,8 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import DeleteIcon from '@material-ui/icons/Delete'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Grid from '@material-ui/core/Grid'
 
 // `import * as filesize` also works, but reported as error by tslint
@@ -17,7 +18,7 @@ import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     root: theme.mixins.gutters({
         flexGrow: 1,
         paddingTop: 16,

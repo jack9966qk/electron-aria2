@@ -12,19 +12,27 @@ import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
 import { TaskCategory, description } from '../model/taskCategory'
 import AriaJsonRPC from '../model/rpc'
-import { Hidden } from '@material-ui/core';
+import { Hidden } from '@material-ui/core'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
-const styles = theme => createStyles({
-    root: {
-        height: "100%"
-    },
-    taskList: {
-        width: "100%"
-    },
+const styles = (theme: Theme) => createStyles({
     content: {
         height: "100%",
-        display: "flex"
-    }
+        width: "100%",
+        display: "grid",
+        gridTemplateRows: "auto 1fr",
+        gridTemplateColumns: "auto 1fr"
+    },
+    topBar: {
+        gridColumnStart: 1,
+        gridColumnEnd: 3
+    },
+    sideBar: {
+    },
+    taskList: {
+        overflow: "auto"
+    },
+    toolBar: theme.mixins.toolbar
 })
 
 interface ViewProps {
@@ -169,30 +177,32 @@ class Control extends React.Component<Props, State> {
     render() {
         const { classes } = this.props
         return (
-            <div className={classes.root}>
-                <TopBar
-                    showAddNewTask={this.handleDialogOpen}
-                    showMenu={this.toggleSidebarOpen}
-                    showSettings={this.handleSettingsOpen}
-                    title={description[this.state.category]}
-                    tabs={<TaskCategoryTabsWithState
-                        onCategorySelected={this.handleCategorySelect}
-                        category={this.state.category}
-                    />}
-                />
-                
+            <>
                 <div className={classes.content}>
+                    <TopBar classes={{root: classes.topBar}}
+                        showAddNewTask={this.handleDialogOpen}
+                        showMenu={this.toggleSidebarOpen}
+                        showSettings={this.handleSettingsOpen}
+                        title={description[this.state.category]}
+                        tabs={<TaskCategoryTabsWithState
+                            onCategorySelected={this.handleCategorySelect}
+                            category={this.state.category}
+                        />}
+                    />
                     <Hidden only="xs">
                         <SideBarWithState
                             open={this.state.sidebarOpen}
                             onCategorySelected={this.handleCategorySelect}
                             category={this.state.category}
+                            classes={{root: classes.sideBar}}
                         />
                     </Hidden>
-                    <div className={classes.taskList}>
-                        <TaskListWithState category={this.state.category} />
-                    </div>
+                    <TaskListWithState
+                        category={this.state.category}
+                        classes={{root: classes.taskList}}
+                    />
                 </div>
+
                 <NewTaskDialogWithState
                     open={this.state.newTaskDialogOpen}
                     onRequestClose={this.handleDialogClose}
@@ -207,7 +217,7 @@ class Control extends React.Component<Props, State> {
                     onClose={this.handleSnackbarClose}
                     message={<span>{this.state.snackbarText}</span>}
                 />
-            </div>
+            </>
         )
     }
 }

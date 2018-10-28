@@ -1,11 +1,12 @@
 import * as React from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
 import TaskListItem from './taskListItem'
 import { filterTasks } from '../model/taskCategory'
 import AriaJsonRPC from '../model/rpc'
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
     root: {
         margin: 10
     },

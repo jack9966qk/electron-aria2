@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, createStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Hidden from '@material-ui/core/Hidden'
@@ -11,10 +12,13 @@ import SettingsIcon from '@material-ui/icons/Settings'
 
 import SmallTooltip from './smallTooltip'
 
-const styles = theme => ({
+const styles = (theme: Theme) => createStyles({
+    appBar: {
+        position: "static",
+        zIndex: theme.zIndex.drawer + 1
+    },
     root: {
         width: '100%',
-        display: 'flex'
         // WebkitUserSelect: 'none'
     },
     flex: {
@@ -38,7 +42,7 @@ interface Props {
 const TopBar: React.SFC<Props> = (props) => {
     return (
         <div className={props.classes.root}>
-            <AppBar position="sticky">
+            <AppBar className={props.classes.appBar}>
                 <Toolbar>
                     <Hidden only="xs" implementation="css">
                         <IconButton
