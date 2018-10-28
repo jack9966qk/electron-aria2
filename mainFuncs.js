@@ -1,5 +1,10 @@
 const { spawn } = require('child_process')
 const path = require('path')
+const fixPath = require('fix-path')
+
+// fix broken OS $PATH when launched from GUI
+// https://github.com/electron-userland/electron-packager/issues/603
+fixPath()
 
 var ariaProc
 

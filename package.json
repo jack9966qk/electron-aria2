@@ -1,8 +1,9 @@
 {
   "name": "electron-aria2",
+  "productName": "Electron Aria2",
   "version": "0.0.2",
   "description": "Aria2 Client",
-  "main": "index.js",
+  "main": "main.js",
   "private": true,
   "scripts": {
     "start": "webpack && electron main.js"
@@ -12,7 +13,9 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "electron": "^3.0.6",
+    "electron-devtools-installer": "^2.2.4",
     "filesize": "^3.6.1",
+    "fix-path": "^2.1.0",
     "ps-tree": "^1.1.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
@@ -33,7 +36,6 @@
     "@types/react-redux": "^6.0.9",
     "@types/redux": "^3.6.0",
     "awesome-typescript-loader": "^5.2.1",
-    "electron-devtools-installer": "^2.2.4",
     "source-map-loader": "^0.2.4",
     "typescript": "^3.1.3",
     "webpack": "^4.23.0",

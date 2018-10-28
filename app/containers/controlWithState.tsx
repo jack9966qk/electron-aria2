@@ -8,8 +8,6 @@ import AriaJsonRPC from '../model/rpc'
 import { RootState } from "../reducer"
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
-console.log(Electron.remote)
-console.log(mainFuncs)
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
@@ -35,7 +33,6 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                 console.log("local aria is already running")
             } else {
                 console.log("launch aria from application")
-                console.log(mainFuncs.launchAria)
                 mainFuncs.launchAria()
             }
             const {port, secret} = mainFuncs

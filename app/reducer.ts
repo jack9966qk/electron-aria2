@@ -15,25 +15,25 @@ export type RootState = {
     readonly tasks: object[]
 }
 
-// export const initialState: RootState = {
-//     hostUrl: undefined,
-//     token: undefined,
-//     rpc: undefined,
-//     version: undefined,
-//     defaultDir: Electron.remote.app.getPath("downloads"),
-//     tasks: []
-// }
-
-
-// for testing purpose only
 export const initialState: RootState = {
-    hostUrl: "ws://localhost:6800/jsonrpc",
-    token: "secret",
+    hostUrl: undefined,
+    token: undefined,
     rpc: undefined,
     version: undefined,
     defaultDir: Electron.remote.app.getPath("downloads"),
     tasks: []
 }
+
+
+// for testing purpose only
+// export const initialState: RootState = {
+//     hostUrl: "ws://localhost:6800/jsonrpc",
+//     token: "secret",
+//     rpc: undefined,
+//     version: undefined,
+//     defaultDir: Electron.remote.app.getPath("downloads"),
+//     tasks: []
+// }
 
 const reducer: Reducer<RootState, RootAction> =
     (state=initialState, action) => {
