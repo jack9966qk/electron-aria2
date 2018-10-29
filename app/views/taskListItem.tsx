@@ -19,14 +19,11 @@ import filesize = require('filesize')
 import SmallTooltip from './smallTooltip'
 
 const styles = (theme: Theme) => createStyles({
-    root: theme.mixins.gutters({
+    root: {
         flexGrow: 1,
-        paddingTop: 16,
-        paddingBottom: 16,
-        marginTop: theme.spacing.unit * 2,
-        marginLeft: theme.spacing.unit * 1,
-        marginRight: theme.spacing.unit * 1,
-    }),
+        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
+        margin: `${theme.spacing.unit * 1.5}px ${theme.spacing.unit * 0.5}px`,
+    },
     progressBar: {
         marginTop: theme.spacing.unit,
         marginBottom: theme.spacing.unit

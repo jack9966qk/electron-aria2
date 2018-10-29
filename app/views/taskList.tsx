@@ -8,6 +8,7 @@ import AriaJsonRPC from '../model/rpc'
 
 const styles = (theme: Theme) => createStyles({
     root: {
+        padding: `${theme.spacing.unit * 0.5}px ${theme.spacing.unit}px`,
     },
 })
 

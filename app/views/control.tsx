@@ -33,7 +33,6 @@ const styles = (theme: Theme) => createStyles({
     },
     taskList: {
         overflow: "auto",
-        margin: "0px 10px",
         [theme.breakpoints.down("xs")]: {
             gridColumn: "1 / -1" // full width in compact view
         }
