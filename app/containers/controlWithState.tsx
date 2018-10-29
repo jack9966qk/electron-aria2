@@ -13,8 +13,8 @@ function mapStateToProps(state: RootState): StoreProps {
     return {
         rpc: state.rpc,
         version: state.version,
-        hostUrl: state.hostUrl,
-        token: state.token
+        hostUrl: state.rpc.url,
+        token: state.rpc.token
     }
 }
 
@@ -27,32 +27,35 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         })
     }
 
+    const onConnectionSuccess = (rpc, onRes, onErr) => {
+        dispatch(connected())
+        rpc.addResponseCallback(onRes)
+        rpc.addErrorCallback(onErr)
+        rpc.call("aria2.getVersion", []).then( ({version}) => {
+            dispatch(receivedVersion(version))
+            // get new task status every 500ms,
+            // can be improved with JSONRPC notifications
+            refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
+        })
+    }
+
     return {
-        launchLocal: () => {
-            if (mainFuncs.getAriaProc()) {
-                console.log("local aria is already running")
-            } else {
-                console.log("launch aria from application")
+        connectOrLaunchLocal: (rpc: AriaJsonRPC, onRes, onErr) => {
+            rpc.connect().then(() => {
+                onConnectionSuccess(rpc, onRes, onErr)
+            }).catch(() => {
+                console.log("caught error")
+                // launch local version and update rpc
                 mainFuncs.launchAria()
-            }
-            const {port, secret} = mainFuncs
-            dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
+                const {port, secret} = mainFuncs
+                dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
+            })
         },
-        connect: (url, token, onRes, onErr, onConnErr) => {
-            let rpc
-            return AriaJsonRPC.connectToServer(url, token).then(jrpc => {
-                dispatch(connected(jrpc as AriaJsonRPC))
-                rpc = jrpc
-                rpc.addResponseCallback(onRes)
-                rpc.addErrorCallback(onErr)
-                return rpc.call("aria2.getVersion", []).then( ({version}) => {
-                    dispatch(receivedVersion(version))
-                    // get new task status every 500ms,
-                    // can be improved with JSONRPC notifications
-                    refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
-                })
-            }).catch(e => {
-                console.log(e)
+        connect: (rpc: AriaJsonRPC, onRes, onErr, onConnErr) => {
+            rpc.connect().then(() => {
+                onConnectionSuccess(rpc, onRes, onErr)
+            }).catch(() => {
+                // connection failure
                 onConnErr()
             })
         },

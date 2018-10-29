@@ -1,11 +1,9 @@
 // actions used along with redux
 
-import AriaJsonRPC from "./model/rpc"
 import { action } from "typesafe-actions"
 
 export const CONNECTED = "CONNECTED"
-export const connected = (rpc: AriaJsonRPC) =>
-    action(CONNECTED, rpc)
+export const connected = () => action(CONNECTED)
 
 export const DISCONNECTED = "DISCONNECTED"
 export const disconnected = () => action(DISCONNECTED)

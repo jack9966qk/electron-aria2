@@ -46,10 +46,13 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    launchLocal: () => void
+    connectOrLaunchLocal: (
+        rpc: AriaJsonRPC,
+        onRes: Function,
+        onErr: Function,
+        ) => void
     connect: (
-        url: string,
-        token: string,
+        rpc: AriaJsonRPC,
         onRes: Function,
         onErr: Function,
         onConnErr: Function,
@@ -123,29 +126,19 @@ class Control extends React.Component<Props, State> {
 
     componentDidMount() {
         console.log("Control did mount")
-        if (this.props.hostUrl && this.props.token) {
-            console.log("Found a remote server on mount, connect")
-            this.props.connect(
-                this.props.hostUrl,
-                this.props.token,
-                this.onRpcResponse,
-                this.onRpcError,
-                this.onConnectionError
-            )
-        } else {
-            console.log("Attempt to start local aria2 from control")
-            this.props.launchLocal()
-        }
+        this.props.connectOrLaunchLocal(
+            this.props.rpc,
+            this.onRpcResponse,
+            this.onRpcError)
     }
 
     componentDidUpdate(prevProps: Props) {
-        if (this.props.hostUrl && this.props.token &&
-            !prevProps.hostUrl && !prevProps.token) {
+        // connect automatically given a new rpc object
+        if (this.props.rpc !== prevProps.rpc) {
             // got a new server, connect
             console.log("componentDidUpdate found a new server, connect")
             this.props.connect(
-                this.props.hostUrl,
-                this.props.token,
+                this.props.rpc,
                 this.onRpcResponse,
                 this.onRpcError,
                 this.onConnectionError
