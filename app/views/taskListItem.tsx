@@ -11,6 +11,7 @@ import FolderIcon from '@material-ui/icons/Folder'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Grid from '@material-ui/core/Grid'
+import * as Lodash from "lodash"
 
 // `import * as filesize` also works, but reported as error by tslint
 // `import filesize` passes lint, but triggers error at runtime
@@ -58,6 +59,15 @@ interface TaskListItemState {
 class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState> {
     constructor(props) {
         super(props)
+    }
+
+    // quick fix for one instance of performance problem
+    // TODO find a better solution
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.state === nextState && Lodash.isEqual(this.props.task, nextProps.task)) {
+            return false
+        }
+        return true
     }
     
     render() {

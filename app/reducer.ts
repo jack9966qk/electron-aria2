@@ -38,6 +38,7 @@ const reducer: Reducer<RootState, RootAction> =
             const {hostUrl, secret} = action.payload
             const rpc = new AriaJsonRPC(hostUrl, secret)
             return {...state, hostUrl, rpc}
+            break
         default:
             return state
             break
