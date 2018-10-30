@@ -6,7 +6,7 @@ import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
 import BlockIcon from '@material-ui/icons/Block'
 
-import { TaskCategory } from '../model/taskCategory'
+import { TaskCategory } from '../model/task'
 
 interface ViewProps {
     category: TaskCategory
@@ -17,7 +17,6 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
-    tasks: any[]
 }
 
 type Props =

@@ -2,10 +2,11 @@ import { connect } from "react-redux"
 
 import SideBar, { StoreProps } from "../views/sideBar"
 import { RootState } from "../reducer"
+import { countCategory } from "../model/task"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        tasks: state.tasks
+        count: countCategory(state.tasks)
     }
 }
 

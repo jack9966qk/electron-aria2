@@ -13,7 +13,7 @@ import BlockIcon from '@material-ui/icons/Block'
 import classnames from 'classnames'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
-import { TaskCategory, filterTasks, description } from '../model/taskCategory'
+import { CategoryCount, TaskCategory, taskCategoryDescription } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -57,7 +57,7 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
-    tasks: any
+    count: CategoryCount
 }
 
 type Props =
@@ -70,7 +70,7 @@ interface State {}
 class SideBar extends React.Component<Props, State> {
     render() {
         const { root, primaryIcon } = this.props.classes
-        const { tasks } = this.props
+        const { count } = this.props
         const paperClass = classnames(
             this.props.classes.paper,
             !this.props.open && this.props.classes.paperClosed)
@@ -83,7 +83,7 @@ class SideBar extends React.Component<Props, State> {
                         category === this.props.category ? {className: primaryIcon} : {}
                     )}
                 </ListItemIcon>
-                <ListItemText primary={description[category] + ` (${filterTasks(tasks, category).length})`} />
+                <ListItemText primary={taskCategoryDescription[category] + ` (${count[category]})`} />
             </ListItem>
         )
 

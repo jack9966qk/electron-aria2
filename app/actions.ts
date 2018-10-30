@@ -1,6 +1,7 @@
 // actions used along with redux
 
 import { action } from "typesafe-actions"
+import { Task } from "./model/task"
 
 export const CONNECTED = "CONNECTED"
 export const connected = () => action(CONNECTED)
@@ -11,6 +12,10 @@ export const disconnected = () => action(DISCONNECTED)
 export const RECEIVED_VERSION = "RECEIVED_VERSION"
 export const receivedVersion = (version: string) =>
     action(RECEIVED_VERSION, version)
+
+export const RECEIVED_TASKS = "RECEIVED_TASKS"
+export const receivedTasks = (tasks: Task[]) =>
+    action(RECEIVED_TASKS, tasks)
 
 export const ARBITRARY_VAL_CHANGED = "ARBITRARY_VAL_CHANGED"
 export const arbitraryValChanged = (key: string, value: any) =>
@@ -25,5 +30,6 @@ export type RootAction =
     ReturnType<typeof connected> |
     ReturnType<typeof disconnected> |
     ReturnType<typeof receivedVersion> |
+    ReturnType<typeof receivedTasks> |
     ReturnType<typeof arbitraryValChanged> |
     ReturnType<typeof setAriaRemote>

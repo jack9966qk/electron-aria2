@@ -10,7 +10,7 @@ import TaskListWithState from '../containers/taskListWithState'
 import TopBar from './topBar'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import { TaskCategory, description } from '../model/taskCategory'
+import { TaskCategory, taskCategoryDescription } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
@@ -188,7 +188,7 @@ class Control extends React.Component<Props, State> {
                         showAddNewTask={this.handleDialogOpen}
                         showMenu={this.toggleSidebarOpen}
                         showSettings={this.handleSettingsOpen}
-                        title={description[this.state.category]}
+                        title={taskCategoryDescription[this.state.category]}
                         tabs={<TaskCategoryTabsWithState
                             onCategorySelected={this.handleCategorySelect}
                             category={this.state.category}

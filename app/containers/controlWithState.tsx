@@ -3,7 +3,7 @@ import { Dispatch } from "redux"
 import * as Electron from "electron"
 
 import Control, { DispatchProps, StoreProps } from "../views/control"
-import { connected, receivedVersion, arbitraryValChanged, setAriaRemote, RootAction } from "../actions"
+import { connected, receivedVersion, receivedTasks, setAriaRemote, RootAction } from "../actions"
 import AriaJsonRPC from '../model/rpc'
 import { RootState } from "../reducer"
 
@@ -23,7 +23,7 @@ let refreshLoopId: number
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc) => {
         rpc.getAllTasks().then(tasks => {
-            dispatch(arbitraryValChanged("tasks", tasks))
+            dispatch(receivedTasks(tasks))
         })
     }
 
