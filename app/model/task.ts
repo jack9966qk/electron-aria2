@@ -31,7 +31,20 @@ export const taskCategoryDescription = {
 
 function getCategory(task: any): TaskCategory {
     if (["active", "paused"].includes(task.status)) {
-        return task.completedLength < task.totalLength ? TaskCategory.Active : TaskCategory.Completed
+        const completed = parseInt(task.completedLength)
+        const total = parseInt(task.totalLength)
+        if (completed === total) {
+            if (total === 0) {
+                // probably a torrent/metadata task that
+                // has not obtained a size yet
+                return TaskCategory.Active
+            } else {
+                // for torrent tasks that have completed
+                // download but still seeding
+                return TaskCategory.Completed
+            }
+        }
+        return TaskCategory.Active
     }
 
     if (["waiting"].includes(task.status)) {
