@@ -67,9 +67,9 @@ type Props =
 
 interface State {}
 
-class SideBar extends React.Component<Props, State> {
+class SideBar extends React.PureComponent<Props, State> {
     render() {
-        const { root, primaryIcon } = this.props.classes
+        const { root, primaryIcon, listItemIcon } = this.props.classes
         const { count } = this.props
         const paperClass = classnames(
             this.props.classes.paper,
@@ -77,13 +77,15 @@ class SideBar extends React.Component<Props, State> {
 
         const makeListItem = (icon, category, num) => (
             <ListItem button onClick={() => { this.props.onCategorySelected(category) }}>
-                <ListItemIcon className={this.props.classes.listItemIcon}>
+                <ListItemIcon className={listItemIcon}>
                     {React.createElement(
                         icon,
                         category === this.props.category ? {className: primaryIcon} : {}
                     )}
                 </ListItemIcon>
-                <ListItemText primary={taskCategoryDescription[category] + ` (${count[category]})`} />
+                <ListItemText
+                    primary={taskCategoryDescription[category] + ` (${count[category]})`}
+                />
             </ListItem>
         )
 

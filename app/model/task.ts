@@ -75,7 +75,7 @@ export const countCategory = (tasks: Task[]) => {
 
 export type CategoryCount = ReturnType<typeof countCategory>
 
-export function filterTasks(tasks, category) {
+export function filterTasks(tasks: Task[], category: TaskCategory) {
     return tasks.filter(e => getCategory(e) === category)
 }
 

@@ -3,7 +3,7 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
 import TaskListItem from './taskListItem'
-import { Task, filterTasks } from '../model/task'
+import { Task, filterTasks, TaskCategory } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
 
 const styles = (theme: Theme) => createStyles({
@@ -13,7 +13,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 interface ViewProps {
-    category: string
+    category: TaskCategory
     classes: any
 }
 
