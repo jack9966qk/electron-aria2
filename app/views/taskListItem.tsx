@@ -21,13 +21,19 @@ import { Task } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        flexGrow: 1,
         padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
         margin: `${theme.spacing.unit * 1.5}px ${theme.spacing.unit * 0.5}px`,
     },
     progressBar: {
         marginTop: theme.spacing.unit,
         marginBottom: theme.spacing.unit
+    },
+    buttons: {
+        display: "flex",
+        justifyContent: "flex-end"
+    },
+    button: {
+        flexShrink: 0
     },
     text: {
         display: "block",
@@ -73,7 +79,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         const pauseButton = (
             <SmallTooltip title="Pause">
-                <IconButton onClick={this.props.handlePauseTask}>
+                <IconButton className={classes.button} onClick={this.props.handlePauseTask}>
                     <PauseIcon />
                 </IconButton>
             </SmallTooltip>
@@ -81,7 +87,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         const resumeButton = (
             <SmallTooltip title="Resume">
-                <IconButton onClick={this.props.handleResumeTask}>
+                <IconButton className={classes.button} onClick={this.props.handleResumeTask}>
                     <PlayArrowIcon />
                 </IconButton>
             </SmallTooltip>
@@ -90,12 +96,12 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         const deleteButton = (
             status !== "error" && status !== "removed" && status !== "complete" ?
                 (<SmallTooltip title="Delete">
-                    <IconButton onClick={this.props.handleDeleteTask}>
+                    <IconButton className={classes.button} onClick={this.props.handleDeleteTask}>
                         <DeleteIcon />
                     </IconButton>
                 </SmallTooltip>) :
                 (<SmallTooltip title="Delete forever">
-                    <IconButton onClick={this.props.handlePermDeleteTask}>
+                    <IconButton className={classes.button} onClick={this.props.handlePermDeleteTask}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </SmallTooltip>)
@@ -103,27 +109,23 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         const openFolderButton = (
             <SmallTooltip title="Open folder">
-                <IconButton onClick={this.props.handleRevealFile}>
+                <IconButton className={classes.button} onClick={this.props.handleRevealFile}>
                     <FolderIcon />
                 </IconButton>
             </SmallTooltip>
         )
 
         const buttons = (
-            <Grid container spacing={0} justify="flex-end">
+            <div className={classes.buttons}>
                 {
                 status === "active" ?
-                    <Grid item sm={4}> {pauseButton} </Grid> :
+                    { pauseButton } :
                 status === "paused" ?
-                    <Grid item sm={4}> {resumeButton} </Grid> : ""
+                    { resumeButton } : ""
                 }
-                <Grid item sm={4}>
-                    { deleteButton }
-                </Grid>
-                <Grid item sm={4}>
-                    { openFolderButton }
-                </Grid>
-            </Grid>
+                { deleteButton }
+                { openFolderButton }
+            </div>
         )
 
         const progress = totalLength === "0" ?
@@ -139,7 +141,6 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         return (
             <Paper className={this.props.classes.root}>
-
                 <Grid container justify="space-between">
                     <Grid item xs={6} sm={9} className={classes.filenameGrid}>
                         <Typography
