@@ -4,99 +4,76 @@ export type MethodName = string
 export type Token = string
 type JsonRPC = any
 
-enum Status {
-    Disconnected,
-    Connecting,
-    Connected
-}
-
 export default class AriaJsonRPC {
     url: string
-    token: Token
+    secret: Token
     jrpc: JsonRPC
     socket: WebSocket
-    responseCallbacks: Set<Function>
-    errorCallbacks: Set<Function>
-    status: Status
+    onAriaResponse: Function
+    onAriaError: Function
+    hasBeenOpen: boolean
 
-    constructor(url: string, token: Token) {
+    constructor(
+        url: string,
+        secret: Token,
+        onAriaResponse: Function,
+        onAriaError: Function
+    ) {
         this.url = url
-        this.token = token
+        this.secret = secret
         this.jrpc = undefined
         this.socket = undefined
-        this.status = Status.Disconnected
-        this.responseCallbacks = new Set()
-        this.errorCallbacks = new Set()
+        this.onAriaResponse = onAriaResponse
+        this.onAriaError = onAriaError
+        this.hasBeenOpen = false
     }
 
-    addResponseCallback(func: Function) {
-        this.responseCallbacks.add(func)
-    }
-
-    removeResponseCallback(func: Function) {
-        this.responseCallbacks.delete(func)
-    }
-
-    addErrorCallback(func: Function) {
-        this.errorCallbacks.add(func)
-    }
-
-    removeErrorCallback(func: Function) {
-        this.errorCallbacks.delete(func)
-    }
-    
-    connect() {
-        this.status = Status.Connecting
+    connect(
+        onOpen: () => void,
+        onClose: (boolean) => void,
+        onConnErr: () => void
+    ) {
         const jrpc = new JsonRPC()
-        return new Promise((res, rej) => {
-            try {
-                const socket = new WebSocket(this.url)
-                jrpc.toStream = (_msg) => { socket.send(_msg) }
-                socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
-                socket.onclose = (event) => {
-                    if (event.code !== 3001) {
-                        // using async function with `throw event` below won't work
-                        rej(event)
-                    } else {
-                        console.log("rpc connection closed normally")
-                    }
-                }
-                // TODO: handle normal WS errors better
-                socket.onerror = (event) => { console.log(event) }
-                socket.onopen = () => {
-                    this.jrpc = jrpc
-                    this.socket = socket
-                    this.status = Status.Connected
-                    res()
-                }
-            } catch(e) {
-                throw e
+        const socket = new WebSocket(this.url)
+        jrpc.toStream = (_msg) => { socket.send(_msg) }
+        socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
+        socket.onclose = (event) => {
+            const isErr = event.code === 3001
+            if (!isErr) {
+                onClose(false)
+            } else if (this.hasBeenOpen) {
+                onClose(true)
+            } else {
+                onConnErr()
             }
-        })
+        }
+        // TODO: handle normal WS errors better
+        socket.onerror = (event) => { console.log(event) }
+        socket.onopen = () => {
+            this.jrpc = jrpc
+            this.socket = socket
+            this.hasBeenOpen = true
+            onOpen()
+        }
     }
 
     disconnect() {
         this.socket.close()
         this.socket = null
         this.jrpc = null
-        this.status = Status.Disconnected
     }
 
     async call(method: MethodName, args: any[], silent=false): Promise<any> {
-        const callAll = (funcs: Set<Function>, args: any[]) => {
-            if (!silent) {
-                for (let f of funcs) {
-                    f(...args)
-                }
-            }
+        const callback = (func: Function, args: any[]) => {
+            if (!silent) { func(...args) }
         }
 
         try {
-            const result = await this.jrpc.call(method, [`token:${this.token}`].concat(args))
-            callAll(this.responseCallbacks, [method, args, result])
+            const result = await this.jrpc.call(method, [`token:${this.secret}`].concat(args))
+            callback(this.onAriaResponse, [method, args, result])
             return result
         } catch(error) {
-            callAll(this.errorCallbacks, [method, args, error])
+            callback(this.onAriaError, [method, args, error])
             throw error
         }
     }

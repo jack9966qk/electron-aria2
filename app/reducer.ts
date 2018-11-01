@@ -17,13 +17,17 @@ import { Task } from './model/task';
 
 export type RootState = {
     readonly rpc: AriaJsonRPC
+    readonly hostUrl: string
+    readonly secret: string
     readonly version: string
     readonly defaultDir: string
     readonly tasks: Task[]
 }
 
 export const initialState: RootState = {
-    rpc: new AriaJsonRPC("ws://localhost:6800/jsonrpc", "secret"),
+    rpc: undefined,
+    hostUrl: "ws://localhost:6800/jsonrpc",
+    secret: "secret",
     version: undefined,
     defaultDir: Electron.remote.app.getPath("downloads"),
     tasks: []
@@ -33,10 +37,12 @@ const reducer: Reducer<RootState, RootAction> =
     (state=initialState, action) => {
     switch(action.type) {
         case CONNECTED:
-            return {...state}
+            return {...state, rpc: action.payload}
             break
         case DISCONNECTED:
-            return {...state, rpc: undefined}
+            // avoid removing active rpc
+            const rpc = state.rpc === action.payload ? undefined : state.rpc
+            return {...state, rpc}
         case RECEIVED_VERSION:
             return {...state, version: action.payload}
             break
@@ -50,8 +56,7 @@ const reducer: Reducer<RootState, RootAction> =
             break
         case SET_ARIA_REMOTE:
             const {hostUrl, secret} = action.payload
-            const rpc = new AriaJsonRPC(hostUrl, secret)
-            return {...state, hostUrl, rpc}
+            return {...state, hostUrl, secret}
             break
         default:
             return state

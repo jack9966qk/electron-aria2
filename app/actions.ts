@@ -2,12 +2,13 @@
 
 import { action } from "typesafe-actions"
 import { Task } from "./model/task"
+import AriaJsonRPC from "./model/rpc"
 
 export const CONNECTED = "CONNECTED"
-export const connected = () => action(CONNECTED)
+export const connected = (rpc: AriaJsonRPC) => action(CONNECTED, rpc)
 
 export const DISCONNECTED = "DISCONNECTED"
-export const disconnected = () => action(DISCONNECTED)
+export const disconnected = (rpc: AriaJsonRPC) => action(DISCONNECTED, rpc)
 
 export const RECEIVED_VERSION = "RECEIVED_VERSION"
 export const receivedVersion = (version: string) =>

@@ -46,20 +46,20 @@ interface ViewProps {
 
 export interface DispatchProps {
     connectOrLaunchLocal: (
-        rpc: AriaJsonRPC,
+        url: string,
+        secret: string,
         onRes: Function,
         onErr: Function,
         ) => void
     connect: (
-        rpc: AriaJsonRPC,
+        url: string,
+        secret: string,
         onRes: Function,
         onErr: Function,
-        onConnErr: Function,
+        onConnErr: () => void,
         ) => void
     disconnect: (
         rpc: AriaJsonRPC,
-        onRes: Function,
-        onErr: Function
         ) => void
     purgeTasks: (AriaJsonRPC) => void
 }
@@ -68,7 +68,7 @@ export interface StoreProps {
     rpc: AriaJsonRPC
     version: string
     hostUrl: string
-    token: string
+    secret: string
 }
 
 type Props = ViewProps & DispatchProps & StoreProps
@@ -107,6 +107,10 @@ class Control extends React.Component<Props, State> {
         this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
+    openSnackbarWith = (text: string) => {
+        this.setState({ snackbarOpen: true, snackbarText: text })
+    }
+
     handleSnackbarClose = () => {
         this.setState({ snackbarOpen: false })
     }
@@ -126,20 +130,26 @@ class Control extends React.Component<Props, State> {
     componentDidMount() {
         console.log("Control did mount")
         this.props.connectOrLaunchLocal(
-            this.props.rpc,
-            this.onRpcResponse,
-            this.onRpcError)
+            this.props.hostUrl,
+            this.props.secret,
+            this.onAriaResponse,
+            this.onAriaError)
     }
 
     componentDidUpdate(prevProps: Props) {
-        // connect automatically given a new rpc object
-        if (this.props.rpc !== prevProps.rpc) {
+        // connect automatically given new url or secret
+        if (this.props.hostUrl !== prevProps.hostUrl ||
+            this.props.secret !== prevProps.secret) {
+            // disconnect old server if exists
+            if (this.props.rpc) {
+                this.props.disconnect(this.props.rpc)
+            }
             // got a new server, connect
-            console.log("componentDidUpdate found a new server, connect")
             this.props.connect(
-                this.props.rpc,
-                this.onRpcResponse,
-                this.onRpcError,
+                this.props.hostUrl,
+                this.props.secret,
+                this.onAriaResponse,
+                this.onAriaError,
                 this.onConnectionError
             )
         }
@@ -147,14 +157,10 @@ class Control extends React.Component<Props, State> {
 
     componentWillUnmount() {
         console.log("Control will unmount")
-        this.props.disconnect(
-            this.props.rpc,
-            this.onRpcResponse,
-            this.onRpcError
-        )
+        this.props.disconnect(this.props.rpc)
     }
 
-    onRpcResponse = (method, args, response) => {
+    onAriaResponse = (method, args, response) => {
         const func = AriaMessages[method]
         if (func !== undefined) {
             this.setState({
@@ -164,19 +170,16 @@ class Control extends React.Component<Props, State> {
         } else {
             console.log(method)
             console.log(response)
-            this.setState({
-                snackbarOpen: true,
-                snackbarText: `${method.replace("aria2.", "")} succeeded`
-            })
+            this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
         }
     }
 
-    onRpcError = (_method, _args, error) => {
-        this.setState({ snackbarOpen: true, snackbarText: "Error: " + error.message })
+    onAriaError = (_method, _args, error) => {
+        this.openSnackbarWith(`Error: ${error.message}`)
     }
 
     onConnectionError = () => {
-        this.setState({ snackbarOpen: true, snackbarText: "Failed to connect to " + this.props.hostUrl})
+        this.openSnackbarWith(`Failed to connect to ${this.props.hostUrl}`)
     }
     
     render() {

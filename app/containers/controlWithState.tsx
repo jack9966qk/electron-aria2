@@ -3,7 +3,14 @@ import { Dispatch } from "redux"
 import * as Electron from "electron"
 
 import Control, { DispatchProps, StoreProps } from "../views/control"
-import { connected, receivedVersion, receivedTasks, setAriaRemote, RootAction } from "../actions"
+import {
+    connected,
+    disconnected,
+    receivedVersion,
+    receivedTasks,
+    setAriaRemote,
+    RootAction
+} from "../actions"
 import AriaJsonRPC from '../model/rpc'
 import { RootState } from "../reducer"
 
@@ -13,24 +20,22 @@ function mapStateToProps(state: RootState): StoreProps {
     return {
         rpc: state.rpc,
         version: state.version,
-        hostUrl: state.rpc.url,
-        token: state.rpc.token
+        hostUrl: state.hostUrl,
+        secret: state.secret
     }
 }
 
 let refreshLoopId: number
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
-    const refreshTasks = (rpc) => {
+    const refreshTasks = (rpc: AriaJsonRPC) => {
         rpc.getAllTasks().then(tasks => {
             dispatch(receivedTasks(tasks))
         })
     }
 
-    const onConnectionSuccess = (rpc, onRes, onErr) => {
-        dispatch(connected())
-        rpc.addResponseCallback(onRes)
-        rpc.addErrorCallback(onErr)
+    const onConnectionSuccess = (rpc: AriaJsonRPC) => () => {
+        dispatch(connected(rpc))
         rpc.call("aria2.getVersion", []).then( ({version}) => {
             dispatch(receivedVersion(version))
             // get new task status every 500ms,
@@ -39,35 +44,38 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         })
     }
 
+    const onConnectionClose = (rpc: AriaJsonRPC) => () => {
+        dispatch(disconnected(rpc))
+    }
+
     return {
-        connectOrLaunchLocal: (rpc: AriaJsonRPC, onRes, onErr) => {
-            rpc.connect().then(() => {
-                onConnectionSuccess(rpc, onRes, onErr)
-            }).catch(() => {
-                console.log("caught error")
+        connectOrLaunchLocal: (url, secret, onRes, onErr) => {
+            const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
+            const onConnErr = () => {
                 // launch local version and update rpc
                 mainFuncs.launchAria()
                 const {port, secret} = mainFuncs
                 dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
-            })
+            }
+            rpc.connect(
+                onConnectionSuccess(rpc),
+                onConnectionClose(rpc),
+                onConnErr)
         },
-        connect: (rpc: AriaJsonRPC, onRes, onErr, onConnErr) => {
-            rpc.connect().then(() => {
-                onConnectionSuccess(rpc, onRes, onErr)
-            }).catch(() => {
-                // connection failure
-                onConnErr()
-            })
+        connect: (url, secret, onRes, onErr, onConnErr) => {
+            const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
+            rpc.connect(
+                onConnectionSuccess(rpc),
+                onConnectionClose(rpc),
+                onConnErr)
         },
-        disconnect: (rpc, _onRes, onErr) => {
+        disconnect: (rpc) => {
             clearInterval(refreshLoopId)
             // need a unified approach on how to and when to shut down
             // rpc.call("aria2.shutdown", [])
-            rpc.removeResponseCallback(onErr)
-            rpc.removeErrorCallback(onErr)
             rpc.disconnect()
         },
-        purgeTasks: (rpc) => {
+        purgeTasks: (rpc: AriaJsonRPC) => {
             rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshTasks(rpc)})            
         },
     }
