@@ -45,11 +45,10 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    connectOrLaunchLocal: (
-        url: string,
-        secret: string,
+    connectLocal: (
         onRes: Function,
         onErr: Function,
+        onConnErr: () => void,
         ) => void
     connect: (
         url: string,
@@ -80,6 +79,7 @@ interface State {
     snackbarOpen: boolean
     category: TaskCategory
     snackbarText: string
+    startedConnecting: boolean
 }
 
 class Control extends React.Component<Props, State> {
@@ -91,7 +91,8 @@ class Control extends React.Component<Props, State> {
             sidebarOpen: false,
             snackbarOpen: false,
             snackbarText: undefined,
-            category: TaskCategory.Active
+            category: TaskCategory.Active,
+            startedConnecting: false
         }
     }
     
@@ -127,13 +128,20 @@ class Control extends React.Component<Props, State> {
         this.setState({ settingsOpen: false })        
     }
 
+    getStatus = () => (
+        this.props.rpc !== undefined ?
+            "Connected" :
+            this.state.startedConnecting ?
+            "Connecting" :
+            "Disconnected"
+    )
+
     componentDidMount() {
         console.log("Control did mount")
-        this.props.connectOrLaunchLocal(
-            this.props.hostUrl,
-            this.props.secret,
+        this.props.connectLocal(
             this.onAriaResponse,
-            this.onAriaError)
+            this.onAriaError,
+            this.onConnectionError)
     }
 
     componentDidUpdate(prevProps: Props) {
@@ -184,6 +192,9 @@ class Control extends React.Component<Props, State> {
     
     render() {
         const { classes } = this.props
+        const title = this.getStatus() === "Connected" ?
+            taskCategoryDescription[this.state.category] :
+            this.getStatus() + "..."
         return (
             <>
                 <div className={classes.content}>
@@ -191,7 +202,7 @@ class Control extends React.Component<Props, State> {
                         showAddNewTask={this.handleDialogOpen}
                         showMenu={this.toggleSidebarOpen}
                         showSettings={this.handleSettingsOpen}
-                        title={taskCategoryDescription[this.state.category]}
+                        title={title}
                         tabs={<TaskCategoryTabsWithState
                             onCategorySelected={this.handleCategorySelect}
                             category={this.state.category}

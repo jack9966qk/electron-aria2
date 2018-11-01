@@ -8,8 +8,8 @@ fixPath()
 
 var ariaProc
 
-const port = 6800
-module.exports.port = port
+const hostUrl = "ws://localhost:6800/jsonrpc"
+module.exports.hostUrl = hostUrl
 const secret = "secret"
 module.exports.secret = secret
 
@@ -24,7 +24,7 @@ module.exports.launchAria = () => {
         path.join(__dirname, "bin", "win64", "aria2c.exe") : "aria2c"
     ariaProc = spawn(ariaPath, [
         "--enable-rpc=true",
-        `--rpc-listen-port=${port}`,
+        `--rpc-listen-port=6800`,
         `--rpc-secret=${secret}`,
         `--dht-file-path=${dhtPath}`])
     ariaProc.stdout.pipe(process.stdout)

@@ -48,27 +48,32 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         dispatch(disconnected(rpc))
     }
 
+    const connect = (url, secret, onRes, onErr, onConnErr) => {
+        const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
+        rpc.connect(
+            onConnectionSuccess(rpc),
+            onConnectionClose(rpc),
+            onConnErr)
+    }
+
     return {
-        connectOrLaunchLocal: (url, secret, onRes, onErr) => {
-            const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
-            const onConnErr = () => {
-                // launch local version and update rpc
+        connectLocal: (onRes, onErr, onConnErr) => {
+            const {hostUrl, secret} = mainFuncs
+            const rpc = new AriaJsonRPC(hostUrl, secret, onRes, onErr)
+            const launchAndRetry = () => {
                 mainFuncs.launchAria()
-                const {port, secret} = mainFuncs
-                dispatch(setAriaRemote(`ws://localhost:${port}/jsonrpc`, secret))
+                // it seems to be necessary to wait a little
+                // for aria2c server to fully start
+                setTimeout(() => {
+                    connect(hostUrl, secret, onRes, onErr, onConnErr)
+                }, 200);
             }
             rpc.connect(
                 onConnectionSuccess(rpc),
                 onConnectionClose(rpc),
-                onConnErr)
+                launchAndRetry)
         },
-        connect: (url, secret, onRes, onErr, onConnErr) => {
-            const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
-            rpc.connect(
-                onConnectionSuccess(rpc),
-                onConnectionClose(rpc),
-                onConnErr)
-        },
+        connect: connect,
         disconnect: (rpc) => {
             clearInterval(refreshLoopId)
             // need a unified approach on how to and when to shut down

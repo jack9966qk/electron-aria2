@@ -38,7 +38,7 @@ export default class AriaJsonRPC {
         jrpc.toStream = (_msg) => { socket.send(_msg) }
         socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
         socket.onclose = (event) => {
-            const isErr = event.code === 3001
+            const isErr = event.code !== 3001
             if (!isErr) {
                 onClose(false)
             } else if (this.hasBeenOpen) {
