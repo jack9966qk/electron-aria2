@@ -119,16 +119,16 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             <div className={classes.buttons}>
                 {
                 status === "active" ?
-                    { pauseButton } :
+                    pauseButton :
                 status === "paused" ?
-                    { resumeButton } : ""
+                    resumeButton : ""
                 }
                 { deleteButton }
                 { openFolderButton }
             </div>
         )
 
-        const progress = totalLength === "0" ?
+        const progress = status === "active" && totalLength === "0" ?
             <LinearProgress
                 className={classes.progressBar}
                 variant="indeterminate"

@@ -169,6 +169,8 @@ class Control extends React.Component<Props, State> {
     }
 
     onAriaResponse = (method, args, response) => {
+        console.log(method)
+        console.log(response)
         const func = AriaMessages[method]
         if (func !== undefined) {
             this.setState({
@@ -176,8 +178,6 @@ class Control extends React.Component<Props, State> {
                 snackbarText: func(args, response)
             })
         } else {
-            console.log(method)
-            console.log(response)
             this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
         }
     }

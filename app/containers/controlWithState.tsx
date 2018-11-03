@@ -8,7 +8,6 @@ import {
     disconnected,
     receivedVersion,
     receivedTasks,
-    setAriaRemote,
     RootAction
 } from "../actions"
 import AriaJsonRPC from '../model/rpc'
@@ -30,6 +29,7 @@ let refreshLoopId: number
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc: AriaJsonRPC) => {
         rpc.getAllTasks().then(tasks => {
+            console.log(tasks)
             dispatch(receivedTasks(tasks))
         })
     }
@@ -59,7 +59,6 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     return {
         connectLocal: (onRes, onErr, onConnErr) => {
             const {hostUrl, secret} = mainFuncs
-            const rpc = new AriaJsonRPC(hostUrl, secret, onRes, onErr)
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
                 // it seems to be necessary to wait a little
@@ -68,10 +67,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                     connect(hostUrl, secret, onRes, onErr, onConnErr)
                 }, 200);
             }
-            rpc.connect(
-                onConnectionSuccess(rpc),
-                onConnectionClose(rpc),
-                launchAndRetry)
+            connect(hostUrl, secret, onRes, onErr, launchAndRetry)
         },
         connect: connect,
         disconnect: (rpc) => {

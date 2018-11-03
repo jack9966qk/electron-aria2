@@ -2,7 +2,7 @@ import { connect } from "react-redux"
 import { Dispatch } from "redux"
 
 import NewTaskDialog, { DispatchProps, StoreProps } from "../views/newTaskDialog"
-import { arbitraryValChanged, RootAction } from "../actions"
+import { receivedTasks, RootAction } from "../actions"
 import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
@@ -19,7 +19,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                 console.log("gid for new task: " + gid)
                 return rpc.getAllTasks()
             }).then(tasks => {
-                dispatch(arbitraryValChanged("tasks", tasks))                
+                dispatch(receivedTasks(tasks)) 
             })
         },
         addTorrent: (rpc, torrent, dir) => {
@@ -27,7 +27,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                 console.log("gid for new task: " + gid)
                 return rpc.getAllTasks()
             }).then(tasks => {
-                dispatch(arbitraryValChanged("tasks", tasks))                
+                dispatch(receivedTasks(tasks))                
             })
         },
     }
