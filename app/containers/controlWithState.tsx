@@ -57,14 +57,13 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         "aria2.onBtDownloadComplete": refreshTasks
     }
 
-    const connect = (url, secret, onRes, onErr, onConnErr) => {
+    const connect = (url, secret, onRes, onNotif, onErr, onConnErr) => {
         const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
         // register handlers for notifications
         for (const event in eventHandlers) {
             const func = eventHandlers[event]
             rpc.on(event, (message) => {
-                console.log(`received ${event}`)
-                console.log(message)
+                onNotif(event, message)
                 func(rpc)
             })
         }
@@ -75,17 +74,17 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     }
 
     return {
-        connectLocal: (onRes, onErr, onConnErr) => {
+        connectLocal: (onRes, onNotif, onErr, onConnErr) => {
             const {hostUrl, secret} = mainFuncs
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
                 // it seems to be necessary to wait a little
                 // for aria2c server to fully start
                 setTimeout(() => {
-                    connect(hostUrl, secret, onRes, onErr, onConnErr)
+                    connect(hostUrl, secret, onRes, onNotif, onErr, onConnErr)
                 }, 200);
             }
-            connect(hostUrl, secret, onRes, onErr, launchAndRetry)
+            connect(hostUrl, secret, onRes, onNotif, onErr, launchAndRetry)
         },
         connect: connect,
         disconnect: (rpc) => {

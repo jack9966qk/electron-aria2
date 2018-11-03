@@ -5,6 +5,8 @@ export type MethodName = string
 export type Token = string
 type JsonRPC = any
 
+export type NotificationResponse = { gid: string }
+
 export default class AriaJsonRPC {
     url: string
     secret: Token
@@ -64,7 +66,7 @@ export default class AriaJsonRPC {
         this.jrpc = null
     }
 
-    on(event: string, callback: (any) => void) {
+    on(event, callback: (response: NotificationResponse) => void) {
         this.jrpc.on(event, callback)
     }
 

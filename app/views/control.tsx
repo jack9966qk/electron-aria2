@@ -47,6 +47,7 @@ interface ViewProps {
 export interface DispatchProps {
     connectLocal: (
         onRes: Function,
+        onNotif: Function,
         onErr: Function,
         onConnErr: () => void,
         ) => void
@@ -54,6 +55,7 @@ export interface DispatchProps {
         url: string,
         secret: string,
         onRes: Function,
+        onNotif: Function,
         onErr: Function,
         onConnErr: () => void,
         ) => void
@@ -140,6 +142,7 @@ class Control extends React.Component<Props, State> {
         console.log("Control did mount")
         this.props.connectLocal(
             this.onAriaResponse,
+            this.onAriaNotification,
             this.onAriaError,
             this.onConnectionError)
     }
@@ -157,6 +160,7 @@ class Control extends React.Component<Props, State> {
                 this.props.hostUrl,
                 this.props.secret,
                 this.onAriaResponse,
+                this.onAriaNotification,
                 this.onAriaError,
                 this.onConnectionError
             )
@@ -179,6 +183,15 @@ class Control extends React.Component<Props, State> {
             })
         } else {
             this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
+        }
+    }
+
+    onAriaNotification = (method, response) => {
+        console.log(method)
+        console.log(response)
+        switch (method) {
+            default:
+            break
         }
     }
 
