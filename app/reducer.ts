@@ -21,7 +21,7 @@ export type RootState = {
     readonly secret: string
     readonly version: string
     readonly defaultDir: string
-    readonly tasks: Task[]
+    readonly tasks: Map<string, Task>
 }
 
 export const initialState: RootState = {
@@ -30,7 +30,7 @@ export const initialState: RootState = {
     secret: "secret",
     version: undefined,
     defaultDir: Electron.remote.app.getPath("downloads"),
-    tasks: []
+    tasks: new Map()
 }
 
 const reducer: Reducer<RootState, RootAction> =

@@ -90,37 +90,32 @@ export function filterTasks(tasks: Task[], category: TaskCategory) {
     return tasks.filter(e => getCategory(e) === category)
 }
 
-export const updateTaskList = (oldTasks: Task[], newTasks: Task[]) => {
+export const updateTaskList = (
+    oldTasks: Map<string, Task>,
+    newTasks: Map<string, Task>) => {
     // compare task lists, only update references where tasks are changed
     // if no task has changed, do not update array reference
     // O(n) with 3 passes, not very optimal
-    const toMap = (tasks: Task[]) => {
-        const map = new Map()
-        for (const t of tasks) { map.set(t.gid, t) }
-        return map
-    }
-    const oldTasksMap = toMap(oldTasks)
-    const newTasksMap = toMap(newTasks)
     var changed = false
     // check for deleted tasks
-    for (const gid of oldTasksMap.keys()) {
-        if (!newTasksMap.has(gid)) { changed = true }
+    for (const gid of oldTasks.keys()) {
+        if (!newTasks.has(gid)) { changed = true }
     }
     // check for added/updated tasks
-    const tasks: Task[] = []
-    for (const t of newTasks) {
-        if (oldTasksMap.has(t.gid)) {
-            const ot = oldTasksMap.get(t.gid)
+    const tasks: Map<string, Task> = new Map()
+    newTasks.forEach((t, gid, _) => {
+        if (oldTasks.has(gid)) {
+            const ot = oldTasks.get(gid)
             if (isEqual(t, ot)) {
-                tasks.push(ot)
+                tasks.set(gid, ot)
             } else {
                 changed = true
-                tasks.push(t)
+                tasks.set(gid, t)
             }
         } else {
             changed = true
-            tasks.push(t)
+            tasks.set(gid, t)
         }
-    }
+    })
     return changed ? tasks : oldTasks
 }

@@ -27,7 +27,7 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
-    tasks: Task[]
+    tasks: Map<string, Task>
     rpc: AriaJsonRPC
 }
 
@@ -45,7 +45,7 @@ class TaskList extends React.Component<Props, State> {
     }
 
     render() {
-        const tasks = filterTasks(this.props.tasks, this.props.category)
+        const tasks = filterTasks(Array.from(this.props.tasks.values()), this.props.category)
         const { root } = this.props.classes
         return (
         <div className={root}>

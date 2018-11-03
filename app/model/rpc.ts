@@ -91,7 +91,9 @@ export default class AriaJsonRPC {
             this.call("aria2.tellWaiting", [0, 100], true),
             this.call("aria2.tellStopped", [0, 100], true)
         ])
-        const tasks = (values as Task[][]).reduce((a, b) => a.concat(b))
+        const flatten = (values as Task[][]).reduce((a, b) => a.concat(b))
+        const tasks: Map<string, Task> = new Map()
+        flatten.reduce(((map, task) => map.set(task.gid, task)), tasks)
         return tasks
     }
 }
