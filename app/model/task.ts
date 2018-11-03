@@ -4,8 +4,17 @@ interface Mapping {
     [key: string]: string | Mapping
 }
 
+type Status =
+    "active" |
+    "waiting" |
+    "paused" |
+    "error" |
+    "complete" |
+    "removed"
+
 export interface Task extends Mapping {
     gid: string
+    status: Status
     bittorrent?: {
         info: Mapping
         [key: string]: string | Mapping
@@ -29,14 +38,16 @@ export const taskCategoryDescription = {
     [TaskCategory.Stopped]: "Stopped"
 }
 
-function getCategory(task: any): TaskCategory {
+function isMetadata(task: Task): boolean {
+    return task.bittorrent !== undefined && task.bittorrent.info === undefined
+}
+
+function getCategory(task: Task): TaskCategory {
     if (["active", "paused"].includes(task.status)) {
         const completed = parseInt(task.completedLength)
         const total = parseInt(task.totalLength)
         if (completed === total) {
-            if (total === 0) {
-                // probably a torrent/metadata task that
-                // has not obtained a size yet
+            if (isMetadata(task)) {
                 return TaskCategory.Active
             } else {
                 // for torrent tasks that have completed

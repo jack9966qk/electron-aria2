@@ -30,7 +30,7 @@ module.exports.launchAria = () => {
         `--rpc-secret=${secret}`,
         `--enable-dht=true`,
         `--dht-file-path=${dhtPath}`,
-        `--dht-entry-point=router.bittorrent.com:6881`
+        `--dht-entry-point=router.bittorrent.com:6881`,
         `--bt-enable-lpd=true`,
         `--save-session=${sessionPath}`
         ]

@@ -29,7 +29,7 @@ let refreshLoopId: number
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc: AriaJsonRPC) => {
         rpc.getAllTasks().then(tasks => {
-            console.log(tasks)
+            // console.log(tasks)
             dispatch(receivedTasks(tasks))
         })
     }

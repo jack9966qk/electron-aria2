@@ -1,4 +1,5 @@
 import * as JsonRPC from 'simple-jsonrpc-js'
+import { Task } from './task'
 
 export type MethodName = string
 export type Token = string
@@ -84,7 +85,7 @@ export default class AriaJsonRPC {
             this.call("aria2.tellWaiting", [0, 100], true),
             this.call("aria2.tellStopped", [0, 100], true)
         ])
-        const tasks = (values as any).reduce((a, b) => a.concat(b))
+        const tasks = (values as Task[][]).reduce((a, b) => a.concat(b))
         return tasks
     }
 }
