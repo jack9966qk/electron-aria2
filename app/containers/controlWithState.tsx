@@ -48,8 +48,26 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         dispatch(disconnected(rpc))
     }
 
+    const eventHandlers = {
+        "aria2.onDownloadStart": refreshTasks,
+        "aria2.onDownloadPause": refreshTasks,
+        "aria2.onDownloadStop": refreshTasks,
+        "aria2.onDownloadComplete": refreshTasks,
+        "aria2.onDownloadError": refreshTasks,
+        "aria2.onBtDownloadComplete": refreshTasks
+    }
+
     const connect = (url, secret, onRes, onErr, onConnErr) => {
         const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
+        // register handlers for notifications
+        for (const event in eventHandlers) {
+            const func = eventHandlers[event]
+            rpc.on(event, (message) => {
+                console.log(`received ${event}`)
+                console.log(message)
+                func(rpc)
+            })
+        }
         rpc.connect(
             onConnectionSuccess(rpc),
             onConnectionClose(rpc),

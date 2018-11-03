@@ -22,7 +22,7 @@ export default class AriaJsonRPC {
     ) {
         this.url = url
         this.secret = secret
-        this.jrpc = undefined
+        this.jrpc = new JsonRPC()
         this.socket = undefined
         this.onAriaResponse = onAriaResponse
         this.onAriaError = onAriaError
@@ -34,10 +34,11 @@ export default class AriaJsonRPC {
         onClose: (boolean) => void,
         onConnErr: () => void
     ) {
-        const jrpc = new JsonRPC()
         const socket = new WebSocket(this.url)
-        jrpc.toStream = (_msg) => { socket.send(_msg) }
-        socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
+        this.jrpc.toStream = (_msg) => { socket.send(_msg) }
+        socket.onmessage = (event) => {
+            this.jrpc.messageHandler(event.data)
+        }
         socket.onclose = (event) => {
             const isErr = event.code !== 3001
             if (!isErr) {
@@ -51,7 +52,6 @@ export default class AriaJsonRPC {
         // TODO: handle normal WS errors better
         socket.onerror = (event) => { console.log(event) }
         socket.onopen = () => {
-            this.jrpc = jrpc
             this.socket = socket
             this.hasBeenOpen = true
             onOpen()
@@ -62,6 +62,10 @@ export default class AriaJsonRPC {
         this.socket.close()
         this.socket = null
         this.jrpc = null
+    }
+
+    on(event: string, callback: (any) => void) {
+        this.jrpc.on(event, callback)
     }
 
     async call(method: MethodName, args: any[], silent=false): Promise<any> {
