@@ -64,8 +64,8 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         for (const event in eventHandlers) {
             const func = eventHandlers[event]
             rpc.on(event, (message) => {
-                onNotif(event, message)
                 func(rpc)
+                onNotif(event, message)
             })
         }
         rpc.connect(

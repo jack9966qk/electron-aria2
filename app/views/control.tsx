@@ -2,6 +2,7 @@ import * as React from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
+import { SnackbarProvider, withSnackbar } from 'notistack'
 
 import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
@@ -42,6 +43,7 @@ const styles = (theme: Theme) => createStyles({
 
 interface ViewProps {
     classes: any
+    enqueueSnackbar: Function
 }
 
 export interface DispatchProps {
@@ -79,7 +81,6 @@ interface State {
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
-    snackbarOpen: boolean
     category: TaskCategory
     snackbarText: string
     startedConnecting: boolean
@@ -92,7 +93,6 @@ class Control extends React.Component<Props, State> {
             newTaskDialogOpen: false,
             settingsOpen: false,
             sidebarOpen: false,
-            snackbarOpen: false,
             snackbarText: undefined,
             category: TaskCategory.Active,
             startedConnecting: false
@@ -111,12 +111,15 @@ class Control extends React.Component<Props, State> {
         this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
-    openSnackbarWith = (text: string) => {
-        this.setState({ snackbarOpen: true, snackbarText: text })
-    }
-
-    handleSnackbarClose = () => {
-        this.setState({ snackbarOpen: false })
+    openSnackbarWith = (text: string, variant?: string) => {
+        this.props.enqueueSnackbar(text, {
+            variant: variant ? variant : "default",
+            autoHideDuration: 5000,
+            anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "center"
+            }
+        })
     }
 
     handleCategorySelect = (category) => {
@@ -178,10 +181,10 @@ class Control extends React.Component<Props, State> {
         console.log(response)
         const func = AriaMessages[method]
         if (func !== undefined) {
-            this.setState({
-                snackbarOpen: true,
-                snackbarText: func(args, response)
-            })
+            const message = func(args, response)
+            if (message !== null) {
+                this.openSnackbarWith(message)
+            }
         } else {
             this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
         }
@@ -191,21 +194,30 @@ class Control extends React.Component<Props, State> {
         console.log(method)
         console.log(response)
         const { gid } = response
+        if (!this.props.tasks.has(gid)) {
+            console.warn(`task with gid ${gid} cannot be found`)
+        }
         const task = this.props.tasks.get(gid)
         const name = getName(task)
         switch (method) {
             case "aria2.onDownloadStart":
                 this.openSnackbarWith(`Task "${name}" started`)
+                break
             case "aria2.onDownloadPause":
                 this.openSnackbarWith(`Task "${name}" paused`)
+                break
             case "aria2.onDownloadStop":
                 this.openSnackbarWith(`Task "${name}" stopped`)
+                break
             case "aria2.onDownloadComplete":
-                this.openSnackbarWith(`Task "${name}" completed`)
+                this.openSnackbarWith(`Task "${name}" completed`, "success")
+                break
             case "aria2.onDownloadError":
-                this.openSnackbarWith(`Task "${name}" has error`)
+                this.openSnackbarWith(`Task "${name}" has error`, "error")
+                break
             case "aria2.onBtDownloadComplete":
                 this.openSnackbarWith(`Task "${name}" completed`)
+                break
             default:
                 break
         }
@@ -257,15 +269,16 @@ class Control extends React.Component<Props, State> {
                     open={this.state.settingsOpen}
                     onRequestClose={this.handleSettingsClose}
                 />
-                <Snackbar
-                    open={this.state.snackbarOpen}
-                    autoHideDuration={5000}
-                    onClose={this.handleSnackbarClose}
-                    message={<span>{this.state.snackbarText}</span>}
-                />
             </>
         )
     }
 }
 
-export default withStyles(styles)(Control)
+const ControlWithSnackbar = withSnackbar(Control)
+const ControlWithSnackbarProvider: React.SFC = (props) => (
+    <SnackbarProvider maxSnack={3}>
+        <ControlWithSnackbar {...props}/>
+    </SnackbarProvider>
+)
+
+export default withStyles(styles)(ControlWithSnackbarProvider)
