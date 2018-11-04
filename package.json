@@ -18,6 +18,7 @@
     "filesize": "^3.6.1",
     "fix-path": "^2.1.0",
     "lodash": "^4.17.11",
+    "notistack": "^0.3.7",
     "ps-tree": "^1.1.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",

@@ -17,7 +17,7 @@ import Grid from '@material-ui/core/Grid'
 import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
-import { Task } from '../model/task'
+import { Task, getName } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -68,14 +68,11 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
     }
     
     render() {
-        const { classes } = this.props
+        const { classes, task } = this.props
         const { status, files, dir, downloadSpeed,
-                completedLength, totalLength } = this.props.task
-        const description = `Task: ${status}, ${files[0].path}`
-        const bittorrent = this.props.task.bittorrent
-        const taskName = bittorrent === undefined || bittorrent.info === undefined ?
-            files[0].path.replace(dir + "/", "") :
-            this.props.task.bittorrent.info.name
+                completedLength, totalLength } = task
+        // const description = `Task: ${status}, ${files[0].path}`
+        const taskName = getName(task)
 
         const pauseButton = (
             <SmallTooltip title="Pause">

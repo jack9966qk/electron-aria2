@@ -10,7 +10,7 @@ import TaskListWithState from '../containers/taskListWithState'
 import TopBar from './topBar'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import { TaskCategory, taskCategoryDescription } from '../model/task'
+import { TaskCategory, taskCategoryDescription, getName, Task } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
@@ -70,6 +70,7 @@ export interface StoreProps {
     version: string
     hostUrl: string
     secret: string
+    tasks: Map<string, Task>
 }
 
 type Props = ViewProps & DispatchProps & StoreProps
@@ -189,9 +190,24 @@ class Control extends React.Component<Props, State> {
     onAriaNotification = (method, response) => {
         console.log(method)
         console.log(response)
+        const { gid } = response
+        const task = this.props.tasks.get(gid)
+        const name = getName(task)
         switch (method) {
+            case "aria2.onDownloadStart":
+                this.openSnackbarWith(`Task "${name}" started`)
+            case "aria2.onDownloadPause":
+                this.openSnackbarWith(`Task "${name}" paused`)
+            case "aria2.onDownloadStop":
+                this.openSnackbarWith(`Task "${name}" stopped`)
+            case "aria2.onDownloadComplete":
+                this.openSnackbarWith(`Task "${name}" completed`)
+            case "aria2.onDownloadError":
+                this.openSnackbarWith(`Task "${name}" has error`)
+            case "aria2.onBtDownloadComplete":
+                this.openSnackbarWith(`Task "${name}" completed`)
             default:
-            break
+                break
         }
     }
 

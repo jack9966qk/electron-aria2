@@ -15,6 +15,7 @@ type Status =
 export interface Task extends Mapping {
     gid: string
     status: Status
+    dir: string
     bittorrent?: {
         info: Mapping
         [key: string]: string | Mapping
@@ -36,6 +37,13 @@ export const taskCategoryDescription = {
     [TaskCategory.Waiting]: "Waiting",
     [TaskCategory.Completed]: "Completed",
     [TaskCategory.Stopped]: "Stopped"
+}
+
+export function getName(task: Task): string {
+    const {bittorrent, files, dir} = task
+    return bittorrent === undefined || bittorrent.info === undefined ?
+        files[0].path.replace(dir + "/", "") :
+        bittorrent.info.name
 }
 
 function isMetadata(task: Task): boolean {
@@ -95,7 +103,7 @@ export const updateTaskList = (
     newTasks: Map<string, Task>) => {
     // compare task lists, only update references where tasks are changed
     // if no task has changed, do not update array reference
-    // O(n) with 3 passes, not very optimal
+    // O(n) with 2 passes, not very optimal
     var changed = false
     // check for deleted tasks
     for (const gid of oldTasks.keys()) {

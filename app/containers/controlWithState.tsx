@@ -20,7 +20,8 @@ function mapStateToProps(state: RootState): StoreProps {
         rpc: state.rpc,
         version: state.version,
         hostUrl: state.hostUrl,
-        secret: state.secret
+        secret: state.secret,
+        tasks: state.tasks
     }
 }
 

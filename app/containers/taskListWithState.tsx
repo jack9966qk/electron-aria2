@@ -21,13 +21,13 @@ function mapDispatchToProps(_dispatch): DispatchProps {
 
     return {
         pauseTask: (rpc, gid) => {
-            rpc.call("aria2.pause", [gid]).then(() => {refreshList(rpc)})
+            rpc.call("aria2.forcePause", [gid]).then(() => {refreshList(rpc)})
         },
         resumeTask: (rpc, gid) => {
             rpc.call("aria2.unpause", [gid]).then(() => {refreshList(rpc)})
         },
         deleteTask: (rpc, gid) => {
-            rpc.call("aria2.remove", [gid]).then(() => {refreshList(rpc)})
+            rpc.call("aria2.forceRemove", [gid]).then(() => {refreshList(rpc)})
         },
         permDeleteTask: (rpc, gid) => {
             rpc.call("aria2.removeDownloadResult", [gid]).then(() => {refreshList(rpc)})
