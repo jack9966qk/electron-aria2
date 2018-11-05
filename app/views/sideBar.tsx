@@ -71,7 +71,8 @@ interface State {}
 class SideBar extends React.Component<Props, State> {
     shouldComponentUpdate(prevProps) {
         return (this.props.category !== prevProps.category) ||
-            !isEqual(this.props.count, prevProps.count)
+            !isEqual(this.props.count, prevProps.count) ||
+            this.props.open !== prevProps.open
     }
 
     render() {

@@ -1,9 +1,5 @@
 import { isEqual } from 'lodash'
 
-interface Mapping {
-    [key: string]: string | Mapping
-}
-
 type Status =
     "active" |
     "waiting" |
@@ -12,17 +8,42 @@ type Status =
     "complete" |
     "removed"
 
-export interface Task extends Mapping {
-    gid: string
-    status: Status
-    dir: string
+export interface Task {
+    bitfield?: string
     bittorrent?: {
-        info: Mapping
-        [key: string]: string | Mapping
+        announceList?: string[][]
+        comment: string
+        creationDate: number
+        info: {
+            name: string
+        }
+        mode: string
     }
     completedLength: string
+    connections: string
+    dir: string
+    downloadSpeed: string
+    files: {
+        completedLength: string
+        index: string
+        length: string
+        path: string
+        selected: string
+        uris: {
+            status: string,
+            uri: string
+        }[]
+    }[]
+    gid: string
+    infoHash: string
+    numPieces: string
+    numSeeders: string
+    pieceLength: string
+    seeder: string
+    status: Status
     totalLength: string
-    [key: string]: string | Mapping
+    uploadLength: string
+    uploadSpeed: string
 }
 
 export enum TaskCategory {
@@ -46,7 +67,11 @@ export function getName(task: Task): string {
         bittorrent.info.name
 }
 
-function isMetadata(task: Task): boolean {
+export function isBittorrent(task: Task): boolean {
+    return task.bittorrent !== undefined && task.bittorrent.info !== undefined
+}
+
+export function isMetadata(task: Task): boolean {
     return task.bittorrent !== undefined && task.bittorrent.info === undefined
 }
 

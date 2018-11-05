@@ -17,7 +17,7 @@ import Grid from '@material-ui/core/Grid'
 import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
-import { Task, getName } from '../model/task'
+import { Task, getName, isBittorrent } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -69,10 +69,16 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
     
     render() {
         const { classes, task } = this.props
-        const { status, files, dir, downloadSpeed,
-                completedLength, totalLength } = task
+        const { status, files, dir } = task
         // const description = `Task: ${status}, ${files[0].path}`
+        const downloadSpeed = parseInt(task.downloadSpeed)
+        const completedLength = parseInt(task.completedLength)
+        const totalLength = parseInt(task.totalLength)
         const taskName = getName(task)
+        const speedDescription = isBittorrent(task) ?
+            `Seeders:${task.numSeeders} UL:${filesize(parseInt(task.uploadSpeed))}/s DL:${filesize(downloadSpeed)}/s` :
+            `${filesize(downloadSpeed)}/s`
+
 
         const pauseButton = (
             <SmallTooltip title="Pause">
@@ -125,7 +131,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             </div>
         )
 
-        const progress = status === "active" && totalLength === "0" ?
+        const progress = status === "active" && totalLength === 0 ?
             <LinearProgress
                 className={classes.progressBar}
                 variant="indeterminate"
@@ -133,7 +139,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             <LinearProgress
                 className={classes.progressBar}
                 variant="determinate"
-                value={parseInt(completedLength) * 100.0 / parseInt(totalLength)}
+                value={completedLength * 100.0 / totalLength}
             />
 
         return (
@@ -177,7 +183,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                     </Grid>
                     <Grid item xs={6} sm={6}>
                         <Typography variant="caption" align="right">
-                            {status === "active" ? `${filesize(downloadSpeed)}/s` : ""}
+                            {status === "active" ? speedDescription : ""}
                         </Typography>
                     </Grid>
                 </Grid>
