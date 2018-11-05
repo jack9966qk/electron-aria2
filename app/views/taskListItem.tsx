@@ -10,7 +10,6 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
-import Grid from '@material-ui/core/Grid'
 
 // `import * as filesize` also works, but reported as error by tslint
 // `import filesize` passes lint, but triggers error at runtime
@@ -28,24 +27,25 @@ const styles = (theme: Theme) => createStyles({
         marginTop: theme.spacing.unit,
         marginBottom: theme.spacing.unit
     },
-    buttons: {
+    flexContainer: {
         display: "flex",
-        justifyContent: "flex-end"
+        alignItems: "center"
     },
     button: {
-        flexShrink: 0
     },
     text: {
-        display: "block",
-        verticalAlign: "middle"
+        // overflow: "hidden",
+        // whiteSpace: "nowrap",
+        // textOverflow: "ellipsis"
+    },
+    name: {
+        flex: 1
     },
     progressText: {
     },
-    filenameGrid: {
-        [theme.breakpoints.up("sm")]: {
-            lineHeight: "48px"
-        },
-    },
+    speedText: {
+        flex: 1
+    }
 })
 
 interface TaskListItemProps {
@@ -119,7 +119,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         )
 
         const buttons = (
-            <div className={classes.buttons}>
+            <>
                 {
                 status === "active" ?
                     pauseButton :
@@ -128,7 +128,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                 }
                 { deleteButton }
                 { openFolderButton }
-            </div>
+            </>
         )
 
         const progress = status === "active" && totalLength === 0 ?
@@ -143,51 +143,49 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             />
 
         return (
-            <Paper className={this.props.classes.root}>
-                <Grid container justify="space-between">
-                    <Grid item xs={6} sm={9} className={classes.filenameGrid}>
+            <Paper className={classes.root}>
+                <div className={classes.flexContainer}>
+                    <div className={classes.name}>
                         <Typography
                             variant="subtitle1"
                             align="left"
-                            component="span"
-                            noWrap
-                            className={classes.text}
+                            classes={{root: classes.text}}
                         >
                             {taskName}
                         </Typography>
                         <Typography
                             variant="body2"
                             align="left"
-                            component="span"
-                            className={classes.text}
+                            classes={{root: classes.text}}
                         >
                             {status}
                         </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={3}>
-                        { buttons }
-                    </Grid>
-                </Grid>
+                    </div>
+                    { buttons }
+                </div>
 
                 { status === "complete" ? "" : progress }
 
-                <Grid container justify="center" spacing={0} className={classes.progressText}>
-                    <Grid item xs={6} sm={6}>
-                        <Typography variant="caption" align="left">
-                            {
-                            status === "active" || status === "paused" ?
-                                `${filesize(completedLength)}/${filesize(totalLength)}` :
-                                `${filesize(totalLength)}`
-                            }
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <Typography variant="caption" align="right">
-                            {status === "active" ? speedDescription : ""}
-                        </Typography>
-                    </Grid>
-                </Grid>
-
+                <div className={classes.flexContainer}>
+                    <Typography
+                        variant="caption"
+                        align="left"
+                        classes={{root: classes.progressText}}
+                    >
+                        {
+                        status === "active" || status === "paused" ?
+                            `${filesize(completedLength)}/${filesize(totalLength)}` :
+                            `${filesize(totalLength)}`
+                        }
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        align="right"
+                        classes={{root: classes.speedText}}
+                    >
+                        {status === "active" ? speedDescription : ""}
+                    </Typography>
+                </div>
             </Paper>
         )
     }
