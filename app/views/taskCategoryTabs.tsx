@@ -24,27 +24,33 @@ type Props =
     DispatchProps &
     StoreProps
 
-const TaskCategoryTabs: React.SFC<Props> = (props) => {
-    const categories = [
-        [TaskCategory.Active, FileDownloadIcon],
-        [TaskCategory.Waiting, ScheduleIcon],
-        [TaskCategory.Completed, CheckCircleIcon],
-        [TaskCategory.Stopped, BlockIcon]
-    ]
-    const onChange = (_, value) => {
-        props.onCategorySelected(categories[value][0])
+class TaskCategoryTabs extends React.Component<Props, {}> {
+    shouldComponentUpdate(prevProps) {
+        return this.props.category !== prevProps.category
     }
-    const value = categories.map(item => item[0]).indexOf(props.category)
-    return (
-        <Tabs fullWidth value={value} onChange={onChange}>
-            {
-                categories.map((item) => {
-                    const [cat, icon] = item
-                    return <Tab key={cat as React.ReactText} icon={React.createElement(icon)} />
-                })
-            }
-        </Tabs>
-    )
+
+    render() {
+        const categories = [
+            [TaskCategory.Active, FileDownloadIcon],
+            [TaskCategory.Waiting, ScheduleIcon],
+            [TaskCategory.Completed, CheckCircleIcon],
+            [TaskCategory.Stopped, BlockIcon]
+        ]
+        const onChange = (_, value) => {
+            this.props.onCategorySelected(categories[value][0])
+        }
+        const value = categories.map(item => item[0]).indexOf(this.props.category)
+        return (
+            <Tabs fullWidth value={value} onChange={onChange}>
+                {
+                    categories.map((item) => {
+                        const [cat, icon] = item
+                        return <Tab key={cat as React.ReactText} icon={React.createElement(icon)} />
+                    })
+                }
+            </Tabs>
+        )
+    }
 }
 
 export default TaskCategoryTabs

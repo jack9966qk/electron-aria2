@@ -34,39 +34,47 @@ interface Props {
     showAddNewTask: (any) => void
 }
 
-const TopBar: React.SFC<Props> = (props) => {
-    return (
-        <AppBar className={props.classes.root}>
-            <Toolbar>
-                <Hidden only="xs" implementation="css">
-                    <IconButton
-                        color="secondary"
-                        aria-label="Menu"
-                        className={props.classes.menuButton}
-                        onClick={props.showMenu}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+class TopBar extends React.Component<Props, {}> {
+    shouldComponentUpdate(prevProps: Props) {
+        return this.props.tabs !== prevProps.tabs ||
+            this.props.title !== prevProps.title
+    }
+
+    render() {
+        const props = this.props
+        return (
+            <AppBar className={props.classes.root}>
+                <Toolbar>
+                    <Hidden only="xs" implementation="css">
+                        <IconButton
+                            color="secondary"
+                            aria-label="Menu"
+                            className={props.classes.menuButton}
+                            onClick={props.showMenu}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                    </Hidden>
+                    <Typography variant="h6" color="inherit" className={props.classes.flex}>
+                        {props.title}
+                    </Typography>
+                    <SmallTooltip title="Settings">
+                        <IconButton color="inherit" onClick={props.showSettings}>
+                            <SettingsIcon/>
+                        </IconButton>
+                    </SmallTooltip>
+                    <SmallTooltip title="New task">
+                        <IconButton color="inherit" onClick={props.showAddNewTask}>
+                            <AddIcon/>
+                        </IconButton>
+                    </SmallTooltip>
+                </Toolbar>
+                <Hidden smUp implementation="css">
+                    {props.tabs}
                 </Hidden>
-                <Typography variant="h6" color="inherit" className={props.classes.flex}>
-                    {props.title}
-                </Typography>
-                <SmallTooltip title="Settings">
-                    <IconButton color="inherit" onClick={props.showSettings}>
-                        <SettingsIcon/>
-                    </IconButton>
-                </SmallTooltip>
-                <SmallTooltip title="New task">
-                    <IconButton color="inherit" onClick={props.showAddNewTask}>
-                        <AddIcon/>
-                    </IconButton>
-                </SmallTooltip>
-            </Toolbar>
-            <Hidden smUp implementation="css">
-                {props.tabs}
-            </Hidden>
-        </AppBar>
-    )
+            </AppBar>
+        )
+    }
 }
 
 export default withStyles(styles)(TopBar)
