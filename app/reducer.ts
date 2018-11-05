@@ -40,9 +40,11 @@ const reducer: Reducer<RootState, RootAction> =
             return {...state, rpc: action.payload}
             break
         case DISCONNECTED:
-            // avoid removing active rpc
-            const rpc = state.rpc === action.payload ? undefined : state.rpc
-            return {...state, rpc}
+            // if current rpc is what has been disconnected
+            // remove tasks and rpc object
+            return state.rpc === action.payload ?
+                {...state, rpc: undefined, tasks: new Map()} : state
+            break
         case RECEIVED_VERSION:
             return {...state, version: action.payload}
             break
