@@ -131,7 +131,30 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             </>
         )
 
-        const progress = status === "active" && totalLength === 0 ?
+        const progressText = (
+            <div className={classes.flexContainer}>
+                <Typography
+                    variant="caption"
+                    align="left"
+                    classes={{root: classes.progressText}}
+                >
+                    {
+                    status === "active" || status === "paused" ?
+                        `${filesize(completedLength)}/${filesize(totalLength)}` :
+                        `${filesize(totalLength)}`
+                    }
+                </Typography>
+                <Typography
+                    variant="caption"
+                    align="right"
+                    classes={{root: classes.speedText}}
+                >
+                    {status === "active" ? speedDescription : ""}
+                </Typography>
+            </div>
+        )
+
+        const progressBar = status === "active" && totalLength === 0 ?
             <LinearProgress
                 className={classes.progressBar}
                 variant="indeterminate"
@@ -164,28 +187,16 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                     { buttons }
                 </div>
 
-                { status === "complete" ? "" : progress }
+                { status === "active" ? progressBar : "" }
 
-                <div className={classes.flexContainer}>
-                    <Typography
-                        variant="caption"
-                        align="left"
-                        classes={{root: classes.progressText}}
-                    >
-                        {
-                        status === "active" || status === "paused" ?
-                            `${filesize(completedLength)}/${filesize(totalLength)}` :
-                            `${filesize(totalLength)}`
-                        }
-                    </Typography>
-                    <Typography
-                        variant="caption"
-                        align="right"
-                        classes={{root: classes.speedText}}
-                    >
-                        {status === "active" ? speedDescription : ""}
-                    </Typography>
-                </div>
+                {
+                (
+                    (status === "active") ||
+                    (status === "complete" && isBittorrent(task))
+                ) ?
+                    progressText : ""
+                }
+
             </Paper>
         )
     }

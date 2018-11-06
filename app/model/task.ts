@@ -62,9 +62,15 @@ export const taskCategoryDescription = {
 
 export function getName(task: Task): string {
     const {bittorrent, files, dir} = task
-    return bittorrent === undefined || bittorrent.info === undefined ?
-        files[0].path.replace(dir + "/", "") :
+    return isHttp(task) ?
+        (files[0].path === "" ?
+            files[0].uris[0].uri :
+            files[0].path.replace(dir + "/", "")) :
         bittorrent.info.name
+}
+
+export function isHttp(task: Task): boolean {
+    return task.bittorrent === undefined || task.bittorrent.info === undefined
 }
 
 export function isBittorrent(task: Task): boolean {
