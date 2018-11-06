@@ -34,12 +34,14 @@ const styles = (theme: Theme) => createStyles({
     button: {
     },
     text: {
-        // overflow: "hidden",
-        // whiteSpace: "nowrap",
-        // textOverflow: "ellipsis"
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis"
     },
     name: {
-        flex: 1
+        flex: 1,
+        // necessary for flex item to be smaller than content size
+        minWidth: "0px"
     },
     progressText: {
     },
