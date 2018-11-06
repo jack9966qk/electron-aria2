@@ -235,7 +235,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                     }
                 </div>
                 
-                { (status === "active" && isHttp(task)) ? progressBar : "" }
+                { (status === "active" && !downloadComplete(task)) ? progressBar : "" }
             </Paper>
         )
     }
