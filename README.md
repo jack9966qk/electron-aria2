@@ -8,7 +8,7 @@ The current version is built with a set up of:
 - React components for the UI
 - Redux for data flow
 - Webpack to pack everything referenced from [app.tsx](./app/app.tsx) to a single file under the directory `./public/js/bundle.js` with source map
-- Electron for OS level functionalities (run with `electron main.js`)
+- Electron for OS level functionalities (run with `electron .`)
 
 ## Usage
 
@@ -23,4 +23,4 @@ Assumes `aria2c` command to be available on platforms other than Windows.
 
 ## Known Issues & Future Improvements
 
-A lot. Will possibly be listed in Issues as development goes further.
+See "Issues" and "Projects" sections. Earlier progress is recorded in [this Trello board](https://trello.com/b/TIozvNgr/electron-aria2).
