@@ -81,33 +81,38 @@ export function isMetadata(task: Task): boolean {
     return task.bittorrent !== undefined && task.bittorrent.info === undefined
 }
 
-function getCategory(task: Task): TaskCategory {
+export function downloadComplete(task: Task): boolean {
+    if (task.status === "complete") { return true }
     if (["active", "paused"].includes(task.status)) {
         const completed = parseInt(task.completedLength)
         const total = parseInt(task.totalLength)
         if (completed === total) {
             if (isMetadata(task)) {
-                return TaskCategory.Active
+                return false
             } else {
                 // for torrent tasks that have completed
                 // download but still seeding
-                return TaskCategory.Completed
+                return true
             }
         }
-        return TaskCategory.Active
+        return false
     }
+}
 
+function getCategory(task: Task): TaskCategory {
     if (["waiting"].includes(task.status)) {
         return TaskCategory.Waiting
-    }
-
-    if (["complete"].includes(task.status)) {
-        return TaskCategory.Completed
     }
 
     if (["error", "removed"].includes(task.status)) {
         return TaskCategory.Stopped
     }
+
+    if (downloadComplete(task)) {
+        return TaskCategory.Completed
+    }
+
+    return TaskCategory.Active
 }
 
 export const countCategory = (tasks: Task[]) => {

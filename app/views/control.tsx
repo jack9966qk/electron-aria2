@@ -114,7 +114,7 @@ class Control extends React.Component<Props, State> {
     openSnackbarWith = (text: string, variant?: string) => {
         this.props.enqueueSnackbar(text, {
             variant: variant ? variant : "default",
-            autoHideDuration: 5000,
+            autoHideDuration: 3000,
             anchorOrigin: {
                 vertical: "bottom",
                 horizontal: "center"

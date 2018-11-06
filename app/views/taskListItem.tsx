@@ -10,28 +10,36 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import { sprintf } from 'sprintf-js'
+import * as humanizeDuration from 'humanize-duration'
 
 // `import * as filesize` also works, but reported as error by tslint
 // `import filesize` passes lint, but triggers error at runtime
 import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
-import { Task, getName, isBittorrent } from '../model/task'
+import { Task, getName, isBittorrent, downloadComplete, isHttp } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
         margin: `${theme.spacing.unit * 1.5}px ${theme.spacing.unit * 0.5}px`,
+        // hide content outside of rounded corners
+        overflow: "hidden",
+        // necessary for above to work, see: https://bit.ly/2OqGslz
+        position: "relative",
+        zIndex: theme.zIndex.drawer
+    },
+    mainArea: {
+        padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`
     },
     progressBar: {
-        marginTop: theme.spacing.unit,
-        marginBottom: theme.spacing.unit
     },
     flexContainer: {
         display: "flex",
         alignItems: "center"
     },
     button: {
+        padding: `${theme.spacing.unit * 0.75}px`
     },
     text: {
         overflow: "hidden",
@@ -71,20 +79,52 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
     
     render() {
         const { classes, task } = this.props
-        const { status, files, dir } = task
-        // const description = `Task: ${status}, ${files[0].path}`
+        const { status } = task
+
         const downloadSpeed = parseInt(task.downloadSpeed)
+        const uploadSpeed = parseInt(task.uploadSpeed)
         const completedLength = parseInt(task.completedLength)
         const totalLength = parseInt(task.totalLength)
-        const taskName = getName(task)
-        const speedDescription = isBittorrent(task) ?
-            `Seeders:${task.numSeeders} UL:${filesize(parseInt(task.uploadSpeed))}/s DL:${filesize(downloadSpeed)}/s` :
-            `${filesize(downloadSpeed)}/s`
 
+        const fsize = filesize.partial({spacer: ""})
+        const taskName = getName(task)
+        const progressPercentage = totalLength === 0 ? "" :
+            sprintf("%.1f", 100 * completedLength / totalLength) + "%"
+        const progressDescription = (status === "active" || status === "paused") ?
+            `${progressPercentage} of ${fsize(totalLength)}` :
+            `${fsize(totalLength)}`
+        const speedDescription = isBittorrent(task) ?
+            (downloadComplete(task) ?
+                `UL:${fsize(uploadSpeed)}/s` :
+                `UL:${fsize(uploadSpeed)}/s DL:${fsize(downloadSpeed)}/s`
+            ) :
+            `${fsize(downloadSpeed)}/s`
+        const humanizer = humanizeDuration.humanizer({
+            delimiter: "",
+            spacer: "",
+            largest: 2,
+            round: true,
+            language: "shortEn",
+            languages: {
+                shortEn: {
+                    y: () => 'y',
+                    mo: () => 'mo',
+                    w: () => 'w',
+                    d: () => 'd',
+                    h: () => 'h',
+                    m: () => 'm',
+                    s: () => 's',
+                    ms: () => 'ms',
+                }
+            }
+        })
+        const timeRemaining = downloadSpeed === 0 ? "" : humanizer(
+            Math.floor((totalLength - completedLength) / downloadSpeed))
+        const speedAndTimeRemaining = timeRemaining + " " + speedDescription
 
         const pauseButton = (
             <SmallTooltip title="Pause">
-                <IconButton className={classes.button} onClick={this.props.handlePauseTask}>
+                <IconButton classes={{root: classes.button}} onClick={this.props.handlePauseTask}>
                     <PauseIcon />
                 </IconButton>
             </SmallTooltip>
@@ -92,7 +132,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         const resumeButton = (
             <SmallTooltip title="Resume">
-                <IconButton className={classes.button} onClick={this.props.handleResumeTask}>
+                <IconButton classes={{root: classes.button}} onClick={this.props.handleResumeTask}>
                     <PlayArrowIcon />
                 </IconButton>
             </SmallTooltip>
@@ -101,12 +141,12 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         const deleteButton = (
             status !== "error" && status !== "removed" && status !== "complete" ?
                 (<SmallTooltip title="Delete">
-                    <IconButton className={classes.button} onClick={this.props.handleDeleteTask}>
+                    <IconButton classes={{root: classes.button}} onClick={this.props.handleDeleteTask}>
                         <DeleteIcon />
                     </IconButton>
                 </SmallTooltip>) :
                 (<SmallTooltip title="Delete forever">
-                    <IconButton className={classes.button} onClick={this.props.handlePermDeleteTask}>
+                    <IconButton classes={{root: classes.button}} onClick={this.props.handlePermDeleteTask}>
                         <DeleteForeverIcon />
                     </IconButton>
                 </SmallTooltip>)
@@ -114,7 +154,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         const openFolderButton = (
             <SmallTooltip title="Open folder">
-                <IconButton className={classes.button} onClick={this.props.handleRevealFile}>
+                <IconButton classes={{root: classes.button}} onClick={this.props.handleRevealFile}>
                     <FolderIcon />
                 </IconButton>
             </SmallTooltip>
@@ -140,18 +180,14 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                     align="left"
                     classes={{root: classes.progressText}}
                 >
-                    {
-                    status === "active" || status === "paused" ?
-                        `${filesize(completedLength)}/${filesize(totalLength)}` :
-                        `${filesize(totalLength)}`
-                    }
+                    {progressDescription}
                 </Typography>
                 <Typography
                     variant="caption"
                     align="right"
                     classes={{root: classes.speedText}}
                 >
-                    {status === "active" ? speedDescription : ""}
+                    {status === "active" ? speedAndTimeRemaining : ""}
                 </Typography>
             </div>
         )
@@ -169,36 +205,37 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
 
         return (
             <Paper className={classes.root}>
-                <div className={classes.flexContainer}>
-                    <div className={classes.name}>
-                        <Typography
-                            variant="subtitle1"
-                            align="left"
-                            classes={{root: classes.text}}
-                        >
-                            {taskName}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            align="left"
-                            classes={{root: classes.text}}
-                        >
-                            {status}
-                        </Typography>
+                <div className={classes.mainArea}>
+                    <div className={classes.flexContainer}>
+                        <div className={classes.name}>
+                            <Typography
+                                variant="subtitle1"
+                                align="left"
+                                classes={{root: classes.text}}
+                            >
+                                {taskName}
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                align="left"
+                                classes={{root: classes.text}}
+                            >
+                                {status}
+                            </Typography>
+                        </div>
+                        { buttons }
                     </div>
-                    { buttons }
+
+                    {
+                    (
+                        (status === "active") ||
+                        (status === "complete" && isBittorrent(task))
+                    ) ?
+                        progressText : ""
+                    }
                 </div>
-
-                { status === "active" ? progressBar : "" }
-
-                {
-                (
-                    (status === "active") ||
-                    (status === "complete" && isBittorrent(task))
-                ) ?
-                    progressText : ""
-                }
-
+                
+                { (status === "active" && isHttp(task)) ? progressBar : "" }
             </Paper>
         )
     }
