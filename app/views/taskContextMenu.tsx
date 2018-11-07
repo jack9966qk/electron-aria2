@@ -23,10 +23,6 @@ interface Props {
 }
 
 class TaskContextMenu extends React.Component<Props, {}> {
-    onPause = () => {
-        console.log("pause!")
-    }
-
     render() {
         const { status } = this.props.task
 
