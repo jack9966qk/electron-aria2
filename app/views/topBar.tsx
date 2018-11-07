@@ -35,9 +35,9 @@ interface Props {
 }
 
 class TopBar extends React.Component<Props, {}> {
-    shouldComponentUpdate(prevProps: Props) {
-        return this.props.tabs !== prevProps.tabs ||
-            this.props.title !== prevProps.title
+    shouldComponentUpdate(nextProps: Props) {
+        return this.props.tabs !== nextProps.tabs ||
+            this.props.title !== nextProps.title
     }
 
     render() {

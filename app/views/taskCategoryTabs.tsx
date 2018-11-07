@@ -25,8 +25,8 @@ type Props =
     StoreProps
 
 class TaskCategoryTabs extends React.Component<Props, {}> {
-    shouldComponentUpdate(prevProps) {
-        return this.props.category !== prevProps.category
+    shouldComponentUpdate(nextProps) {
+        return this.props.category !== nextProps.category
     }
 
     render() {

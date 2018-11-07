@@ -69,10 +69,10 @@ type Props =
 interface State {}
 
 class SideBar extends React.Component<Props, State> {
-    shouldComponentUpdate(prevProps) {
-        return (this.props.category !== prevProps.category) ||
-            !isEqual(this.props.count, prevProps.count) ||
-            this.props.open !== prevProps.open
+    shouldComponentUpdate(nextProps) {
+        return (this.props.category !== nextProps.category) ||
+            !isEqual(this.props.count, nextProps.count) ||
+            this.props.open !== nextProps.open
     }
 
     render() {
