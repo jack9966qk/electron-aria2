@@ -8,6 +8,7 @@ import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
 import SettingsDialogWithState from '../containers/settingsDialogWithState'
 import TaskListWithState from '../containers/taskListWithState'
+import StatusBar from './statusBar'
 import TopBar from './topBar'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
@@ -20,7 +21,7 @@ const styles = (theme: Theme) => createStyles({
         height: "100%",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "auto 1fr",
+        gridTemplateRows: "auto 1fr auto",
         gridTemplateColumns: "auto 1fr"
     },
     topBar: {
@@ -28,6 +29,7 @@ const styles = (theme: Theme) => createStyles({
         gridColumn: "1 / -1"
     },
     sideBar: {
+        gridRow: "2 / -1",
         [theme.breakpoints.down("xs")]: {
             display: "none"
         }
@@ -40,6 +42,11 @@ const styles = (theme: Theme) => createStyles({
     },
     toolBar: theme.mixins.toolbar,
     snackBar: {
+    },
+    statusBar: {
+        [theme.breakpoints.down("xs")]: {
+            gridColumn: "1 / -1" // full width in compact view
+        }
     }
 })
 
@@ -288,6 +295,11 @@ class Control extends React.Component<Props, State> {
                         category={this.state.category}
                         classes={{root: classes.taskList}}
                         openContextMenu={this.openContextMenu}
+                    />
+
+                    <StatusBar
+                        tasks={this.props.tasks}
+                        classes={{root: classes.statusBar}}
                     />
 
                     <Popover
