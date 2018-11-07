@@ -38,7 +38,9 @@ const styles = (theme: Theme) => createStyles({
             gridColumn: "1 / -1" // full width in compact view
         }
     },
-    toolBar: theme.mixins.toolbar
+    toolBar: theme.mixins.toolbar,
+    snackBar: {
+    }
 })
 
 interface ViewProps {
@@ -313,8 +315,10 @@ class Control extends React.Component<Props, State> {
 }
 
 const ControlWithSnackbar = withSnackbar(Control)
-const ControlWithSnackbarProvider: React.SFC = (props) => (
-    <SnackbarProvider maxSnack={3}>
+const ControlWithSnackbarProvider: React.SFC<any> = (props) => (
+    <SnackbarProvider maxSnack={3} classes={{
+        root: props.classes.snackBar
+    }}>
         <ControlWithSnackbar {...props}/>
     </SnackbarProvider>
 )
