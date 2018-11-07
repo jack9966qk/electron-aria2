@@ -48,6 +48,13 @@ const styles = (theme: Theme) => createStyles({
         whiteSpace: "nowrap",
         textOverflow: "ellipsis"
     },
+    status: {
+        display: "inline",
+        marginRight: `${theme.spacing.unit}px`
+    },
+    inline: {
+        display: "inline"
+    },
     name: {
         flex: 1,
         // necessary for flex item to be smaller than content size
@@ -99,14 +106,14 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         const uploadSpeed = parseInt(task.uploadSpeed)
         const completedLength = parseInt(task.completedLength)
         const totalLength = parseInt(task.totalLength)
+        const uploadLength = parseInt(task.uploadLength)
 
         const fsize = filesize.partial({spacer: ""})
         const taskName = getName(task)
         const progressPercentage = totalLength === 0 ? "" :
             sprintf("%.1f", 100 * completedLength / totalLength) + "%"
         const progressDescription = (status === "active" || status === "paused") ?
-            `${progressPercentage} of ${fsize(totalLength)}` :
-            `${fsize(totalLength)}`
+            `${progressPercentage} downloaded` : `${fsize(uploadLength)} uploaded`
         const speedDescription = isBittorrent(task) ?
             (downloadComplete(task) ?
                 `UL:${fsize(uploadSpeed)}/s` :
@@ -216,37 +223,43 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                 variant="determinate"
                 value={completedLength * 100.0 / totalLength}
             />
+        
+        const basicInfo = (
+            <div className={classes.flexContainer}>
+                <div className={classes.name}>
+                    <Typography
+                        variant="subtitle1"
+                        align="left"
+                        classes={{root: classes.text}}
+                    >
+                        {taskName}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        align="left"
+                        classes={{root: classes.status}}
+                        component="span"
+                    >
+                        {status}
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        align="left"
+                        classes={{root: classes.inline}}
+                        component="span"
+                    >
+                        {`${fsize(totalLength)}`}
+                    </Typography>
+                </div>
+                { buttons }
+            </div>
+        )
 
         return (
             <Paper className={classes.root} onContextMenu={this.onContext}>
                 <div className={classes.mainArea}>
-                    <div className={classes.flexContainer}>
-                        <div className={classes.name}>
-                            <Typography
-                                variant="subtitle1"
-                                align="left"
-                                classes={{root: classes.text}}
-                            >
-                                {taskName}
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                align="left"
-                                classes={{root: classes.text}}
-                            >
-                                {status}
-                            </Typography>
-                        </div>
-                        { buttons }
-                    </div>
-
-                    {
-                    (
-                        (status === "active") ||
-                        (status === "complete" && isBittorrent(task))
-                    ) ?
-                        progressText : ""
-                    }
+                    { basicInfo }
+                    { (status === "active") ? progressText : "" }
                 </div>
                 
                 { (status === "active" && !downloadComplete(task)) ? progressBar : "" }
