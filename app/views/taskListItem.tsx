@@ -133,7 +133,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             }
         })
         const timeRemaining = downloadSpeed === 0 ? "" : humanizer(
-            Math.floor((totalLength - completedLength) / downloadSpeed))
+            Math.floor((totalLength - completedLength) / downloadSpeed) * 1000)
         const speedAndTimeRemaining = timeRemaining + " " + speedDescription
 
         const pauseButton = (
