@@ -15,6 +15,7 @@ const styles = (theme: Theme) => createStyles({
 interface ViewProps {
     category: TaskCategory
     classes: any
+    openContextMenu: (menu: JSX.Element, event: React.MouseEvent) => void
 }
 
 export interface DispatchProps {
@@ -69,6 +70,7 @@ class TaskList extends React.Component<Props, State> {
                     handleRevealFile={() => {
                         this.props.revealFile(task.files[0].path)
                     }}
+                    openContextMenu = {this.props.openContextMenu}
                 />
             )
             }

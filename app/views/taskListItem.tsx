@@ -13,6 +13,8 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import { sprintf } from 'sprintf-js'
 import * as humanizeDuration from 'humanize-duration'
 
+import TaskContextMenu from './taskContextMenu'
+
 // `import * as filesize` also works, but reported as error by tslint
 // `import filesize` passes lint, but triggers error at runtime
 import filesize = require('filesize')
@@ -61,20 +63,32 @@ const styles = (theme: Theme) => createStyles({
 interface TaskListItemProps {
     classes: any
     task: Task
-    handlePauseTask: any
-    handleResumeTask: any
-    handleDeleteTask: any
-    handlePermDeleteTask: any
-    handleRevealFile: any
+    handlePauseTask: () => void
+    handleResumeTask: () => void
+    handleDeleteTask: () => void
+    handlePermDeleteTask: () => void
+    handleRevealFile: () => void
+    openContextMenu: (menu: JSX.Element, event: React.MouseEvent) => void
 }
 
 interface TaskListItemState {
-
 }
 
 class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState> {
     constructor(props) {
         super(props)
+    }
+
+    onContext = (event: React.MouseEvent) => {
+        const menu = <TaskContextMenu
+            task={this.props.task}
+            handlePauseTask={this.props.handlePauseTask}
+            handleResumeTask={this.props.handleResumeTask}
+            handleDeleteTask={this.props.handleDeleteTask}
+            handlePermDeleteTask={this.props.handlePermDeleteTask}
+            handleRevealFile={this.props.handleRevealFile}        
+        />
+        this.props.openContextMenu(menu, event)
     }
     
     render() {
@@ -204,7 +218,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             />
 
         return (
-            <Paper className={classes.root}>
+            <Paper className={classes.root} onContextMenu={this.onContext}>
                 <div className={classes.mainArea}>
                     <div className={classes.flexContainer}>
                         <div className={classes.name}>

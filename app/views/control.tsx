@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Snackbar from '@material-ui/core/Snackbar'
+import Popover from '@material-ui/core/Popover'
 import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
 import { SnackbarProvider, withSnackbar } from 'notistack'
@@ -81,6 +81,9 @@ interface State {
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
+    contextMenuOpen: boolean
+    contextMenuPosition: {top: number, left: number}
+    contextMenu: JSX.Element
     category: TaskCategory
     snackbarText: string
     startedConnecting: boolean
@@ -93,18 +96,29 @@ class Control extends React.Component<Props, State> {
             newTaskDialogOpen: false,
             settingsOpen: false,
             sidebarOpen: false,
+            contextMenuOpen: false,
+            contextMenuPosition: {top: 0, left: 0},
+            contextMenu: undefined,
             snackbarText: undefined,
             category: TaskCategory.Active,
             startedConnecting: false
         }
     }
     
-    handleDialogOpen = () => {
+    openDialog = () => {
         this.setState({ newTaskDialogOpen: true })
     }
     
-    handleDialogClose = () => {
+    closeDialog = () => {
         this.setState({ newTaskDialogOpen: false })
+    }
+
+    openSettings = () => {
+        this.setState({ settingsOpen: true })  
+    }
+
+    closeSettings = () => {
+        this.setState({ settingsOpen: false })        
     }
 
     toggleSidebarOpen = () => {
@@ -122,16 +136,29 @@ class Control extends React.Component<Props, State> {
         })
     }
 
-    handleCategorySelect = (category) => {
+    onCategorySelected = (category) => {
         this.setState({ category })
     }
 
-    handleSettingsOpen = () => {
-        this.setState({ settingsOpen: true })  
+    openContextMenu = (menu: JSX.Element, event: React.MouseEvent) => {
+        this.setState({
+            contextMenuOpen: true,
+            contextMenu: menu,
+            contextMenuPosition: {top: event.clientY, left: event.clientX}
+        })
     }
 
-    handleSettingsClose = () => {
-        this.setState({ settingsOpen: false })        
+    closeContextMenu = () => {
+        this.setState({
+            contextMenuOpen: false
+        })
+    }
+
+    onMouseUp = (event: React.MouseEvent) => {
+        // close menu if main button pressed (usually left-click)
+        if (event.button === 0) {
+            this.closeContextMenu()
+        }
     }
 
     getStatus = () => (
@@ -238,36 +265,47 @@ class Control extends React.Component<Props, State> {
             this.getStatus() + "..."
         return (
             <>
-                <div className={classes.content}>
+                <div className={classes.content} onMouseUp={this.onMouseUp}>
                     <TopBar classes={{root: classes.topBar}}
-                        showAddNewTask={this.handleDialogOpen}
+                        showAddNewTask={this.openDialog}
                         showMenu={this.toggleSidebarOpen}
-                        showSettings={this.handleSettingsOpen}
+                        showSettings={this.openSettings}
                         title={title}
                         tabs={<TaskCategoryTabsWithState
-                            onCategorySelected={this.handleCategorySelect}
+                            onCategorySelected={this.onCategorySelected}
                             category={this.state.category}
                         />}
                     />
                     <SideBarWithState
                         open={this.state.sidebarOpen}
-                        onCategorySelected={this.handleCategorySelect}
+                        onCategorySelected={this.onCategorySelected}
                         category={this.state.category}
                         classes={{root: classes.sideBar}}
                     />
                     <TaskListWithState
                         category={this.state.category}
                         classes={{root: classes.taskList}}
+                        openContextMenu={this.openContextMenu}
                     />
+
+                    <Popover
+                        open={this.state.contextMenuOpen}
+                        anchorReference="anchorPosition"
+                        anchorPosition={this.state.contextMenuPosition}
+                        // necessary for event to go through popover before control
+                        container={this}
+                    >
+                        {this.state.contextMenu}
+                    </Popover>
                 </div>
 
                 <NewTaskDialogWithState
                     open={this.state.newTaskDialogOpen}
-                    onRequestClose={this.handleDialogClose}
+                    onRequestClose={this.closeDialog}
                 />
                 <SettingsDialogWithState
                     open={this.state.settingsOpen}
-                    onRequestClose={this.handleSettingsClose}
+                    onRequestClose={this.closeSettings}
                 />
             </>
         )
