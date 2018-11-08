@@ -1,7 +1,7 @@
 {
   "name": "electron-aria2",
   "productName": "Electron Aria2",
-  "version": "0.0.2",
+  "version": "0.1.2",
   "description": "Aria2 Client",
   "main": "main.js",
   "private": true,
