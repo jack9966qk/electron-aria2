@@ -1,9 +1,5 @@
 import { isEqual } from 'lodash'
 
-interface Mapping {
-    [key: string]: string | Mapping
-}
-
 type Status =
     "active" |
     "waiting" |
@@ -12,16 +8,47 @@ type Status =
     "complete" |
     "removed"
 
-export interface Task extends Mapping {
-    gid: string
-    status: Status
+export interface Task {
+    bitfield?: string
     bittorrent?: {
-        info: Mapping
-        [key: string]: string | Mapping
+        announceList?: string[][]
+        comment: string
+        creationDate: number
+        info: {
+            name: string
+        }
+        mode: string
     }
     completedLength: string
+    connections: string
+    dir: string
+    downloadSpeed: string
+    errorCode?: string
+    errorMessage?: string
+    followedBy?: string[]
+    following?: string
+    belongsTo?: string
+    files: {
+        completedLength: string
+        index: string
+        length: string
+        path: string
+        selected: string
+        uris: {
+            status: string,
+            uri: string
+        }[]
+    }[]
+    gid: string
+    infoHash: string
+    numPieces: string
+    numSeeders: string
+    pieceLength: string
+    seeder: string
+    status: Status
     totalLength: string
-    [key: string]: string | Mapping
+    uploadLength: string
+    uploadSpeed: string
 }
 
 export enum TaskCategory {
@@ -38,37 +65,59 @@ export const taskCategoryDescription = {
     [TaskCategory.Stopped]: "Stopped"
 }
 
-function isMetadata(task: Task): boolean {
+export function getName(task: Task): string {
+    const {bittorrent, files, dir} = task
+    return isHttp(task) ?
+        (files[0].path === "" ?
+            files[0].uris[0].uri :
+            files[0].path.replace(dir + "/", "")) :
+        bittorrent.info.name
+}
+
+export function isHttp(task: Task): boolean {
+    return task.bittorrent === undefined || task.bittorrent.info === undefined
+}
+
+export function isBittorrent(task: Task): boolean {
+    return task.bittorrent !== undefined && task.bittorrent.info !== undefined
+}
+
+export function isMetadata(task: Task): boolean {
     return task.bittorrent !== undefined && task.bittorrent.info === undefined
 }
 
-function getCategory(task: Task): TaskCategory {
+export function downloadComplete(task: Task): boolean {
+    if (task.status === "complete") { return true }
     if (["active", "paused"].includes(task.status)) {
         const completed = parseInt(task.completedLength)
         const total = parseInt(task.totalLength)
         if (completed === total) {
             if (isMetadata(task)) {
-                return TaskCategory.Active
+                return false
             } else {
                 // for torrent tasks that have completed
                 // download but still seeding
-                return TaskCategory.Completed
+                return true
             }
         }
-        return TaskCategory.Active
+        return false
     }
+}
 
+function getCategory(task: Task): TaskCategory {
     if (["waiting"].includes(task.status)) {
         return TaskCategory.Waiting
-    }
-
-    if (["complete"].includes(task.status)) {
-        return TaskCategory.Completed
     }
 
     if (["error", "removed"].includes(task.status)) {
         return TaskCategory.Stopped
     }
+
+    if (downloadComplete(task)) {
+        return TaskCategory.Completed
+    }
+
+    return TaskCategory.Active
 }
 
 export const countCategory = (tasks: Task[]) => {
@@ -90,37 +139,32 @@ export function filterTasks(tasks: Task[], category: TaskCategory) {
     return tasks.filter(e => getCategory(e) === category)
 }
 
-export const updateTaskList = (oldTasks: Task[], newTasks: Task[]) => {
+export const updateTaskList = (
+    oldTasks: Map<string, Task>,
+    newTasks: Map<string, Task>) => {
     // compare task lists, only update references where tasks are changed
     // if no task has changed, do not update array reference
-    // O(n) with 3 passes, not very optimal
-    const toMap = (tasks: Task[]) => {
-        const map = new Map()
-        for (const t of tasks) { map.set(t.gid, t) }
-        return map
-    }
-    const oldTasksMap = toMap(oldTasks)
-    const newTasksMap = toMap(newTasks)
+    // O(n) with 2 passes, not very optimal
     var changed = false
     // check for deleted tasks
-    for (const gid of oldTasksMap.keys()) {
-        if (!newTasksMap.has(gid)) { changed = true }
+    for (const gid of oldTasks.keys()) {
+        if (!newTasks.has(gid)) { changed = true }
     }
     // check for added/updated tasks
-    const tasks: Task[] = []
-    for (const t of newTasks) {
-        if (oldTasksMap.has(t.gid)) {
-            const ot = oldTasksMap.get(t.gid)
+    const tasks: Map<string, Task> = new Map()
+    newTasks.forEach((t, gid, _) => {
+        if (oldTasks.has(gid)) {
+            const ot = oldTasks.get(gid)
             if (isEqual(t, ot)) {
-                tasks.push(ot)
+                tasks.set(gid, ot)
             } else {
                 changed = true
-                tasks.push(t)
+                tasks.set(gid, t)
             }
         } else {
             changed = true
-            tasks.push(t)
+            tasks.set(gid, t)
         }
-    }
+    })
     return changed ? tasks : oldTasks
 }

@@ -15,7 +15,7 @@ export const receivedVersion = (version: string) =>
     action(RECEIVED_VERSION, version)
 
 export const RECEIVED_TASKS = "RECEIVED_TASKS"
-export const receivedTasks = (tasks: Task[]) =>
+export const receivedTasks = (tasks: Map<string, Task>) =>
     action(RECEIVED_TASKS, tasks)
 
 export const ARBITRARY_VAL_CHANGED = "ARBITRARY_VAL_CHANGED"

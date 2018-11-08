@@ -5,6 +5,8 @@ export type MethodName = string
 export type Token = string
 type JsonRPC = any
 
+export type NotificationResponse = { gid: string }
+
 export default class AriaJsonRPC {
     url: string
     secret: Token
@@ -22,7 +24,7 @@ export default class AriaJsonRPC {
     ) {
         this.url = url
         this.secret = secret
-        this.jrpc = undefined
+        this.jrpc = new JsonRPC()
         this.socket = undefined
         this.onAriaResponse = onAriaResponse
         this.onAriaError = onAriaError
@@ -34,10 +36,11 @@ export default class AriaJsonRPC {
         onClose: (boolean) => void,
         onConnErr: () => void
     ) {
-        const jrpc = new JsonRPC()
         const socket = new WebSocket(this.url)
-        jrpc.toStream = (_msg) => { socket.send(_msg) }
-        socket.onmessage = (event) => { jrpc.messageHandler(event.data) }
+        this.jrpc.toStream = (_msg) => { socket.send(_msg) }
+        socket.onmessage = (event) => {
+            this.jrpc.messageHandler(event.data)
+        }
         socket.onclose = (event) => {
             const isErr = event.code !== 3001
             if (!isErr) {
@@ -51,7 +54,6 @@ export default class AriaJsonRPC {
         // TODO: handle normal WS errors better
         socket.onerror = (event) => { console.log(event) }
         socket.onopen = () => {
-            this.jrpc = jrpc
             this.socket = socket
             this.hasBeenOpen = true
             onOpen()
@@ -62,6 +64,10 @@ export default class AriaJsonRPC {
         this.socket.close()
         this.socket = null
         this.jrpc = null
+    }
+
+    on(event, callback: (response: NotificationResponse) => void) {
+        this.jrpc.on(event, callback)
     }
 
     async call(method: MethodName, args: any[], silent=false): Promise<any> {
@@ -85,7 +91,9 @@ export default class AriaJsonRPC {
             this.call("aria2.tellWaiting", [0, 100], true),
             this.call("aria2.tellStopped", [0, 100], true)
         ])
-        const tasks = (values as Task[][]).reduce((a, b) => a.concat(b))
+        const flatten = (values as Task[][]).reduce((a, b) => a.concat(b))
+        const tasks: Map<string, Task> = new Map()
+        flatten.reduce(((map, task) => map.set(task.gid, task)), tasks)
         return tasks
     }
 }

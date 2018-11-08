@@ -1,16 +1,18 @@
 import * as React from 'react'
-import Snackbar from '@material-ui/core/Snackbar'
+import Popover from '@material-ui/core/Popover'
 import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
+import { SnackbarProvider, withSnackbar } from 'notistack'
 
 import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
 import SettingsDialogWithState from '../containers/settingsDialogWithState'
 import TaskListWithState from '../containers/taskListWithState'
+import StatusBar from './statusBar'
 import TopBar from './topBar'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import { TaskCategory, taskCategoryDescription } from '../model/task'
+import { TaskCategory, taskCategoryDescription, getName, Task } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
@@ -19,7 +21,7 @@ const styles = (theme: Theme) => createStyles({
         height: "100%",
         width: "100%",
         display: "grid",
-        gridTemplateRows: "auto 1fr",
+        gridTemplateRows: "auto 1fr auto",
         gridTemplateColumns: "auto 1fr"
     },
     topBar: {
@@ -27,6 +29,7 @@ const styles = (theme: Theme) => createStyles({
         gridColumn: "1 / -1"
     },
     sideBar: {
+        gridRow: "2 / -1",
         [theme.breakpoints.down("xs")]: {
             display: "none"
         }
@@ -37,16 +40,25 @@ const styles = (theme: Theme) => createStyles({
             gridColumn: "1 / -1" // full width in compact view
         }
     },
-    toolBar: theme.mixins.toolbar
+    toolBar: theme.mixins.toolbar,
+    snackBar: {
+    },
+    statusBar: {
+        [theme.breakpoints.down("xs")]: {
+            gridColumn: "1 / -1" // full width in compact view
+        }
+    }
 })
 
 interface ViewProps {
     classes: any
+    enqueueSnackbar: Function
 }
 
 export interface DispatchProps {
     connectLocal: (
         onRes: Function,
+        onNotif: Function,
         onErr: Function,
         onConnErr: () => void,
         ) => void
@@ -54,6 +66,7 @@ export interface DispatchProps {
         url: string,
         secret: string,
         onRes: Function,
+        onNotif: Function,
         onErr: Function,
         onConnErr: () => void,
         ) => void
@@ -68,6 +81,7 @@ export interface StoreProps {
     version: string
     hostUrl: string
     secret: string
+    tasks: Map<string, Task>
 }
 
 type Props = ViewProps & DispatchProps & StoreProps
@@ -76,7 +90,9 @@ interface State {
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
-    snackbarOpen: boolean
+    contextMenuOpen: boolean
+    contextMenuPosition: {top: number, left: number}
+    contextMenu: JSX.Element
     category: TaskCategory
     snackbarText: string
     startedConnecting: boolean
@@ -89,43 +105,69 @@ class Control extends React.Component<Props, State> {
             newTaskDialogOpen: false,
             settingsOpen: false,
             sidebarOpen: false,
-            snackbarOpen: false,
+            contextMenuOpen: false,
+            contextMenuPosition: {top: 0, left: 0},
+            contextMenu: undefined,
             snackbarText: undefined,
             category: TaskCategory.Active,
             startedConnecting: false
         }
     }
     
-    handleDialogOpen = () => {
+    openDialog = () => {
         this.setState({ newTaskDialogOpen: true })
     }
     
-    handleDialogClose = () => {
+    closeDialog = () => {
         this.setState({ newTaskDialogOpen: false })
+    }
+
+    openSettings = () => {
+        this.setState({ settingsOpen: true })  
+    }
+
+    closeSettings = () => {
+        this.setState({ settingsOpen: false })        
     }
 
     toggleSidebarOpen = () => {
         this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
-    openSnackbarWith = (text: string) => {
-        this.setState({ snackbarOpen: true, snackbarText: text })
+    openSnackbarWith = (text: string, variant?: string) => {
+        this.props.enqueueSnackbar(text, {
+            variant: variant ? variant : "default",
+            autoHideDuration: 3000,
+            anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "center"
+            }
+        })
     }
 
-    handleSnackbarClose = () => {
-        this.setState({ snackbarOpen: false })
-    }
-
-    handleCategorySelect = (category) => {
+    onCategorySelected = (category) => {
         this.setState({ category })
     }
 
-    handleSettingsOpen = () => {
-        this.setState({ settingsOpen: true })  
+    openContextMenu = (menu: JSX.Element, event: React.MouseEvent) => {
+        this.setState({
+            contextMenuOpen: true,
+            contextMenu: menu,
+            contextMenuPosition: {top: event.clientY, left: event.clientX}
+        })
     }
 
-    handleSettingsClose = () => {
-        this.setState({ settingsOpen: false })        
+    closeContextMenu = () => {
+        this.setState({
+            contextMenuOpen: false
+        })
+    }
+
+    onMouseUp = (event: React.MouseEvent) => {
+        // close menu if main button pressed (usually left-click)
+        if (event.button === 0) {
+            this.closeContextMenu()
+        }
     }
 
     getStatus = () => (
@@ -140,6 +182,7 @@ class Control extends React.Component<Props, State> {
         console.log("Control did mount")
         this.props.connectLocal(
             this.onAriaResponse,
+            this.onAriaNotification,
             this.onAriaError,
             this.onConnectionError)
     }
@@ -157,6 +200,7 @@ class Control extends React.Component<Props, State> {
                 this.props.hostUrl,
                 this.props.secret,
                 this.onAriaResponse,
+                this.onAriaNotification,
                 this.onAriaError,
                 this.onConnectionError
             )
@@ -173,12 +217,45 @@ class Control extends React.Component<Props, State> {
         console.log(response)
         const func = AriaMessages[method]
         if (func !== undefined) {
-            this.setState({
-                snackbarOpen: true,
-                snackbarText: func(args, response)
-            })
+            const message = func(args, response)
+            if (message !== null) {
+                this.openSnackbarWith(message)
+            }
         } else {
             this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
+        }
+    }
+
+    onAriaNotification = (method, response) => {
+        console.log(method)
+        console.log(response)
+        const { gid } = response
+        if (!this.props.tasks.has(gid)) {
+            console.warn(`task with gid ${gid} cannot be found`)
+        }
+        const task = this.props.tasks.get(gid)
+        const name = getName(task)
+        switch (method) {
+            case "aria2.onDownloadStart":
+                this.openSnackbarWith(`Task "${name}" started`)
+                break
+            case "aria2.onDownloadPause":
+                this.openSnackbarWith(`Task "${name}" paused`)
+                break
+            case "aria2.onDownloadStop":
+                this.openSnackbarWith(`Task "${name}" stopped`)
+                break
+            case "aria2.onDownloadComplete":
+                this.openSnackbarWith(`Task "${name}" completed`, "success")
+                break
+            case "aria2.onDownloadError":
+                this.openSnackbarWith(`Task "${name}" has error`, "error")
+                break
+            case "aria2.onBtDownloadComplete":
+                this.openSnackbarWith(`Task "${name}" completed`)
+                break
+            default:
+                break
         }
     }
 
@@ -197,46 +274,65 @@ class Control extends React.Component<Props, State> {
             this.getStatus() + "..."
         return (
             <>
-                <div className={classes.content}>
+                <div className={classes.content} onMouseUp={this.onMouseUp}>
                     <TopBar classes={{root: classes.topBar}}
-                        showAddNewTask={this.handleDialogOpen}
+                        showAddNewTask={this.openDialog}
                         showMenu={this.toggleSidebarOpen}
-                        showSettings={this.handleSettingsOpen}
+                        showSettings={this.openSettings}
                         title={title}
                         tabs={<TaskCategoryTabsWithState
-                            onCategorySelected={this.handleCategorySelect}
+                            onCategorySelected={this.onCategorySelected}
                             category={this.state.category}
                         />}
                     />
                     <SideBarWithState
                         open={this.state.sidebarOpen}
-                        onCategorySelected={this.handleCategorySelect}
+                        onCategorySelected={this.onCategorySelected}
                         category={this.state.category}
                         classes={{root: classes.sideBar}}
                     />
                     <TaskListWithState
                         category={this.state.category}
                         classes={{root: classes.taskList}}
+                        openContextMenu={this.openContextMenu}
                     />
+
+                    <StatusBar
+                        tasks={this.props.tasks}
+                        classes={{root: classes.statusBar}}
+                    />
+
+                    <Popover
+                        open={this.state.contextMenuOpen}
+                        anchorReference="anchorPosition"
+                        anchorPosition={this.state.contextMenuPosition}
+                        // necessary for event to go through popover before control
+                        container={this}
+                    >
+                        {this.state.contextMenu}
+                    </Popover>
                 </div>
 
                 <NewTaskDialogWithState
                     open={this.state.newTaskDialogOpen}
-                    onRequestClose={this.handleDialogClose}
+                    onRequestClose={this.closeDialog}
                 />
                 <SettingsDialogWithState
                     open={this.state.settingsOpen}
-                    onRequestClose={this.handleSettingsClose}
-                />
-                <Snackbar
-                    open={this.state.snackbarOpen}
-                    autoHideDuration={5000}
-                    onClose={this.handleSnackbarClose}
-                    message={<span>{this.state.snackbarText}</span>}
+                    onRequestClose={this.closeSettings}
                 />
             </>
         )
     }
 }
 
-export default withStyles(styles)(Control)
+const ControlWithSnackbar = withSnackbar(Control)
+const ControlWithSnackbarProvider: React.SFC<any> = (props) => (
+    <SnackbarProvider maxSnack={3} classes={{
+        root: props.classes.snackBar
+    }}>
+        <ControlWithSnackbar {...props}/>
+    </SnackbarProvider>
+)
+
+export default withStyles(styles)(ControlWithSnackbarProvider)

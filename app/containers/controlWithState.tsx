@@ -20,7 +20,8 @@ function mapStateToProps(state: RootState): StoreProps {
         rpc: state.rpc,
         version: state.version,
         hostUrl: state.hostUrl,
-        secret: state.secret
+        secret: state.secret,
+        tasks: state.tasks
     }
 }
 
@@ -48,8 +49,25 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         dispatch(disconnected(rpc))
     }
 
-    const connect = (url, secret, onRes, onErr, onConnErr) => {
+    const eventHandlers = {
+        "aria2.onDownloadStart": refreshTasks,
+        "aria2.onDownloadPause": refreshTasks,
+        "aria2.onDownloadStop": refreshTasks,
+        "aria2.onDownloadComplete": refreshTasks,
+        "aria2.onDownloadError": refreshTasks,
+        "aria2.onBtDownloadComplete": refreshTasks
+    }
+
+    const connect = (url, secret, onRes, onNotif, onErr, onConnErr) => {
         const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
+        // register handlers for notifications
+        for (const event in eventHandlers) {
+            const func = eventHandlers[event]
+            rpc.on(event, (message) => {
+                func(rpc)
+                onNotif(event, message)
+            })
+        }
         rpc.connect(
             onConnectionSuccess(rpc),
             onConnectionClose(rpc),
@@ -57,17 +75,17 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     }
 
     return {
-        connectLocal: (onRes, onErr, onConnErr) => {
+        connectLocal: (onRes, onNotif, onErr, onConnErr) => {
             const {hostUrl, secret} = mainFuncs
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
                 // it seems to be necessary to wait a little
                 // for aria2c server to fully start
                 setTimeout(() => {
-                    connect(hostUrl, secret, onRes, onErr, onConnErr)
+                    connect(hostUrl, secret, onRes, onNotif, onErr, onConnErr)
                 }, 200);
             }
-            connect(hostUrl, secret, onRes, onErr, launchAndRetry)
+            connect(hostUrl, secret, onRes, onNotif, onErr, launchAndRetry)
         },
         connect: connect,
         disconnect: (rpc) => {

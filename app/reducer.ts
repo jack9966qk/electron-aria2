@@ -21,7 +21,7 @@ export type RootState = {
     readonly secret: string
     readonly version: string
     readonly defaultDir: string
-    readonly tasks: Task[]
+    readonly tasks: Map<string, Task>
 }
 
 export const initialState: RootState = {
@@ -30,7 +30,7 @@ export const initialState: RootState = {
     secret: "secret",
     version: undefined,
     defaultDir: Electron.remote.app.getPath("downloads"),
-    tasks: []
+    tasks: new Map()
 }
 
 const reducer: Reducer<RootState, RootAction> =
@@ -40,9 +40,11 @@ const reducer: Reducer<RootState, RootAction> =
             return {...state, rpc: action.payload}
             break
         case DISCONNECTED:
-            // avoid removing active rpc
-            const rpc = state.rpc === action.payload ? undefined : state.rpc
-            return {...state, rpc}
+            // if current rpc is what has been disconnected
+            // remove tasks and rpc object
+            return state.rpc === action.payload ?
+                {...state, rpc: undefined, tasks: new Map()} : state
+            break
         case RECEIVED_VERSION:
             return {...state, version: action.payload}
             break

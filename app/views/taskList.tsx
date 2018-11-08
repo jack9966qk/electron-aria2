@@ -15,6 +15,7 @@ const styles = (theme: Theme) => createStyles({
 interface ViewProps {
     category: TaskCategory
     classes: any
+    openContextMenu: (menu: JSX.Element, event: React.MouseEvent) => void
 }
 
 export interface DispatchProps {
@@ -27,7 +28,7 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
-    tasks: Task[]
+    tasks: Map<string, Task>
     rpc: AriaJsonRPC
 }
 
@@ -45,7 +46,7 @@ class TaskList extends React.Component<Props, State> {
     }
 
     render() {
-        const tasks = filterTasks(this.props.tasks, this.props.category)
+        const tasks = filterTasks(Array.from(this.props.tasks.values()), this.props.category)
         const { root } = this.props.classes
         return (
         <div className={root}>
@@ -69,6 +70,7 @@ class TaskList extends React.Component<Props, State> {
                     handleRevealFile={() => {
                         this.props.revealFile(task.files[0].path)
                     }}
+                    openContextMenu = {this.props.openContextMenu}
                 />
             )
             }

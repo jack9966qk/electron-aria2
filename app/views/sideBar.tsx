@@ -12,6 +12,7 @@ import ScheduleIcon from '@material-ui/icons/Schedule'
 import BlockIcon from '@material-ui/icons/Block'
 import classnames from 'classnames'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import { isEqual } from 'lodash'
 
 import { CategoryCount, TaskCategory, taskCategoryDescription } from '../model/task'
 
@@ -67,7 +68,13 @@ type Props =
 
 interface State {}
 
-class SideBar extends React.PureComponent<Props, State> {
+class SideBar extends React.Component<Props, State> {
+    shouldComponentUpdate(nextProps) {
+        return (this.props.category !== nextProps.category) ||
+            !isEqual(this.props.count, nextProps.count) ||
+            this.props.open !== nextProps.open
+    }
+
     render() {
         const { root, primaryIcon, listItemIcon } = this.props.classes
         const { count } = this.props
