@@ -1,6 +1,7 @@
 import * as React from 'react'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Paper from '@material-ui/core/Paper'
+import Collapse from '@material-ui/core/Collapse'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import PauseIcon from '@material-ui/icons/Pause'
@@ -21,6 +22,7 @@ import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
 import { Task, getName, isBittorrent, downloadComplete, isHttp } from '../model/task'
+import TaskDetailsView from './taskDetailsView';
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -64,6 +66,10 @@ const styles = (theme: Theme) => createStyles({
     },
     speedText: {
         flex: 1
+    },
+    detailsView: {
+        paddingTop: `${theme.spacing.unit}px`,
+        paddingBottom: `${theme.spacing.unit}px`
     }
 })
 
@@ -79,11 +85,29 @@ interface TaskListItemProps {
 }
 
 interface TaskListItemState {
+    showDetails: boolean
 }
 
 class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState> {
     constructor(props) {
         super(props)
+        this.state = {
+            showDetails: false
+        }
+    }
+
+    toggleDetailView = () => {
+        this.setState({ showDetails: !this.state.showDetails })
+    }
+
+    onMouseUp = (event) => {
+        if (event.button === 0) {
+            this.toggleDetailView()
+        }
+    }
+
+    onButtonMouseUp = (event) => {
+        event.stopPropagation()
     }
 
     onContext = (event: React.MouseEvent) => {
@@ -112,8 +136,8 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         const taskName = getName(task)
         const progressPercentage = totalLength === 0 ? "" :
             sprintf("%.1f", 100 * completedLength / totalLength) + "%"
-        const progressDescription = (status === "active" || status === "paused") ?
-            `${progressPercentage} downloaded` : `${fsize(uploadLength)} uploaded`
+        const progressDescription = (downloadComplete(task)) ?
+            `${fsize(uploadLength)} uploaded` : `${progressPercentage} downloaded`
         const speedDescription = isBittorrent(task) ?
             (downloadComplete(task) ?
                 `UL:${fsize(uploadSpeed)}/s` :
@@ -143,43 +167,27 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             Math.floor((totalLength - completedLength) / downloadSpeed) * 1000)
         const speedAndTimeRemaining = timeRemaining + " " + speedDescription
 
-        const pauseButton = (
-            <SmallTooltip title="Pause">
-                <IconButton classes={{root: classes.button}} onClick={this.props.handlePauseTask}>
-                    <PauseIcon />
+        const button = (tooltipText, icon, onClick) => (
+            <SmallTooltip title={tooltipText}>
+                <IconButton
+                    classes={{root: classes.button}}
+                    onClick={onClick}
+                    onMouseUp={this.onButtonMouseUp}
+                >
+                    { icon }
                 </IconButton>
             </SmallTooltip>
         )
 
-        const resumeButton = (
-            <SmallTooltip title="Resume">
-                <IconButton classes={{root: classes.button}} onClick={this.props.handleResumeTask}>
-                    <PlayArrowIcon />
-                </IconButton>
-            </SmallTooltip>
-        )
+        const pauseButton = button("Pause", <PauseIcon />, this.props.handlePauseTask)
+        const resumeButton = button("Resume", <PlayArrowIcon />, this.props.handleResumeTask)
 
-        const deleteButton = (
-            status !== "error" && status !== "removed" && status !== "complete" ?
-                (<SmallTooltip title="Delete">
-                    <IconButton classes={{root: classes.button}} onClick={this.props.handleDeleteTask}>
-                        <DeleteIcon />
-                    </IconButton>
-                </SmallTooltip>) :
-                (<SmallTooltip title="Delete forever">
-                    <IconButton classes={{root: classes.button}} onClick={this.props.handlePermDeleteTask}>
-                        <DeleteForeverIcon />
-                    </IconButton>
-                </SmallTooltip>)
-        )
+        const deleteButton =
+            (status !== "error" && status !== "removed" && status !== "complete") ?
+                button("Delete", <DeleteIcon />, this.props.handleDeleteTask) :
+                button("Delete forever", <DeleteForeverIcon />, this.props.handlePermDeleteTask)
 
-        const openFolderButton = (
-            <SmallTooltip title="Open folder">
-                <IconButton classes={{root: classes.button}} onClick={this.props.handleRevealFile}>
-                    <FolderIcon />
-                </IconButton>
-            </SmallTooltip>
-        )
+        const openFolderButton = button("Open folder", <FolderIcon />, this.props.handleRevealFile)
 
         const buttons = (
             <>
@@ -256,9 +264,12 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         )
 
         return (
-            <Paper className={classes.root} onContextMenu={this.onContext}>
+            <Paper className={classes.root} onContextMenu={this.onContext} onMouseUp={this.onMouseUp}>
                 <div className={classes.mainArea}>
                     { basicInfo }
+                    <Collapse in={this.state.showDetails}>
+                        <TaskDetailsView task={task} classes={{root: classes.detailsView}}/>
+                    </Collapse>
                     { (status === "active") ? progressText : "" }
                 </div>
                 

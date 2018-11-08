@@ -23,6 +23,11 @@ export interface Task {
     connections: string
     dir: string
     downloadSpeed: string
+    errorCode?: string
+    errorMessage?: string
+    followedBy?: string[]
+    following?: string
+    belongsTo?: string
     files: {
         completedLength: string
         index: string
