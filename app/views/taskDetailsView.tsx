@@ -3,8 +3,10 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Typography from '@material-ui/core/Typography'
+import { get } from 'lodash'
 
-import { Task, isBittorrent } from '../model/task'
+import { Task } from '../model/task'
+
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -37,63 +39,57 @@ class TaskDetailsView extends React.Component<Props, {}> {
     render() {
         const { task, classes } = this.props
 
-        const makeCell = (subtitle: string, details: string) => (
-            <div className={classes.cell}>
-                <Typography
-                    variant="body2"
-                    align="left"
-                    component="span"
-                    classes={{root: classes.subtitle}}
-                >
-                    {subtitle}
-                </Typography>
-                <Typography
-                    variant="caption"
-                    align="right"
-                    classes={{root: classes.details}}
-                >
-                    {details}
-                </Typography>
-            </div>
-        )
+        const makeCell = (subtitle: string, path: string) => {
+            const val = get(task, path)
+            return val !== undefined ? (
+                <div className={classes.cell}>
+                    <Typography
+                        variant="body2"
+                        align="left"
+                        component="span"
+                        classes={{root: classes.subtitle}}
+                    >
+                        {subtitle}
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        align="right"
+                        classes={{root: classes.details}}
+                    >
+                        {val.toString()}
+                    </Typography>
+                </div>
+            ) : (<></>)
+        }
 
         const cells = (
             <>
-                { makeCell("GID", task.gid) }
-                { makeCell("Total Length", task.totalLength) }
-                { makeCell("Completed Length", task.completedLength) }
-                { makeCell("Connections", task.connections) }
-                { makeCell("Piece Length", task.pieceLength) }
-                { makeCell("Num Pieces", task.numPieces) }
-                
+                { makeCell("GID", "gid") }
+                { makeCell("Total Length", "totalLength") }
+                { makeCell("Completed Length", "completedLength") }
+                { makeCell("Connections", "connections") }
+                { makeCell("Piece Length", "pieceLength") }
+                { makeCell("Num Pieces", "numPieces") }
+                { makeCell("BitField", "bitfield") }
+                { makeCell("Error Code", "errorCode") }
+                { makeCell("Error Message", "errorMessage") }
+                { makeCell("Followed By", "followedBy") }
+                { makeCell("Following", "following") }
+                { makeCell("Belongs To", "belongsTo") }
+                { makeCell("InfoHash", "infoHash") }
+                { makeCell("Num Seeders", "numSeeders") }
+                { makeCell("Is Seeder", "seeder") }
+                { makeCell("AnnouceList", "bittorrent.announceList") }
+                { makeCell("Comment", "bittorrent.comment") }
+                { makeCell("Creation Date", "bittorrent.creationDate") }
+                { makeCell("File Mode", "bittorrent.mode") }
+                { makeCell("Name", "bittorrent.info.name") }
             </>
         )
-
-        // TODO: handle these optional fields
-        // { makeCell("BitField", task.bitfield) }
-        // { makeCell("Error Code", task.errorCode) }
-        // { makeCell("Error Message", task.errorMessage) }
-        // { makeCell("Followed By", task.followedBy.toString()) }
-        // { makeCell("Following", task.following) }
-        // { makeCell("Belongs To", task.belongsTo) }
-
-        const btCells = isBittorrent(task) ? (
-            <>
-                { makeCell("InfoHash", task.infoHash) }
-                { makeCell("Num Seeders", task.numSeeders) }
-                { makeCell("Is Seeder", task.seeder.toString()) }
-                { makeCell("AnnouceList", task.bittorrent.announceList.toString()) }
-                { makeCell("Comment", task.bittorrent.comment) }
-                { makeCell("Creation Date", task.bittorrent.creationDate.toString()) }
-                { makeCell("File Mode", task.bittorrent.mode) }
-                { makeCell("Name", task.bittorrent.info.name) }
-            </>
-        ) : (<></>)
 
         return (
             <div className={classes.root}>
                 { cells }
-                { btCells }
             </div>
         )
     }
