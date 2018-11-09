@@ -31,7 +31,6 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     }
 
     const onConnectionSuccess = (rpc: AriaJsonRPC) => {
-        console.log("onSuccess")
         Promise.all([
             rpc.call("aria2.getVersion", []),
             rpc.call("aria2.getGlobalOption", []),

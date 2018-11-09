@@ -1,10 +1,11 @@
 import { Reducer } from 'redux'
-import { updateTaskList } from './model/task'
+import { updateTaskList, Options } from './model/task'
 
 import {
     RootAction,
     CONNECTED,
     RECEIVED_TASKS,
+    RECEIVED_OPTIONS,
     DISCONNECTED
 } from './actions'
 import { Task } from './model/task'
@@ -13,8 +14,8 @@ export type Server = {
     readonly hostUrl: string
     readonly secret: string
     readonly version: string
-    readonly options: any
     readonly tasks: Map<string, Task>
+    readonly options: Options
 }
 
 export type RootState = {
@@ -40,6 +41,8 @@ const reducer: Reducer<RootState, RootAction> =
             const tasks = updateTaskList(state.server.tasks, action.payload)
             return {...state, server: {...state.server, tasks}}
             break
+        case RECEIVED_OPTIONS:
+            return {...state, server: {...state.server, options: action.payload}}
         default:
             return state
             break

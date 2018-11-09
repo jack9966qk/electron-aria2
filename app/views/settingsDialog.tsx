@@ -7,15 +7,22 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 
+import { Options, OptionName, optionNames } from '../model/task'
+import AriaJsonRPC from '../model/rpc';
+
 interface ViewProps {
+    title: string
     open: boolean
+    rpc: AriaJsonRPC
     onRequestClose: () => void
 }
 
 export interface DispatchProps {
+    changeOptions: (rpc: AriaJsonRPC, options: Options) => void
 }
 
 export interface StoreProps {
+    options: Options
 }
 
 type Props =
@@ -24,58 +31,74 @@ type Props =
     StoreProps
 
 interface State {
-    dir: string
+    // avoid using full options for better performance
+    // record only the key-value pairs that have changed
+    optionChanges: Options
 }
 
 class SettingsDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            dir: props.defaultDir
+            optionChanges: {}
         }
     }
 
-    handleDirInput = (event) => {
+    handleValChange = (event, name) => {
         this.setState({
-            dir: event.target.value
+            optionChanges: {
+                ...this.state.optionChanges,
+                [name]: event.target.value
+            }
         })
     }
 
     saveSettings = () => {
-        // this.props.setDefaultDir(this.state.dir)
+        const { rpc, options } = this.props
+        const { optionChanges } = this.state
+        this.props.changeOptions(rpc, {...options, ...optionChanges})
         this.props.onRequestClose()
     }
 
     render() {
+        const { options } = this.props
+        const { optionChanges } = this.state
+
+        const textField = (name: OptionName) => {
+            return (
+                <TextField
+                    key={name}
+                    margin="dense"
+                    id="name"
+                    label={name}
+                    type="text"
+                    value={
+                        optionChanges[name] !== undefined ?
+                        optionChanges[name] : options[name]
+                    }
+                    onChange={(e) => { this.handleValChange(e, name) }}
+                    variant="filled"
+                    fullWidth
+                />
+            )
+        }
+
         return (
             <Dialog
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
                 fullWidth={true}
             >
-                <DialogTitle>Settings</DialogTitle>
+                <DialogTitle>{this.props.title}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                    Default download directory:
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Download Directory"
-                        type="url"
-                        value={this.state.dir}
-                        onChange={this.handleDirInput}
-                        multiline
-                        fullWidth
-                    />
+                    { optionNames.map((name) => textField(name)) }
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.onRequestClose} color="primary">
                         Cancel
                     </Button>
                     <Button onClick={this.saveSettings} color="primary">
-                        Save Settings
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>

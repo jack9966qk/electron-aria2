@@ -2,6 +2,8 @@ const { spawn } = require('child_process')
 const path = require('path')
 const fixPath = require('fix-path')
 const fs = require('fs')
+const electron = require('electron')
+const app = electron.app
 
 // fix broken OS $PATH when launched from GUI
 // https://github.com/electron-userland/electron-packager/issues/603
@@ -22,9 +24,11 @@ module.exports.launchAria = () => {
     console.log("launchAria get called")
     const dhtPath = path.join(__dirname, "save", "dht.dat")
     const sessionPath = path.join(__dirname, "save", "session")
+    const downloadPath = app.getPath("downloads")
     const ariaPath = process.platform === 'win32' ?
-    path.join(__dirname, "bin", "win64", "aria2c.exe") : "aria2c"
+        path.join(__dirname, "bin", "win64", "aria2c.exe") : "aria2c"
     const args = [
+        `--dir=${downloadPath}`,
         "--enable-rpc=true",
         `--rpc-listen-port=6800`,
         `--rpc-secret=${secret}`,

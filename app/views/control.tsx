@@ -328,6 +328,7 @@ class Control extends React.Component<Props, State> {
                     onRequestClose={this.closeDialog}
                 />
                 <SettingsDialogWithState
+                    title="Global Options"
                     rpc={this.state.rpc}
                     open={this.state.settingsOpen}
                     onRequestClose={this.closeSettings}
