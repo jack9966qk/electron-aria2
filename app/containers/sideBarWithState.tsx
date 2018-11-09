@@ -7,7 +7,7 @@ import { isEqual } from "lodash"
 
 var prevCount = undefined
 function mapStateToProps(state: RootState): StoreProps {
-    const newCount = countCategory(Array.from(state.tasks.values()))
+    const newCount = countCategory(Array.from(state.server.tasks.values()))
     // avoid setting new reference if count has not changed
     const count = isEqual(prevCount, newCount) ? prevCount : newCount
     prevCount = count

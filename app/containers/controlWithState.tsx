@@ -6,7 +6,6 @@ import Control, { DispatchProps, StoreProps } from "../views/control"
 import {
     connected,
     disconnected,
-    receivedVersion,
     receivedTasks,
     RootAction
 } from "../actions"
@@ -17,11 +16,7 @@ const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        rpc: state.rpc,
-        version: state.version,
-        hostUrl: state.hostUrl,
-        secret: state.secret,
-        tasks: state.tasks
+        server: state.server
     }
 }
 
@@ -35,18 +30,25 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         })
     }
 
-    const onConnectionSuccess = (rpc: AriaJsonRPC) => () => {
-        dispatch(connected(rpc))
-        rpc.call("aria2.getVersion", []).then( ({version}) => {
-            dispatch(receivedVersion(version))
-            // get new task status every 500ms,
-            // can be improved with JSONRPC notifications
+    const onConnectionSuccess = (rpc: AriaJsonRPC) => {
+        console.log("onSuccess")
+        Promise.all([
+            rpc.call("aria2.getVersion", []),
+            rpc.call("aria2.getGlobalOption", []),
+            rpc.getAllTasks()
+        ]).then( ([version, options, tasks]) => {
+            dispatch(connected({
+                hostUrl: rpc.url,
+                secret: rpc.secret,
+                version, options, tasks
+            }))
+            // get new task status every 500ms
             refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
         })
     }
 
     const onConnectionClose = (rpc: AriaJsonRPC) => () => {
-        dispatch(disconnected(rpc))
+        dispatch(disconnected(rpc.url))
     }
 
     const eventHandlers = {
@@ -58,7 +60,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         "aria2.onBtDownloadComplete": refreshTasks
     }
 
-    const connect = (url, secret, onRes, onNotif, onErr, onConnErr) => {
+    const connect = (url, secret, onRes, onNotif, onErr, onConnErr, onConnSuccess) => {
         const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
         // register handlers for notifications
         for (const event in eventHandlers) {
@@ -68,24 +70,28 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
                 onNotif(event, message)
             })
         }
+        const onSuccess = () => {
+            onConnSuccess(rpc)
+            onConnectionSuccess(rpc)
+        }
         rpc.connect(
-            onConnectionSuccess(rpc),
+            onSuccess,
             onConnectionClose(rpc),
             onConnErr)
     }
 
     return {
-        connectLocal: (onRes, onNotif, onErr, onConnErr) => {
+        connectLocal: (onRes, onNotif, onErr, onConnErr, onConnSuccess) => {
             const {hostUrl, secret} = mainFuncs
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
                 // it seems to be necessary to wait a little
                 // for aria2c server to fully start
                 setTimeout(() => {
-                    connect(hostUrl, secret, onRes, onNotif, onErr, onConnErr)
+                    connect(hostUrl, secret, onRes, onNotif, onErr, onConnErr, onConnSuccess)
                 }, 200);
             }
-            connect(hostUrl, secret, onRes, onNotif, onErr, launchAndRetry)
+            connect(hostUrl, secret, onRes, onNotif, onErr, launchAndRetry, onConnSuccess)
         },
         connect: connect,
         disconnect: (rpc) => {

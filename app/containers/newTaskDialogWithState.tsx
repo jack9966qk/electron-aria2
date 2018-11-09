@@ -7,23 +7,21 @@ import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        rpc: state.rpc,
-        defaultDir: state.defaultDir
     }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     return {
-        addTask: (rpc, uri, dir) => {
-            rpc.call("aria2.addUri", [[uri], {dir}]).then(gid => {
+        addTask: (rpc, uri) => {
+            rpc.call("aria2.addUri", [[uri], {}]).then(gid => {
                 console.log("gid for new task: " + gid)
                 return rpc.getAllTasks()
             }).then(tasks => {
                 dispatch(receivedTasks(tasks)) 
             })
         },
-        addTorrent: (rpc, torrent, dir) => {
-            rpc.call("aria2.addTorrent", [torrent, [], {dir}]).then(gid => {
+        addTorrent: (rpc, torrent) => {
+            rpc.call("aria2.addTorrent", [torrent, [], {}]).then(gid => {
                 console.log("gid for new task: " + gid)
                 return rpc.getAllTasks()
             }).then(tasks => {

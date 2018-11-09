@@ -6,8 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import AriaJsonRPC from '../model/rpc'
 
 interface ViewProps {
+    rpc: AriaJsonRPC
     open: boolean
     onRequestClose: () => void
 }
@@ -18,8 +20,6 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
-    rpc: any
-    defaultDir: string
 }
 
 type Props =
@@ -48,8 +48,7 @@ class NewTaskDialog extends React.Component<Props, State> {
     onAddClicked = () => {
         this.props.addTask(
             this.props.rpc,
-            this.state.uri,
-            this.props.defaultDir)
+            this.state.uri)
         this.props.onRequestClose()
     }
 
@@ -63,7 +62,7 @@ class NewTaskDialog extends React.Component<Props, State> {
          
         getBase64(event.target.files[0]).then( base64 => {
             console.log(base64)
-            this.props.addTorrent(this.props.rpc, base64, this.props.defaultDir)
+            this.props.addTorrent(this.props.rpc, base64)
             this.props.onRequestClose()
         })
     }

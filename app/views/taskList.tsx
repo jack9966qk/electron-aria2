@@ -13,6 +13,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 interface ViewProps {
+    rpc: AriaJsonRPC
     category: TaskCategory
     classes: any
     openContextMenu: (menu: JSX.Element, event: React.MouseEvent) => void
@@ -29,7 +30,6 @@ export interface DispatchProps {
 
 export interface StoreProps {
     tasks: Map<string, Task>
-    rpc: AriaJsonRPC
 }
 
 type Props =

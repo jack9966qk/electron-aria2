@@ -13,11 +13,9 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    setDefaultDir: (string) => void
 }
 
 export interface StoreProps {
-    defaultDir: string
 }
 
 type Props =
@@ -44,7 +42,7 @@ class SettingsDialog extends React.Component<Props, State> {
     }
 
     saveSettings = () => {
-        this.props.setDefaultDir(this.state.dir)
+        // this.props.setDefaultDir(this.state.dir)
         this.props.onRequestClose()
     }
 
