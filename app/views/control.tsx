@@ -3,10 +3,12 @@ import Popover from '@material-ui/core/Popover'
 import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
 import { SnackbarProvider, withSnackbar } from 'notistack'
+import * as Electron from "electron"
 
 import AriaMessages from '../model/ariaMessages'
 import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
 import SettingsDialogWithState from '../containers/settingsDialogWithState'
+import ConnectionDialog from './connectionDialog'
 import TaskListWithState from '../containers/taskListWithState'
 import StatusBar from './statusBar'
 import TopBar from './topBar'
@@ -15,7 +17,9 @@ import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
 import { TaskCategory, taskCategoryDescription, getName, Task } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
-import { Server } from '../reducer';
+import { Server } from '../reducer'
+
+const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
 const styles = (theme: Theme) => createStyles({
     content: {
@@ -90,6 +94,7 @@ interface State {
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
+    connectionDialogOpen: boolean
     contextMenuOpen: boolean
     contextMenuPosition: {top: number, left: number}
     contextMenu: JSX.Element | null
@@ -106,6 +111,7 @@ class Control extends React.Component<Props, State> {
             newTaskDialogOpen: false,
             settingsOpen: false,
             sidebarOpen: false,
+            connectionDialogOpen: false,
             contextMenuOpen: false,
             contextMenuPosition: {top: 0, left: 0},
             contextMenu: null,
@@ -125,6 +131,14 @@ class Control extends React.Component<Props, State> {
 
     openSettings = () => {
         this.setState({ settingsOpen: true })  
+    }
+
+    openConnectionDialog = () => {
+        this.setState({ connectionDialogOpen: true })  
+    }
+
+    closeConnectionDialog = () => {
+        this.setState({ connectionDialogOpen: false })  
     }
 
     closeSettings = () => {
@@ -172,11 +186,11 @@ class Control extends React.Component<Props, State> {
     }
 
     getStatus = () => (
-        this.state.rpc !== null ?
+        this.props.server !== null ?
             "Connected" :
             this.state.startedConnecting ?
-            "Connecting" :
-            "Disconnected"
+                "Connecting" :
+                "Disconnected"
     )
 
     componentDidMount() {
@@ -189,24 +203,21 @@ class Control extends React.Component<Props, State> {
             this.onConnectionSuccess)
     }
 
-    componentDidUpdate(prevProps: Props) {
-        // // connect automatically given new url or secret
-        // if (this.props.hostUrl !== prevProps.hostUrl ||
-        //     this.props.secret !== prevProps.secret) {
-        //     // disconnect old server if exists
-        //     if (this.props.rpc) {
-        //         this.props.disconnect(this.props.rpc)
-        //     }
-        //     // got a new server, connect
-        //     this.props.connect(
-        //         this.props.hostUrl,
-        //         this.props.secret,
-        //         this.onAriaResponse,
-        //         this.onAriaNotification,
-        //         this.onAriaError,
-        //         this.onConnectionError
-        //     )
-        // }
+    disconnect = () => {
+        if (this.state.rpc) {
+            this.props.disconnect(this.state.rpc)
+            this.setState({ rpc: null, startedConnecting: false })
+        }
+    }
+
+    connect = (hostUrl, secret) => {
+        this.disconnect()
+        this.props.connect(hostUrl, secret,
+            this.onAriaResponse,
+            this.onAriaNotification,
+            this.onAriaError,
+            this.onConnectionError,
+            this.onConnectionSuccess)
     }
 
     componentWillUnmount() {
@@ -277,17 +288,18 @@ class Control extends React.Component<Props, State> {
     
     render() {
         const { server, classes } = this.props
-        const title = this.getStatus() === "Connected" ?
-            taskCategoryDescription[this.state.category] :
-            this.getStatus() + "..."
+        const title = taskCategoryDescription[this.state.category]
         return server === null ? (<></>) : (
             <>
                 <div className={classes.content} onMouseUp={this.onMouseUp}>
-                    <TopBar classes={{root: classes.topBar}}
+                    <TopBar
+                        classes={{root: classes.topBar}}
                         showAddNewTask={this.openDialog}
                         showMenu={this.toggleSidebarOpen}
                         showSettings={this.openSettings}
+                        showConnectionDialog={this.openConnectionDialog}
                         title={title}
+                        isLocalServer={server.hostUrl === mainFuncs.hostUrl}
                         tabs={<TaskCategoryTabsWithState
                             onCategorySelected={this.onCategorySelected}
                             category={this.state.category}
@@ -321,6 +333,13 @@ class Control extends React.Component<Props, State> {
                         {this.state.contextMenu}
                     </Popover>
                 </div>
+
+                <ConnectionDialog
+                    open={this.state.connectionDialogOpen}
+                    server={server}
+                    onRequestClose={this.closeConnectionDialog}
+                    onRequestConnect={this.connect}
+                />
 
                 <NewTaskDialogWithState
                     rpc={this.state.rpc}

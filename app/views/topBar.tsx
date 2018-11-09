@@ -4,11 +4,14 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Hidden from '@material-ui/core/Hidden'
+import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import AddIcon from '@material-ui/icons/Add'
 import SettingsIcon from '@material-ui/icons/Settings'
+import ServerIcon from '@material-ui/icons/Router'
+import LocalIcon from '@material-ui/icons/Computer'
 
 import SmallTooltip from './smallTooltip'
 
@@ -23,15 +26,20 @@ const styles = (theme: Theme) => createStyles({
         marginLeft: -12,
         marginRight: 20,
     },
-});
+    buttonIcon: {
+        marginRight: theme.spacing.unit
+    }
+})
 
 interface Props {
     classes: any
     title: string
     tabs: JSX.Element
+    isLocalServer: boolean
     showMenu: (any) => void
     showSettings: (any) => void
     showAddNewTask: (any) => void
+    showConnectionDialog: (any) => void
 }
 
 class TopBar extends React.Component<Props, {}> {
@@ -41,36 +49,51 @@ class TopBar extends React.Component<Props, {}> {
     }
 
     render() {
-        const props = this.props
+        const {
+            title,
+            isLocalServer,
+            showMenu,
+            showSettings,
+            showAddNewTask,
+            showConnectionDialog,
+            tabs,
+            classes
+        } = this.props
         return (
-            <AppBar className={props.classes.root}>
+            <AppBar className={classes.root}>
                 <Toolbar>
                     <Hidden only="xs" implementation="css">
                         <IconButton
                             color="secondary"
                             aria-label="Menu"
-                            className={props.classes.menuButton}
-                            onClick={props.showMenu}
+                            className={classes.menuButton}
+                            onClick={showMenu}
                         >
                             <MenuIcon />
                         </IconButton>
                     </Hidden>
-                    <Typography variant="h6" color="inherit" className={props.classes.flex}>
-                        {props.title}
+                    <Typography variant="h6" color="inherit" className={classes.flex}>
+                        {title}
                     </Typography>
+                    <Button color="inherit" onClick={showConnectionDialog}>
+                        {isLocalServer ?
+                            <LocalIcon classes={{root: classes.buttonIcon}}/> :
+                            <ServerIcon classes={{root: classes.buttonIcon}}/>}
+                        Server
+                    </Button>
                     <SmallTooltip title="Settings">
-                        <IconButton color="inherit" onClick={props.showSettings}>
+                        <IconButton color="inherit" onClick={showSettings}>
                             <SettingsIcon/>
                         </IconButton>
                     </SmallTooltip>
                     <SmallTooltip title="New task">
-                        <IconButton color="inherit" onClick={props.showAddNewTask}>
+                        <IconButton color="inherit" onClick={showAddNewTask}>
                             <AddIcon/>
                         </IconButton>
                     </SmallTooltip>
                 </Toolbar>
                 <Hidden smUp implementation="css">
-                    {props.tabs}
+                    {tabs}
                 </Hidden>
             </AppBar>
         )
