@@ -28,6 +28,45 @@ interface State {
 const styles = (theme: Theme) => createStyles({
 })
 
+
+class OptionField extends React.Component<
+    {name: OptionName, initialVal: string, onChange: Function},
+    {value: string}
+> {
+    constructor(props) {
+        super(props)
+        this.state = { value: props.initialVal }
+    }
+
+    shouldComponentUpdate(_nextProps, nextState) {
+        return (this.state.value !== nextState.value)
+    }
+
+    onChange = (e) => {
+        const value = e.target.value
+        this.setState({ value }, () => {
+            this.props.onChange(value)
+        })
+    }
+
+    render() {
+        const { name } = this.props
+        const { value } = this.state
+        return (
+            <TextField
+                margin="dense"
+                id="name"
+                label={name}
+                type="text"
+                value={value === undefined ? "" : value}
+                onChange={this.onChange}
+                variant="filled"
+                fullWidth
+            />
+        )
+    }
+}
+
 class OptionFields extends React.Component<Props, State> {
     constructor(props) {
         super(props)
@@ -36,11 +75,11 @@ class OptionFields extends React.Component<Props, State> {
         }
     }
 
-    handleValChange = (event, name) => {
+    handleValChange = (name, value) => {
         this.setState({
             newOptions: {
                 ...this.props.prevOptions,
-                [name]: event.target.value
+                [name]: value
             }
         }, () => {
             this.props.onOptionChange(this.state.newOptions)
@@ -50,25 +89,18 @@ class OptionFields extends React.Component<Props, State> {
     render() {
         const { newOptions } = this.state
 
-        const textField = (name: OptionName) => {
-            return (
-                <TextField
-                    key={name}
-                    margin="dense"
-                    id="name"
-                    label={name}
-                    type="text"
-                    value={newOptions[name]}
-                    onChange={(e) => { this.handleValChange(e, name) }}
-                    variant="filled"
-                    fullWidth
-                />
-            )
-        }
-
         return (
             <>
-                { optionNames.map((name) => textField(name)) }
+                {
+                optionNames.map((name) => (
+                    <OptionField
+                        key={name}
+                        name={name}
+                        initialVal={this.props.prevOptions[name]}
+                        onChange={(v) => {this.handleValChange(name, v)}}
+                    />
+                ))
+                }
             </>
         )
     }
