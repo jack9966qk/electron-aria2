@@ -11,7 +11,9 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
+import OptionFields from './optionFields'
 import AriaJsonRPC from '../model/rpc'
+import { Options } from '../model/task'
 
 const styles = (theme: Theme) => createStyles({
     tabs: {
@@ -23,6 +25,9 @@ const styles = (theme: Theme) => createStyles({
     fileInputButton: {
         width: "100%",
         marginTop: theme.spacing.unit
+    },
+    optionsText: {
+        marginTop: theme.spacing.unit * 2
     }
 })
 
@@ -50,6 +55,7 @@ interface State {
     uri: string | null
     file: File | null
     tabValue: number
+    options: Options
 }
 
 class NewTaskDialog extends React.Component<Props, State> {
@@ -58,7 +64,8 @@ class NewTaskDialog extends React.Component<Props, State> {
         this.state = {
             uri: null,
             file: null, 
-            tabValue: 0
+            tabValue: 0,
+            options: {}
         }
     }
 
@@ -77,7 +84,8 @@ class NewTaskDialog extends React.Component<Props, State> {
             case 0:
                 this.props.addTask(
                     this.props.rpc,
-                    this.state.uri)
+                    this.state.uri,
+                    this.state.options)
                 break
             case 1:
                 this.submitTorrentFile()
@@ -100,7 +108,7 @@ class NewTaskDialog extends React.Component<Props, State> {
          
         getBase64(this.state.file).then( base64 => {
             console.log(base64)
-            this.props.addTorrent(this.props.rpc, base64)
+            this.props.addTorrent(this.props.rpc, base64, this.state.options)
             this.props.onRequestClose()
         })
     }
@@ -108,6 +116,10 @@ class NewTaskDialog extends React.Component<Props, State> {
     handleFileSelect = (event) => {
         console.log(event.target.files[0])
         this.setState({ file: event.target.files[0] })   
+    }
+
+    onOptionChange = (options) => {
+        this.setState({ options })
     }
 
     render() {
@@ -119,7 +131,7 @@ class NewTaskDialog extends React.Component<Props, State> {
         const fromUrl = (
             <>
                 <DialogContentText>
-                Enter task URL below:
+                    Enter task URL below:
                 </DialogContentText>
                 <TextField
                     autoFocus
@@ -181,6 +193,13 @@ class NewTaskDialog extends React.Component<Props, State> {
                     </Tabs>
                     { tabValue === 0 ? fromUrl : "" }
                     { tabValue === 1 ? fromFile : "" }
+                    <DialogContentText classes={{root: classes.optionsText}}>
+                        Options:
+                    </DialogContentText>
+                    <OptionFields
+                        prevOptions={{}}
+                        onOptionChange={this.onOptionChange}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.props.onRequestClose}>
