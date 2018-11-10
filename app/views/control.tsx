@@ -34,12 +34,14 @@ const styles = (theme: Theme) => createStyles({
         gridColumn: "1 / -1"
     },
     sideBar: {
+        zIndex: theme.zIndex.drawer,
         gridRow: "2 / -1",
         [theme.breakpoints.down("xs")]: {
             display: "none"
         }
     },
     taskList: {
+        zIndex: theme.zIndex.drawer - 2,
         overflow: "auto",
         [theme.breakpoints.down("xs")]: {
             gridColumn: "1 / -1" // full width in compact view
@@ -49,6 +51,7 @@ const styles = (theme: Theme) => createStyles({
     snackBar: {
     },
     statusBar: {
+        zIndex: theme.zIndex.drawer - 1,
         [theme.breakpoints.down("xs")]: {
             gridColumn: "1 / -1" // full width in compact view
         }

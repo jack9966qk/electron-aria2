@@ -32,7 +32,7 @@ class StatusBar extends React.Component<Props, {}> {
         const totalDownloadSpeed = filesize(totalOf(t => parseInt(t.downloadSpeed)))
         const totalUploadSpeed = filesize(totalOf(t => parseInt(t.uploadSpeed)))
         return (
-            <Paper classes={{root: this.props.classes.root}}>
+            <Paper classes={{root: this.props.classes.root}} elevation={4}>
                 <Typography variant="body1">
                     {`Up: ${totalUploadSpeed}/s Down: ${totalDownloadSpeed}/s`}
                 </Typography>
