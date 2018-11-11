@@ -3,21 +3,38 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
+import Paper from '@material-ui/core/Paper'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
 import OptionFields from './optionFields'
 import AriaJsonRPC from '../model/rpc'
-import { Options } from '../model/task'
+import { Options } from '../model/options'
 
 const styles = (theme: Theme) => createStyles({
+    dialogPaper: {
+        // fixes the issue of no scroll bar of DialogContent
+        overflowY: "visible"
+    },
+    dialogHeaderPaper: {
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        zIndex: theme.zIndex.modal
+    },
+    dialogActionsPaper: {
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
+        zIndex: theme.zIndex.modal
+    },
     tabs: {
-        marginBottom: theme.spacing.unit * 3
+    },
+    dialogContent: {
+        paddingTop: theme.spacing.unit * 1.5,
+        backgroundColor: theme.palette.grey[200]
     },
     fileInput: {
         display: "none"
@@ -27,6 +44,9 @@ const styles = (theme: Theme) => createStyles({
         marginTop: theme.spacing.unit
     },
     optionsText: {
+        marginTop: theme.spacing.unit * 2
+    },
+    optionFields: {
         marginTop: theme.spacing.unit * 2
     }
 })
@@ -130,9 +150,6 @@ class NewTaskDialog extends React.Component<Props, State> {
 
         const fromUrl = (
             <>
-                <DialogContentText>
-                    Enter task URL below:
-                </DialogContentText>
                 <TextField
                     autoFocus
                     margin="dense"
@@ -148,9 +165,6 @@ class NewTaskDialog extends React.Component<Props, State> {
 
         const fromFile = (
             <>
-                <DialogContentText>
-                    Choose a torrent file:
-                </DialogContentText>
                 <input
                     className={classes.fileInput}
                     type="file"
@@ -166,7 +180,7 @@ class NewTaskDialog extends React.Component<Props, State> {
                     >
                         {
                         file === null ?
-                            "Select File" :
+                            "Select Torrent File" :
                             `Selected ${file.name}`
                         }
                     </Button>
@@ -179,9 +193,10 @@ class NewTaskDialog extends React.Component<Props, State> {
                 open={open}
                 onClose={onRequestClose}
                 fullWidth={true}
+                classes={{paper: classes.dialogPaper}}
             >
-                <DialogTitle>New Task</DialogTitle>
-                <DialogContent>
+                <Paper classes={{root: classes.dialogHeaderPaper}}>
+                    <DialogTitle>New Task</DialogTitle>
                     <Tabs
                         classes={{root: classes.tabs}}
                         value={tabValue}
@@ -191,24 +206,26 @@ class NewTaskDialog extends React.Component<Props, State> {
                         <Tab label="From URL" />
                         <Tab label="From File" />
                     </Tabs>
+                </Paper>
+                <DialogContent classes={{root: classes.dialogContent}}>
                     { tabValue === 0 ? fromUrl : "" }
                     { tabValue === 1 ? fromFile : "" }
-                    <DialogContentText classes={{root: classes.optionsText}}>
-                        Options:
-                    </DialogContentText>
                     <OptionFields
+                        classes={{root: classes.optionFields}}
                         prevOptions={{}}
                         onOptionChange={this.onOptionChange}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.props.onRequestClose}>
-                        Cancel
-                    </Button>
-                    <Button onClick={this.onAddClicked} color="primary">
-                        Add Task
-                    </Button>
-                </DialogActions>
+                <Paper classes={{root: classes.dialogActionsPaper}}>
+                    <DialogActions>
+                        <Button onClick={this.props.onRequestClose}>
+                            Cancel
+                        </Button>
+                        <Button onClick={this.onAddClicked} color="primary">
+                            Add Task
+                        </Button>
+                    </DialogActions>
+                </Paper>
             </Dialog>
         )
     }

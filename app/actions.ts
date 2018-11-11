@@ -1,7 +1,8 @@
 // actions used along with redux
 
 import { action } from "typesafe-actions"
-import { Task, Options } from "./model/task"
+import { Task } from "./model/task"
+import { Options } from "./model/options"
 import { Server } from "./reducer"
 
 export const CONNECTED = "CONNECTED"

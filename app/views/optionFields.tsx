@@ -3,11 +3,48 @@ import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import TextField from '@material-ui/core/TextField'
 
-import { Options, OptionName, optionNames } from '../model/task'
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+import {
+    Options,
+    OptionName,
+    basicOptionNames,
+    httpFtpSftpOptionNames,
+    httpOptionNames,
+    ftpSftpOptionNames,
+    torrentMetalinkOptionNames,
+    torrentOptionNames,
+    metalinkOptionNames,
+    rpcOptionNames,
+    otherOptionNames } from '../model/options'
+
+const sections = [
+    [basicOptionNames, "Basic Options", true],
+    [httpFtpSftpOptionNames, "HTTP/FTP/SFTP Options", false],
+    [httpOptionNames, "HTTP Specific Options", false],
+    [ftpSftpOptionNames, "FTP/SFTP Specific Options", false],
+    [torrentMetalinkOptionNames, "Torrent/Metalink Options", false],
+    [torrentOptionNames, "Torrent Specific Options", false],
+    [metalinkOptionNames, "Metalink Specific Options", false],
+    [rpcOptionNames, "RPC Options", false],
+    [otherOptionNames, "Other Options", false]
+]
+
+const styles = (theme: Theme) => createStyles({
+    expansionDetails: {
+        display: "block"
+    },
+    root: {}
+})
 
 interface ViewProps {
     prevOptions: Options
     onOptionChange: (Options) => void
+    classes: any
 }
 
 export interface DispatchProps {
@@ -25,8 +62,6 @@ interface State {
     newOptions: Options
 }
 
-const styles = (theme: Theme) => createStyles({
-})
 
 
 class OptionField extends React.Component<
@@ -60,7 +95,7 @@ class OptionField extends React.Component<
                 type="text"
                 value={value === undefined ? "" : value}
                 onChange={this.onChange}
-                variant="filled"
+                variant="outlined"
                 fullWidth
             />
         )
@@ -86,22 +121,37 @@ class OptionFields extends React.Component<Props, State> {
         })
     }
 
+    
     render() {
-        const { newOptions } = this.state
+        const makeOptionField = (name) => (
+            <OptionField
+                key={name}
+                name={name}
+                initialVal={this.props.prevOptions[name]}
+                onChange={(v) => {this.handleValChange(name, v)}}
+            />
+        )
+
+        const makeSection = (optionNames, description, defaultExpanded) => (
+            <ExpansionPanel key={description} defaultExpanded={defaultExpanded}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>{description}</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                    classes={{root: this.props.classes.expansionDetails}}
+                >
+                    {optionNames.map(makeOptionField)}
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+        )
 
         return (
-            <>
+            <div className={this.props.classes.root}>
                 {
-                optionNames.map((name) => (
-                    <OptionField
-                        key={name}
-                        name={name}
-                        initialVal={this.props.prevOptions[name]}
-                        onChange={(v) => {this.handleValChange(name, v)}}
-                    />
-                ))
+                sections.map(([optionNames, description, defaultExpanded]) =>
+                    makeSection(optionNames, description, defaultExpanded))
                 }
-            </>
+            </div>
         )
     }
 }

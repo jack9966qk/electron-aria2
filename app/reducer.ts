@@ -1,5 +1,6 @@
 import { Reducer } from 'redux'
-import { updateTaskList, Options } from './model/task'
+import { Task, updateTaskList } from './model/task'
+import { Options } from './model/options'
 
 import {
     RootAction,
@@ -8,7 +9,6 @@ import {
     RECEIVED_OPTIONS,
     DISCONNECTED
 } from './actions'
-import { Task } from './model/task'
 
 export type Server = {
     readonly hostUrl: string
