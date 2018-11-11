@@ -22,7 +22,9 @@ import filesize = require('filesize')
 
 import SmallTooltip from './smallTooltip'
 import { Task, getName, isBittorrent, downloadComplete, isHttp } from '../model/task'
-import TaskDetailsView from './taskDetailsView';
+import TaskDetailsView from './taskDetailsView'
+import ButtonBase from '@material-ui/core/ButtonBase'
+import Card from '@material-ui/core/Card';
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -31,7 +33,12 @@ const styles = (theme: Theme) => createStyles({
         overflow: "hidden",
         // necessary for above to work, see: https://bit.ly/2OqGslz
         position: "relative",
-        zIndex: theme.zIndex.drawer
+        zIndex: theme.zIndex.drawer,
+        // card raised/not raised transition
+        transition: theme.transitions.create('box-shadow', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        })
     },
     mainArea: {
         padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`
@@ -264,7 +271,12 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         )
 
         return (
-            <Paper className={classes.root} onContextMenu={this.onContext} onMouseUp={this.onMouseUp}>
+            <Card
+                raised={this.state.showDetails}
+                className={classes.root}
+                onContextMenu={this.onContext}
+                onMouseUp={this.onMouseUp}
+            >
                 <div className={classes.mainArea}>
                     { basicInfo }
                     <Collapse in={this.state.showDetails}>
@@ -274,7 +286,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                 </div>
                 
                 { (status === "active" && !downloadComplete(task)) ? progressBar : "" }
-            </Paper>
+            </Card>
         )
     }
 }

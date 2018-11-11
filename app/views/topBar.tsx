@@ -25,6 +25,7 @@ const styles = (theme: Theme) => createStyles({
     menuButton: {
         marginLeft: -12,
         marginRight: 20,
+        color: theme.palette.primary.contrastText
     },
     buttonIcon: {
         marginRight: theme.spacing.unit
@@ -75,12 +76,14 @@ class TopBar extends React.Component<Props, {}> {
                     <Typography variant="h6" color="inherit" className={classes.flex}>
                         {title}
                     </Typography>
-                    <Button color="inherit" onClick={showConnectionDialog}>
-                        {isLocalServer ?
-                            <LocalIcon classes={{root: classes.buttonIcon}}/> :
-                            <ServerIcon classes={{root: classes.buttonIcon}}/>}
-                        Server
-                    </Button>
+                    <SmallTooltip title="Server Connection">
+                        <Button color="inherit" onClick={showConnectionDialog}>
+                            {isLocalServer ?
+                                <LocalIcon classes={{root: classes.buttonIcon}}/> :
+                                <ServerIcon classes={{root: classes.buttonIcon}}/>}
+                            {isLocalServer ? "Local" : "Remote"}
+                        </Button>
+                    </SmallTooltip>
                     <SmallTooltip title="Settings">
                         <IconButton color="inherit" onClick={showSettings}>
                             <SettingsIcon/>

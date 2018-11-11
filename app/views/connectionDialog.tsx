@@ -60,6 +60,7 @@ class ConnectionDialog extends React.Component<Props, State> {
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
                 fullWidth={true}
+                disableRestoreFocus // for tooltips: https://bit.ly/2z4suAV
             >
                 <DialogTitle>Aria2 Connection</DialogTitle>
                 <DialogContent>

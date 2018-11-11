@@ -92,6 +92,7 @@ class SettingsDialog extends React.Component<Props, State> {
                 onClose={onRequestClose}
                 fullWidth={true}
                 classes={{paper: classes.dialogPaper}}
+                disableRestoreFocus // for tooltips: https://bit.ly/2z4suAV
             >
                 <Paper classes={{root: classes.dialogHeaderPaper}}>
                     <DialogTitle>{title}</DialogTitle>
