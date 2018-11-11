@@ -2,7 +2,6 @@ import * as React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
 import Paper from '@material-ui/core/Paper'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -11,6 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import OptionFields from './optionFields'
 import AriaJsonRPC from '../model/rpc'
 import { Options } from '../model/options'
+import ResponsiveDialog from './responsiveDialog'
 
 const styles = (theme: Theme) => createStyles({
     dialogPaper: {
@@ -87,7 +87,7 @@ class SettingsDialog extends React.Component<Props, State> {
         } = this.props
 
         return (
-            <Dialog
+            <ResponsiveDialog
                 open={open}
                 onClose={onRequestClose}
                 fullWidth={true}
@@ -114,7 +114,7 @@ class SettingsDialog extends React.Component<Props, State> {
                         </Button>
                     </DialogActions>
                 </Paper>
-            </Dialog>
+            </ResponsiveDialog>
         )
     }
 }

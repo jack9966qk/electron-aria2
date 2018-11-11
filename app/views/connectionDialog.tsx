@@ -1,5 +1,4 @@
 import * as React from 'react'
-import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -7,6 +6,7 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
 import { Server } from '../reducer'
+import ResponsiveDialog from './responsiveDialog'
 
 interface ViewProps {
     open: boolean
@@ -56,7 +56,7 @@ class ConnectionDialog extends React.Component<Props, State> {
 
     render() {
         return (
-            <Dialog
+            <ResponsiveDialog
                 open={this.props.open}
                 onClose={this.props.onRequestClose}
                 fullWidth={true}
@@ -91,7 +91,7 @@ class ConnectionDialog extends React.Component<Props, State> {
                         Connect
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </ResponsiveDialog>
         )
     }
 }
