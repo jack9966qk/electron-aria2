@@ -38,7 +38,11 @@ const sections = [
 
 const styles = (theme: Theme) => createStyles({
     expansionDetails: {
-        display: "block"
+        // display: "block",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridRowGap: `${theme.spacing.unit * 0.75}px`,
+        gridColumnGap: `${theme.spacing.unit * 1.5}px`
     },
     root: {}
 })
@@ -127,6 +131,8 @@ class OptionFields extends React.Component<Props, State> {
 
     
     render() {
+        const { classes } = this.props
+
         const makeOptionField = (name) => (
             <OptionField
                 key={name}
@@ -142,7 +148,7 @@ class OptionFields extends React.Component<Props, State> {
                 <Typography>{description}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
-                    classes={{root: this.props.classes.expansionDetails}}
+                    classes={{root: classes.expansionDetails}}
                 >
                     {optionNames.map(makeOptionField)}
                 </ExpansionPanelDetails>
@@ -150,7 +156,7 @@ class OptionFields extends React.Component<Props, State> {
         )
 
         return (
-            <div className={this.props.classes.root}>
+            <div className={classes.root}>
                 {
                 sections.map(([optionNames, description, defaultExpanded]) =>
                     makeSection(optionNames, description, defaultExpanded))
