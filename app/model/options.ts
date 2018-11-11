@@ -43,7 +43,7 @@ export type Options = {
 }
 
 export const basicOptionNames = tuple(
-    "dir", "max-download-limit"
+    "dir"
 )
 
 export const httpFtpSftpOptionNames = tuple(
@@ -113,6 +113,10 @@ const makeOtherOptionNames = () => {
 }
 
 export const otherOptionNames = makeOtherOptionNames()
+
+export const optionDescriptions = {
+    "dir": "Download directory"
+}
 
 const makeEmptyOptions = () => {
     const options = {}

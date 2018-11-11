@@ -64,6 +64,7 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
+    globalOptions: Options
 }
 
 type Props =
@@ -143,7 +144,7 @@ class NewTaskDialog extends React.Component<Props, State> {
     }
 
     render() {
-        const { open, onRequestClose, classes } = this.props
+        const { open, globalOptions, onRequestClose, classes } = this.props
         const { tabValue, file } = this.state
 
         const onChange = (_, value) => { this.updateTabValue(value) }
@@ -212,7 +213,7 @@ class NewTaskDialog extends React.Component<Props, State> {
                     { tabValue === 1 ? fromFile : "" }
                     <OptionFields
                         classes={{root: classes.optionFields}}
-                        prevOptions={{}}
+                        defaultOptions={globalOptions}
                         onOptionChange={this.onOptionChange}
                     />
                 </DialogContent>

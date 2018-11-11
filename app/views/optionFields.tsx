@@ -20,7 +20,9 @@ import {
     torrentOptionNames,
     metalinkOptionNames,
     rpcOptionNames,
-    otherOptionNames } from '../model/options'
+    otherOptionNames,
+    optionDescriptions
+} from '../model/options'
 
 const sections = [
     [basicOptionNames, "Basic Options", true],
@@ -42,7 +44,7 @@ const styles = (theme: Theme) => createStyles({
 })
 
 interface ViewProps {
-    prevOptions: Options
+    defaultOptions: Options
     onOptionChange: (Options) => void
     classes: any
 }
@@ -87,11 +89,13 @@ class OptionField extends React.Component<
     render() {
         const { name } = this.props
         const { value } = this.state
+        const label = optionDescriptions[name] !== undefined ?
+            `${optionDescriptions[name]} (${name})` : name
         return (
             <TextField
                 margin="dense"
                 id="name"
-                label={name}
+                label={label}
                 type="text"
                 value={value === undefined ? "" : value}
                 onChange={this.onChange}
@@ -113,7 +117,7 @@ class OptionFields extends React.Component<Props, State> {
     handleValChange = (name, value) => {
         this.setState({
             newOptions: {
-                ...this.props.prevOptions,
+                ...this.props.defaultOptions,
                 [name]: value
             }
         }, () => {
@@ -127,7 +131,7 @@ class OptionFields extends React.Component<Props, State> {
             <OptionField
                 key={name}
                 name={name}
-                initialVal={this.props.prevOptions[name]}
+                initialVal={this.props.defaultOptions[name]}
                 onChange={(v) => {this.handleValChange(name, v)}}
             />
         )

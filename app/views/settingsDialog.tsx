@@ -99,7 +99,7 @@ class SettingsDialog extends React.Component<Props, State> {
 
                 <DialogContent classes={{root: classes.dialogContent}}>
                     <OptionFields
-                        prevOptions={options}
+                        defaultOptions={options}
                         onOptionChange={this.onOptionChange}
                     />
                 </DialogContent>

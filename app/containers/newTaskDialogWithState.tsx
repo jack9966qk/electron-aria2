@@ -7,6 +7,7 @@ import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
+        globalOptions: state.server.options
     }
 }
 
