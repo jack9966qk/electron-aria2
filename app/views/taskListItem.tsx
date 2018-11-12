@@ -23,7 +23,7 @@ import {
     isBittorrent,
     isHttp,
     Task
-    } from '../model/task'
+} from '../model/task'
 
 
 // `import * as filesize` also works, but reported as error by tslint

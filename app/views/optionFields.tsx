@@ -24,7 +24,7 @@ import {
 
 
 
-const sections = [
+const sections: [OptionName[], string, boolean][] = [
     [basicOptionNames, "Basic Options", true],
     [httpFtpSftpOptionNames, "HTTP/FTP/SFTP Options", false],
     [httpOptionNames, "HTTP Specific Options", false],
@@ -68,7 +68,54 @@ interface State {
     newOptions: Options
 }
 
+class Section extends React.Component<
+    {
+        optionNames: string[],
+        description: string,
+        defaultExpanded: boolean,
+        handleValChange: Function
+    } & Props,
+    { renderChildren: boolean }
+> {
+    constructor(props) {
+        super(props)
+        this.state = { renderChildren: props.defaultExpanded }
+    }
 
+    onEnter = () => {
+        this.setState({ renderChildren: true })
+    }
+
+    render() {
+        const { defaultExpanded, description, optionNames, handleValChange, classes } = this.props
+
+        const makeOptionField = (name) => (
+            <OptionField
+                key={name}
+                name={name}
+                initialVal={this.props.defaultOptions[name]}
+                onChange={(v) => { handleValChange(name, v) }}
+            />
+        )
+
+        return (
+            <ExpansionPanel
+                key={description}
+                defaultExpanded={defaultExpanded}
+                CollapseProps={{onEnter: this.onEnter}}
+            >
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>{description}</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails
+                    classes={{ root: classes.expansionDetails }}
+                >
+                    {this.state.renderChildren ? optionNames.map(makeOptionField) : ""}
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+        )
+    }
+}
 
 class OptionField extends React.Component<
     { name: OptionName, initialVal: string, onChange: Function },
@@ -129,37 +176,20 @@ class OptionFields extends React.Component<Props, State> {
         })
     }
 
-
     render() {
         const { classes } = this.props
-
-        const makeOptionField = (name) => (
-            <OptionField
-                key={name}
-                name={name}
-                initialVal={this.props.defaultOptions[name]}
-                onChange={(v) => { this.handleValChange(name, v) }}
-            />
-        )
-
-        const makeSection = (optionNames, description, defaultExpanded) => (
-            <ExpansionPanel key={description} defaultExpanded={defaultExpanded}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography>{description}</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails
-                    classes={{ root: classes.expansionDetails }}
-                >
-                    {optionNames.map(makeOptionField)}
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-        )
 
         return (
             <div className={classes.root}>
                 {
                     sections.map(([optionNames, description, defaultExpanded]) =>
-                        makeSection(optionNames, description, defaultExpanded))
+                        <Section
+                            {...this.props}
+                            optionNames={optionNames}
+                            description={description}
+                            defaultExpanded={defaultExpanded}
+                            handleValChange={this.handleValChange}
+                        />)
                 }
             </div>
         )
