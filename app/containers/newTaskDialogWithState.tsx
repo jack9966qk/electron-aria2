@@ -13,17 +13,26 @@ function mapStateToProps(state: RootState): StoreProps {
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     return {
-        addTask: (rpc, uri, options) => {
-            rpc.call("aria2.addUri", [[uri], options]).then(gid => {
-                console.log("gid for new task: " + gid)
-                return rpc.getAllTasks()
-            }).then(tasks => {
-                dispatch(receivedTasks(tasks)) 
-            })
+        addUris: (rpc, uris, options) => {
+            const requests = uris
+                .map((uri) => rpc.call("aria2.addUri", [[uri], options]))
+            Promise.all(requests)
+                .then(() => rpc.getAllTasks())
+                .then(tasks => { dispatch(receivedTasks(tasks)) })
         },
-        addTorrent: (rpc, torrent, options) => {
-            rpc.call("aria2.addTorrent", [torrent, [], options]).then(gid => {
-                console.log("gid for new task: " + gid)
+        addFiles: (rpc, files, options) => {
+            const requests = files.map(({ type, content }) => {
+                switch (type) {
+                    case "torrent":
+                        return rpc.call("aria2.addTorrent", [content, [], options])
+                        break
+                    case "metalink":
+                        return rpc.call("aria2.addMetalink", [content, options])
+                        break
+                }
+            })
+
+            Promise.all(requests).then(() => {
                 return rpc.getAllTasks()
             }).then(tasks => {
                 dispatch(receivedTasks(tasks))                

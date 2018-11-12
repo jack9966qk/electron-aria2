@@ -59,8 +59,17 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    addTask: Function
-    addTorrent: Function
+    addUris: (
+        rpc: AriaJsonRPC,
+        uris: string[],
+        options: Options) => void
+    addFiles: (
+        rpc: AriaJsonRPC,
+        files: {
+            type: "torrent" | "metalink"
+            content: string
+        }[],
+        options: Options) => void
 }
 
 export interface StoreProps {
@@ -73,8 +82,8 @@ type Props =
     StoreProps
 
 interface State {
-    uri: string | null
-    file: File | null
+    uris: string | null
+    files: FileList | null
     tabValue: number
     options: Options
 }
@@ -83,10 +92,17 @@ class NewTaskDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            uri: null,
-            file: null, 
+            uris: null,
+            files: null, 
             tabValue: 0,
             options: {}
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        // clear links and files when dialog closed
+        if (prevProps.open && !this.props.open) {
+            this.setState({ uris: null, files: null })
         }
     }
 
@@ -96,16 +112,16 @@ class NewTaskDialog extends React.Component<Props, State> {
 
     updateUri = (event) => {
         this.setState({
-            uri: event.target.value
+            uris: event.target.value
         })
     }
 
     onAddClicked = () => {
         switch (this.state.tabValue) {
             case 0:
-                this.props.addTask(
+                this.props.addUris(
                     this.props.rpc,
-                    this.state.uri,
+                    this.state.uris.split("\n"),
                     this.state.options)
                 break
             case 1:
@@ -120,23 +136,43 @@ class NewTaskDialog extends React.Component<Props, State> {
     }
 
     submitTorrentFile = () => {
-        const getBase64 = (file) => new Promise( (res, rej) => {
-            const reader = new FileReader();
+        const getBase64 : (File) => Promise<string> =
+            (file) => new Promise( (res, rej) => {
+            const reader = new FileReader()
             reader.readAsDataURL(file)
             reader.onload = () => { res((reader.result as string).split(",")[1]) }
             reader.onerror = (error) => { rej(error) }
         })
-         
-        getBase64(this.state.file).then( base64 => {
-            console.log(base64)
-            this.props.addTorrent(this.props.rpc, base64, this.state.options)
-            this.props.onRequestClose()
+
+        const extension = (file) => file.name.split(".").pop()
+
+        const validFiles = Array.from(this.state.files)
+            .filter((file) => {
+                switch (extension(file)) {
+                    case "torrent":
+                        return true
+                        break
+                    case "metalink":
+                        return true
+                        break
+                    default:
+                        console.warn(`invalid file type: ${extension}`)
+                        return false
+                        break
+                }
+            })
+
+        Promise.all(validFiles.map(getBase64)).then((results) => {
+            const files = results.map((content, i) => ({
+                content: content,
+                type: extension(validFiles[i])
+            }))
+            this.props.addFiles(this.props.rpc, files, this.state.options)
         })
     }
 
     handleFileSelect = (event) => {
-        console.log(event.target.files[0])
-        this.setState({ file: event.target.files[0] })   
+        this.setState({ files: event.target.files })   
     }
 
     onOptionChange = (options) => {
@@ -145,7 +181,7 @@ class NewTaskDialog extends React.Component<Props, State> {
 
     render() {
         const { open, globalOptions, onRequestClose, classes } = this.props
-        const { tabValue, file } = this.state
+        const { tabValue, files } = this.state
 
         const onChange = (_, value) => { this.updateTabValue(value) }
 
@@ -156,7 +192,7 @@ class NewTaskDialog extends React.Component<Props, State> {
                     margin="dense"
                     id="name"
                     label="Task URL"
-                    type="url"
+                    type="text"
                     onChange={this.updateUri}
                     multiline
                     fullWidth
@@ -170,6 +206,8 @@ class NewTaskDialog extends React.Component<Props, State> {
                     className={classes.fileInput}
                     type="file"
                     id="file-input"
+                    accept=".torrent,.metalink"
+                    multiple
                     onChange={this.handleFileSelect}
                 />
                 <label htmlFor="file-input">
@@ -180,9 +218,11 @@ class NewTaskDialog extends React.Component<Props, State> {
                         component="span"
                     >
                         {
-                        file === null ?
+                        files === null ?
                             "Select Torrent File" :
-                            `Selected ${file.name}`
+                            files.length > 1 ?
+                                `Selected ${files.length} files` :
+                                `Selected ${files[0].name}`
                         }
                     </Button>
                 </label>
