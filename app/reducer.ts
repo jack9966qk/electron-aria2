@@ -5,10 +5,11 @@ import { Options } from './model/options'
 import {
     RootAction,
     CONNECTED,
-    RECEIVED_TASKS,
+    RECEIVED_TASKS_AND_STATUS,
     RECEIVED_OPTIONS,
     DISCONNECTED
 } from './actions'
+import { GlobalStat } from './model/globalStat'
 
 export type Server = {
     readonly hostUrl: string
@@ -16,6 +17,7 @@ export type Server = {
     readonly version: string
     readonly tasks: Map<string, Task>
     readonly options: Options
+    readonly stat: GlobalStat
 }
 
 export type RootState = {
@@ -37,9 +39,10 @@ const reducer: Reducer<RootState, RootAction> =
             return state.server.hostUrl === action.payload ?
                 {...state, server: null} : state
             break
-        case RECEIVED_TASKS:
-            const tasks = updateTaskList(state.server.tasks, action.payload)
-            return {...state, server: {...state.server, tasks}}
+        case RECEIVED_TASKS_AND_STATUS:
+            const tasks = updateTaskList(state.server.tasks, action.payload.tasks)
+            const { stat } = action.payload
+            return {...state, server: {...state.server, tasks, stat}}
             break
         case RECEIVED_OPTIONS:
             return {...state, server: {...state.server, options: action.payload}}

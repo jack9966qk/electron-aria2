@@ -322,7 +322,8 @@ class Control extends React.Component<Props, State> {
                     />
 
                     <StatusBar
-                        tasks={server.tasks}
+                        totalDownloadSpeed={parseInt(server.stat.downloadSpeed)}
+                        totalUploadSpeed={parseInt(server.stat.uploadSpeed)}
                         classes={{root: classes.statusBar}}
                     />
 

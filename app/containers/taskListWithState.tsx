@@ -2,7 +2,7 @@ import { connect } from "react-redux"
 import { shell } from 'electron'
 import TaskList, { DispatchProps, StoreProps } from "../views/taskList"
 import { RootState } from "../reducer"
-import { receivedTasks } from "../actions"
+import { receivedTasksAndStatus } from "../actions"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
@@ -13,8 +13,8 @@ function mapStateToProps(state: RootState): StoreProps {
 function mapDispatchToProps(dispatch): DispatchProps {
 
     const refreshList = (rpc) => {
-        rpc.getAllTasks().then(tasks => {
-            dispatch(receivedTasks(tasks))
+        rpc.getTasksAndStatus().then(({tasks, stat}) => {
+            dispatch(receivedTasksAndStatus(tasks, stat))
         })
     }
 

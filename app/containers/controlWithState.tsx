@@ -6,7 +6,7 @@ import Control, { DispatchProps, StoreProps } from "../views/control"
 import {
     connected,
     disconnected,
-    receivedTasks,
+    receivedTasksAndStatus,
     RootAction
 } from "../actions"
 import AriaJsonRPC from '../model/rpc'
@@ -24,9 +24,9 @@ let refreshLoopId: number
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc: AriaJsonRPC) => {
-        rpc.getAllTasks().then(tasks => {
+        rpc.getTasksAndStatus().then(({tasks, stat}) => {
             // console.log(tasks)
-            dispatch(receivedTasks(tasks))
+            dispatch(receivedTasksAndStatus(tasks, stat))
         })
     }
 
@@ -34,12 +34,12 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         Promise.all([
             rpc.call("aria2.getVersion", []),
             rpc.call("aria2.getGlobalOption", []),
-            rpc.getAllTasks()
-        ]).then( ([version, options, tasks]) => {
+            rpc.getTasksAndStatus()
+        ]).then( ([version, options, {tasks, stat}]) => {
             dispatch(connected({
                 hostUrl: rpc.url,
                 secret: rpc.secret,
-                version, options, tasks
+                version, options, tasks, stat
             }))
             // get new task status every 500ms
             refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)

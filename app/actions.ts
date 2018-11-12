@@ -4,6 +4,7 @@ import { action } from "typesafe-actions"
 import { Task } from "./model/task"
 import { Options } from "./model/options"
 import { Server } from "./reducer"
+import { GlobalStat } from "./model/globalStat";
 
 export const CONNECTED = "CONNECTED"
 export const connected = (server: Server) => action(CONNECTED, server)
@@ -11,9 +12,9 @@ export const connected = (server: Server) => action(CONNECTED, server)
 export const DISCONNECTED = "DISCONNECTED"
 export const disconnected = (hostUrl: string) => action(DISCONNECTED, hostUrl)
 
-export const RECEIVED_TASKS = "RECEIVED_TASKS"
-export const receivedTasks = (tasks: Map<string, Task>) =>
-    action(RECEIVED_TASKS, tasks)
+export const RECEIVED_TASKS_AND_STATUS = "RECEIVED_TASKS_AND_STATUS"
+export const receivedTasksAndStatus = (tasks: Map<string, Task>, stat: GlobalStat) =>
+    action(RECEIVED_TASKS_AND_STATUS, {tasks, stat})
 
 export const RECEIVED_OPTIONS = "RECEIVED_OPTIONS"
 export const receivedOptions = (options: Options) =>
@@ -22,5 +23,5 @@ export const receivedOptions = (options: Options) =>
 export type RootAction =
     ReturnType<typeof connected> |
     ReturnType<typeof disconnected> |
-    ReturnType<typeof receivedTasks> |
+    ReturnType<typeof receivedTasksAndStatus> |
     ReturnType<typeof receivedOptions>

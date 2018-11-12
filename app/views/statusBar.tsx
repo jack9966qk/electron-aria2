@@ -5,8 +5,6 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import createStyles from '@material-ui/core/styles/createStyles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
-import { Task } from '../model/task'
-
 import filesize = require('filesize')
 
 const styles = (theme: Theme) => createStyles({
@@ -20,21 +18,20 @@ const styles = (theme: Theme) => createStyles({
 })
 
 interface Props {
-    tasks: Map<string, Task>
+    totalDownloadSpeed: number
+    totalUploadSpeed: number
     classes: any
 }
 
 class StatusBar extends React.Component<Props, {}> {
     render() {
-        const { tasks } = this.props
-        const totalOf = (fn: (Task) => number) => Array.from(tasks.values()).reduce((n, t) => n + fn(t), 0)
-
-        const totalDownloadSpeed = filesize(totalOf(t => parseInt(t.downloadSpeed)))
-        const totalUploadSpeed = filesize(totalOf(t => parseInt(t.uploadSpeed)))
+        const { totalDownloadSpeed, totalUploadSpeed, classes } = this.props
+        const dl = filesize(totalDownloadSpeed)
+        const ul = filesize(totalUploadSpeed)
         return (
-            <Paper classes={{root: this.props.classes.root}} elevation={4}>
+            <Paper classes={{root: classes.root}} elevation={4}>
                 <Typography variant="body1">
-                    {`Up: ${totalUploadSpeed}/s Down: ${totalDownloadSpeed}/s`}
+                    {`Up: ${ul}/s Down: ${dl}/s`}
                 </Typography>
             </Paper>
         )

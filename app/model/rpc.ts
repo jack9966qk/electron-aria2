@@ -1,11 +1,22 @@
 import * as JsonRPC from 'simple-jsonrpc-js'
 import { Task } from './task'
+import { GlobalStat } from './globalStat'
 
 export type MethodName = string
 export type Token = string
 type JsonRPC = any
 
 export type NotificationResponse = { gid: string }
+
+const callback = (func: Function, args: any[], silent) => {
+    if (!silent) { func(...args) }
+}
+
+const getAllTasksMethods = [
+    { methodName: "aria2.tellActive", args: [] },
+    { methodName: "aria2.tellWaiting", args: [0, 100] },
+    { methodName: "aria2.tellStopped", args: [0, 100] }
+]
 
 export default class AriaJsonRPC {
     url: string
@@ -71,29 +82,41 @@ export default class AriaJsonRPC {
     }
 
     async call(method: MethodName, args: any[], silent=false): Promise<any> {
-        const callback = (func: Function, args: any[]) => {
-            if (!silent) { func(...args) }
-        }
-
         try {
             const result = await this.jrpc.call(method, [`token:${this.secret}`].concat(args))
-            callback(this.onAriaResponse, [method, args, result])
+            callback(this.onAriaResponse, [method, args, result], silent)
             return result
         } catch(error) {
-            callback(this.onAriaError, [method, args, error])
+            callback(this.onAriaError, [method, args, error], silent)
+            throw error
+        }
+    }
+
+    async multiCall(methods: {methodName: MethodName, args: any[]}[], silent=false): Promise<any> {
+        const methodsWithSecret = methods.map(({methodName, args}) => ({
+            methodName, params: [`token:${this.secret}`].concat(args)
+        }))
+        const unpack = ([val]) => val
+        try {
+            const response = await this.jrpc.call("system.multicall", [methodsWithSecret])
+            const result = response.map(unpack)
+            callback(this.onAriaResponse, ["system.multicall", [methods], result], silent)
+            return result
+        } catch(error) {
+            callback(this.onAriaError, ["system.multicall", [methods], error], silent)
             throw error
         }
     }
     
-    async getAllTasks() {
-        const values = await Promise.all([
-            this.call("aria2.tellActive", [], true),
-            this.call("aria2.tellWaiting", [0, 100], true),
-            this.call("aria2.tellStopped", [0, 100], true)
-        ])
-        const flatten = (values as Task[][]).reduce((a, b) => a.concat(b))
+    async getTasksAndStatus() {
+        const methods = getAllTasksMethods.concat([{
+            methodName: "aria2.getGlobalStat", args: []
+        }])
+        const [active, waiting, stopped, stat] = await this.multiCall(methods, true)
         const tasks: Map<string, Task> = new Map()
-        flatten.reduce(((map, task) => map.set(task.gid, task)), tasks)
-        return tasks
+        for (const ts of [active, waiting, stopped]) {
+            for (const t of ts) { tasks.set(t.gid, t) }
+        }
+        return { tasks, stat: (stat as GlobalStat) }
     }
 }

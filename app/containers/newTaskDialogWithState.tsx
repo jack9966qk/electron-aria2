@@ -2,7 +2,7 @@ import { connect } from "react-redux"
 import { Dispatch } from "redux"
 
 import NewTaskDialog, { DispatchProps, StoreProps } from "../views/newTaskDialog"
-import { receivedTasks, RootAction } from "../actions"
+import { receivedTasksAndStatus, RootAction } from "../actions"
 import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
@@ -17,8 +17,8 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
             const requests = uris
                 .map((uri) => rpc.call("aria2.addUri", [[uri], options]))
             Promise.all(requests)
-                .then(() => rpc.getAllTasks())
-                .then(tasks => { dispatch(receivedTasks(tasks)) })
+                .then(() => rpc.getTasksAndStatus())
+                .then(({tasks, stat}) => { dispatch(receivedTasksAndStatus(tasks, stat)) })
         },
         addFiles: (rpc, files, options) => {
             const requests = files.map(({ type, content }) => {
@@ -33,9 +33,9 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
             })
 
             Promise.all(requests).then(() => {
-                return rpc.getAllTasks()
-            }).then(tasks => {
-                dispatch(receivedTasks(tasks))                
+                return rpc.getTasksAndStatus()
+            }).then(({tasks, stat}) => {
+                dispatch(receivedTasksAndStatus(tasks, stat))                
             })
         },
     }
