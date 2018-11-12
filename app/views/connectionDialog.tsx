@@ -1,12 +1,12 @@
-import * as React from 'react'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import TextField from '@material-ui/core/TextField'
-
-import { Server } from '../reducer'
+import * as React from 'react'
 import ResponsiveDialog from './responsiveDialog'
+import { Server } from '../reducer'
+
 
 interface ViewProps {
     open: boolean
@@ -34,7 +34,7 @@ interface State {
 class ConnectionDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
-        this.state ={
+        this.state = {
             hostUrl: this.props.server.hostUrl,
             secret: this.props.server.secret
         }

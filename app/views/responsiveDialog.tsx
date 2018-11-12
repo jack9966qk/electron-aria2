@@ -1,6 +1,6 @@
-import * as React from 'react'
 import Dialog from '@material-ui/core/Dialog'
 import withMobileDialog from '@material-ui/core/withMobileDialog'
+import * as React from 'react'
 
 class ResponsiveDialog extends React.Component<any, {}> {
     render() {
@@ -14,4 +14,4 @@ class ResponsiveDialog extends React.Component<any, {}> {
 }
 
 // had to cast the prop type to prevent TypeScript compile time error
-export default withMobileDialog({breakpoint: "xs"})(ResponsiveDialog) as React.ComponentType<any>
+export default withMobileDialog({ breakpoint: "xs" })(ResponsiveDialog) as React.ComponentType<any>

@@ -1,7 +1,7 @@
-import * as React from 'react'
-import Tooltip from '@material-ui/core/Tooltip'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { createStyles, withStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import Tooltip from '@material-ui/core/Tooltip'
+import * as React from 'react'
 
 const styles = (theme: Theme) => createStyles({
     // same tooltip size for all windows sizes

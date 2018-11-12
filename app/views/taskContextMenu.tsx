@@ -1,16 +1,16 @@
-import * as React from 'react'
-import Paper from '@material-ui/core/Paper'
-import MenuList from '@material-ui/core/MenuList'
-import MenuItem from '@material-ui/core/MenuItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
-import PauseIcon from '@material-ui/icons/Pause'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import MenuItem from '@material-ui/core/MenuItem'
+import MenuList from '@material-ui/core/MenuList'
+import Paper from '@material-ui/core/Paper'
 import DeleteIcon from '@material-ui/icons/Delete'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
+import PauseIcon from '@material-ui/icons/Pause'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import * as React from 'react'
+import AriaJsonRPC from '../model/rpc'
 
-import AriaJsonRPC from '../model/rpc';
 
 interface Props {
     status: string
@@ -54,13 +54,13 @@ class TaskContextMenu extends React.PureComponent<Props, {}> {
             <Paper>
                 <MenuList>
                     {
-                    status === "active" ?
-                        pauseListItem :
-                    status === "paused" ?
-                        resumeListItem : ""
+                        status === "active" ?
+                            pauseListItem :
+                            status === "paused" ?
+                                resumeListItem : ""
                     }
-                    { deleteListItem }
-                    { openFolderListItem }
+                    {deleteListItem}
+                    {openFolderListItem}
                 </MenuList>
             </Paper>
         )

@@ -1,16 +1,16 @@
-import { connect } from "react-redux"
-import { Dispatch } from "redux"
-import * as Electron from "electron"
-
-import Control, { DispatchProps, StoreProps } from "../views/control"
+import * as Electron from 'electron'
+import { connect } from 'react-redux'
+import { Dispatch } from 'redux'
 import {
     connected,
     disconnected,
     receivedTasksAndStatus,
     RootAction
-} from "../actions"
+} from '../actions'
 import AriaJsonRPC from '../model/rpc'
-import { RootState } from "../reducer"
+import { RootState } from '../reducer'
+import Control, { DispatchProps, StoreProps } from '../views/control'
+
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
@@ -24,7 +24,7 @@ let refreshLoopId: number
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
     const refreshTasks = (rpc: AriaJsonRPC) => {
-        rpc.getTasksAndStatus().then(({tasks, stat}) => {
+        rpc.getTasksAndStatus().then(({ tasks, stat }) => {
             // console.log(tasks)
             dispatch(receivedTasksAndStatus(tasks, stat))
         })
@@ -35,7 +35,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
             rpc.call("aria2.getVersion", []),
             rpc.call("aria2.getGlobalOption", []),
             rpc.getTasksAndStatus()
-        ]).then( ([version, options, {tasks, stat}]) => {
+        ]).then(([version, options, { tasks, stat }]) => {
             dispatch(connected({
                 hostUrl: rpc.url,
                 secret: rpc.secret,
@@ -81,7 +81,7 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
 
     return {
         connectLocal: (onRes, onNotif, onErr, onConnErr, onConnSuccess) => {
-            const {hostUrl, secret} = mainFuncs
+            const { hostUrl, secret } = mainFuncs
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
                 // it seems to be necessary to wait a little
@@ -100,9 +100,9 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
             rpc.disconnect()
         },
         purgeTasks: (rpc: AriaJsonRPC) => {
-            rpc.call("aria2.purgeDownloadResult", []).then(() => {refreshTasks(rpc)})            
+            rpc.call("aria2.purgeDownloadResult", []).then(() => { refreshTasks(rpc) })
         },
     }
 }
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(Control)

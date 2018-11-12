@@ -1,20 +1,20 @@
-import * as React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
-import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
+import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import { createStyles, withStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import BlockIcon from '@material-ui/icons/Block'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
-import BlockIcon from '@material-ui/icons/Block'
 import classnames from 'classnames'
-import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import { isEqual } from 'lodash'
-
+import * as React from 'react'
 import { CategoryCount, TaskCategory, taskCategoryDescription } from '../model/task'
+
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -66,7 +66,7 @@ type Props =
     DispatchProps &
     StoreProps
 
-interface State {}
+interface State { }
 
 class SideBar extends React.Component<Props, State> {
     shouldComponentUpdate(nextProps) {
@@ -87,7 +87,7 @@ class SideBar extends React.Component<Props, State> {
                 <ListItemIcon className={listItemIcon}>
                     {React.createElement(
                         icon,
-                        category === this.props.category ? {className: primaryIcon} : {}
+                        category === this.props.category ? { className: primaryIcon } : {}
                     )}
                 </ListItemIcon>
                 <ListItemText

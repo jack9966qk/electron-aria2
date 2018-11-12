@@ -1,9 +1,9 @@
-import { connect } from "react-redux"
-import { Dispatch } from "redux"
+import { connect } from 'react-redux'
+import { Dispatch } from 'redux'
+import { receivedOptions, RootAction } from '../actions'
+import { RootState } from '../reducer'
+import SettingsDialog, { DispatchProps, StoreProps } from '../views/settingsDialog'
 
-import SettingsDialog, { DispatchProps, StoreProps } from "../views/settingsDialog"
-import { RootAction, receivedOptions } from "../actions"
-import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
@@ -22,5 +22,5 @@ function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
         }
     }
 }
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsDialog)

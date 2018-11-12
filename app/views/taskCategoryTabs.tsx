@@ -1,12 +1,12 @@
-import * as React from 'react'
 import Tab from '@material-ui/core/Tab'
 import Tabs from '@material-ui/core/Tabs'
+import BlockIcon from '@material-ui/icons/Block'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import FileDownloadIcon from '@material-ui/icons/CloudDownload'
 import ScheduleIcon from '@material-ui/icons/Schedule'
-import BlockIcon from '@material-ui/icons/Block'
-
+import * as React from 'react'
 import { TaskCategory } from '../model/task'
+
 
 interface ViewProps {
     category: TaskCategory

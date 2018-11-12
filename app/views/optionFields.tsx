@@ -1,28 +1,28 @@
-import * as React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import ExpansionPanel from '@material-ui/core/ExpansionPanel'
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
+import { createStyles, withStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import TextField from '@material-ui/core/TextField'
-
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
+import Typography from '@material-ui/core/Typography'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import * as React from 'react'
 import {
-    Options,
-    OptionName,
     basicOptionNames,
+    ftpSftpOptionNames,
     httpFtpSftpOptionNames,
     httpOptionNames,
-    ftpSftpOptionNames,
-    torrentMetalinkOptionNames,
-    torrentOptionNames,
     metalinkOptionNames,
-    rpcOptionNames,
+    optionDescriptions,
+    OptionName,
+    Options,
     otherOptionNames,
-    optionDescriptions
+    rpcOptionNames,
+    torrentMetalinkOptionNames,
+    torrentOptionNames
 } from '../model/options'
+
+
 
 const sections = [
     [basicOptionNames, "Basic Options", true],
@@ -71,9 +71,9 @@ interface State {
 
 
 class OptionField extends React.Component<
-    {name: OptionName, initialVal: string, onChange: Function},
-    {value: string}
-> {
+    { name: OptionName, initialVal: string, onChange: Function },
+    { value: string }
+    > {
     constructor(props) {
         super(props)
         this.state = { value: props.initialVal }
@@ -114,7 +114,7 @@ class OptionFields extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            newOptions: {...props.prevOptions}
+            newOptions: { ...props.prevOptions }
         }
     }
 
@@ -129,7 +129,7 @@ class OptionFields extends React.Component<Props, State> {
         })
     }
 
-    
+
     render() {
         const { classes } = this.props
 
@@ -138,17 +138,17 @@ class OptionFields extends React.Component<Props, State> {
                 key={name}
                 name={name}
                 initialVal={this.props.defaultOptions[name]}
-                onChange={(v) => {this.handleValChange(name, v)}}
+                onChange={(v) => { this.handleValChange(name, v) }}
             />
         )
 
         const makeSection = (optionNames, description, defaultExpanded) => (
             <ExpansionPanel key={description} defaultExpanded={defaultExpanded}>
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>{description}</Typography>
+                    <Typography>{description}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
-                    classes={{root: classes.expansionDetails}}
+                    classes={{ root: classes.expansionDetails }}
                 >
                     {optionNames.map(makeOptionField)}
                 </ExpansionPanelDetails>
@@ -158,8 +158,8 @@ class OptionFields extends React.Component<Props, State> {
         return (
             <div className={classes.root}>
                 {
-                sections.map(([optionNames, description, defaultExpanded]) =>
-                    makeSection(optionNames, description, defaultExpanded))
+                    sections.map(([optionNames, description, defaultExpanded]) =>
+                        makeSection(optionNames, description, defaultExpanded))
                 }
             </div>
         )

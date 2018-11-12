@@ -1,16 +1,16 @@
-import * as React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
-import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Button from '@material-ui/core/Button'
-import Paper from '@material-ui/core/Paper'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
-
+import Paper from '@material-ui/core/Paper'
+import { createStyles, withStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import * as React from 'react'
 import OptionFields from './optionFields'
-import AriaJsonRPC from '../model/rpc'
-import { Options } from '../model/options'
 import ResponsiveDialog from './responsiveDialog'
+import { Options } from '../model/options'
+import AriaJsonRPC from '../model/rpc'
+
 
 const styles = (theme: Theme) => createStyles({
     dialogPaper: {
@@ -91,20 +91,20 @@ class SettingsDialog extends React.Component<Props, State> {
                 open={open}
                 onClose={onRequestClose}
                 fullWidth={true}
-                classes={{paper: classes.dialogPaper}}
+                classes={{ paper: classes.dialogPaper }}
                 disableRestoreFocus // for tooltips: https://bit.ly/2z4suAV
             >
-                <Paper classes={{root: classes.dialogHeaderPaper}}>
+                <Paper classes={{ root: classes.dialogHeaderPaper }}>
                     <DialogTitle>{title}</DialogTitle>
                 </Paper>
 
-                <DialogContent classes={{root: classes.dialogContent}}>
+                <DialogContent classes={{ root: classes.dialogContent }}>
                     <OptionFields
                         defaultOptions={options}
                         onOptionChange={this.onOptionChange}
                     />
                 </DialogContent>
-                <Paper classes={{root: classes.dialogHeaderPaper}}>
+                <Paper classes={{ root: classes.dialogHeaderPaper }}>
                     <DialogActions>
                         <Button onClick={onRequestClose} color="primary">
                             Cancel

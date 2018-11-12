@@ -1,12 +1,12 @@
-import { connect } from "react-redux"
+import { connect } from 'react-redux'
+import { RootState } from '../reducer'
+import TaskCategoryTabs, { StoreProps } from '../views/taskCategoryTabs'
 
-import TaskCategoryTabs, { StoreProps } from "../views/taskCategoryTabs"
-import { RootState } from "../reducer"
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
 
     }
 }
-  
+
 export default connect(mapStateToProps)(TaskCategoryTabs)

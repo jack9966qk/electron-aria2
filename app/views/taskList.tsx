@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
+import { createStyles, withStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
-
-import { Task, filterTasks, TaskCategory } from '../model/task'
+import * as React from 'react'
+import TaskListItemWithState from '../containers/taskListItemWithState'
 import AriaJsonRPC from '../model/rpc'
-import TaskListItemWithState from '../containers/taskListItemWithState';
+import { filterTasks, Task, TaskCategory } from '../model/task'
+
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -47,18 +47,18 @@ class TaskList extends React.Component<Props, State> {
         const tasks = filterTasks(Array.from(this.props.tasks.values()), this.props.category)
         const { root } = this.props.classes
         return (
-        <div className={root}>
-            {
-            tasks.map(task =>
-                <TaskListItemWithState
-                    rpc={this.props.rpc}
-                    key={task.gid}
-                    task={task}
-                    openContextMenu={this.props.openContextMenu}
-                />
-            )
-            }
-        </div>
+            <div className={root}>
+                {
+                    tasks.map(task =>
+                        <TaskListItemWithState
+                            rpc={this.props.rpc}
+                            key={task.gid}
+                            task={task}
+                            openContextMenu={this.props.openContextMenu}
+                        />
+                    )
+                }
+            </div>
         )
     }
 }

@@ -1,9 +1,9 @@
-import { connect } from "react-redux"
+import { isEqual } from 'lodash'
+import { connect } from 'react-redux'
+import { countCategory } from '../model/task'
+import { RootState } from '../reducer'
+import SideBar, { StoreProps } from '../views/sideBar'
 
-import SideBar, { StoreProps } from "../views/sideBar"
-import { RootState } from "../reducer"
-import { countCategory } from "../model/task"
-import { isEqual } from "lodash"
 
 var prevCount = undefined
 function mapStateToProps(state: RootState): StoreProps {

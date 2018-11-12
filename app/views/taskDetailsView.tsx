@@ -1,10 +1,9 @@
-import * as React from 'react'
-import withStyles from '@material-ui/core/styles/withStyles'
-import createStyles from '@material-ui/core/styles/createStyles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import createStyles from '@material-ui/core/styles/createStyles'
+import withStyles from '@material-ui/core/styles/withStyles'
 import Typography from '@material-ui/core/Typography'
 import { get } from 'lodash'
-
+import * as React from 'react'
 import { Task } from '../model/task'
 
 
@@ -47,14 +46,14 @@ class TaskDetailsView extends React.Component<Props, {}> {
                         variant="body2"
                         align="left"
                         component="span"
-                        classes={{root: classes.subtitle}}
+                        classes={{ root: classes.subtitle }}
                     >
                         {subtitle}
                     </Typography>
                     <Typography
                         variant="caption"
                         align="right"
-                        classes={{root: classes.details}}
+                        classes={{ root: classes.details }}
                     >
                         {val.toString()}
                     </Typography>
@@ -64,32 +63,32 @@ class TaskDetailsView extends React.Component<Props, {}> {
 
         const cells = (
             <>
-                { makeCell("GID", "gid") }
-                { makeCell("Total Length", "totalLength") }
-                { makeCell("Completed Length", "completedLength") }
-                { makeCell("Connections", "connections") }
-                { makeCell("Piece Length", "pieceLength") }
-                { makeCell("Num Pieces", "numPieces") }
-                { makeCell("BitField", "bitfield") }
-                { makeCell("Error Code", "errorCode") }
-                { makeCell("Error Message", "errorMessage") }
-                { makeCell("Followed By", "followedBy") }
-                { makeCell("Following", "following") }
-                { makeCell("Belongs To", "belongsTo") }
-                { makeCell("InfoHash", "infoHash") }
-                { makeCell("Num Seeders", "numSeeders") }
-                { makeCell("Is Seeder", "seeder") }
-                { makeCell("AnnouceList", "bittorrent.announceList") }
-                { makeCell("Comment", "bittorrent.comment") }
-                { makeCell("Creation Date", "bittorrent.creationDate") }
-                { makeCell("File Mode", "bittorrent.mode") }
-                { makeCell("Name", "bittorrent.info.name") }
+                {makeCell("GID", "gid")}
+                {makeCell("Total Length", "totalLength")}
+                {makeCell("Completed Length", "completedLength")}
+                {makeCell("Connections", "connections")}
+                {makeCell("Piece Length", "pieceLength")}
+                {makeCell("Num Pieces", "numPieces")}
+                {makeCell("BitField", "bitfield")}
+                {makeCell("Error Code", "errorCode")}
+                {makeCell("Error Message", "errorMessage")}
+                {makeCell("Followed By", "followedBy")}
+                {makeCell("Following", "following")}
+                {makeCell("Belongs To", "belongsTo")}
+                {makeCell("InfoHash", "infoHash")}
+                {makeCell("Num Seeders", "numSeeders")}
+                {makeCell("Is Seeder", "seeder")}
+                {makeCell("AnnouceList", "bittorrent.announceList")}
+                {makeCell("Comment", "bittorrent.comment")}
+                {makeCell("Creation Date", "bittorrent.creationDate")}
+                {makeCell("File Mode", "bittorrent.mode")}
+                {makeCell("Name", "bittorrent.info.name")}
             </>
         )
 
         return (
             <div className={classes.root}>
-                { cells }
+                {cells}
             </div>
         )
     }

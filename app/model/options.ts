@@ -76,7 +76,7 @@ export const torrentMetalinkOptionNames = tuple(
 
 export const torrentOptionNames = tuple(
     "bt-enable-hook-after-hash-check", "bt-enable-lpd", "bt-exclude-tracker",
-    "bt-external-ip", "bt-force-encryption", "bt-hash-check-seed", 
+    "bt-external-ip", "bt-force-encryption", "bt-hash-check-seed",
     "bt-load-saved-metadata", "bt-max-peers", "bt-metadata-only",
     "bt-min-crypto-level", "bt-prioritize-piece", "bt-remove-unselected-file",
     "bt-request-peer-speed-limit", "bt-require-crypto", "bt-save-metadata",

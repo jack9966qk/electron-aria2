@@ -1,6 +1,6 @@
 import * as JsonRPC from 'simple-jsonrpc-js'
-import { Task } from './task'
 import { GlobalStat } from './globalStat'
+import { Task } from './task'
 
 export type MethodName = string
 export type Token = string
@@ -81,19 +81,19 @@ export default class AriaJsonRPC {
         this.jrpc.on(event, callback)
     }
 
-    async call(method: MethodName, args: any[], silent=false): Promise<any> {
+    async call(method: MethodName, args: any[], silent = false): Promise<any> {
         try {
             const result = await this.jrpc.call(method, [`token:${this.secret}`].concat(args))
             callback(this.onAriaResponse, [method, args, result], silent)
             return result
-        } catch(error) {
+        } catch (error) {
             callback(this.onAriaError, [method, args, error], silent)
             throw error
         }
     }
 
-    async multiCall(methods: {methodName: MethodName, args: any[]}[], silent=false): Promise<any> {
-        const methodsWithSecret = methods.map(({methodName, args}) => ({
+    async multiCall(methods: { methodName: MethodName, args: any[] }[], silent = false): Promise<any> {
+        const methodsWithSecret = methods.map(({ methodName, args }) => ({
             methodName, params: [`token:${this.secret}`].concat(args)
         }))
         const unpack = ([val]) => val
@@ -102,12 +102,12 @@ export default class AriaJsonRPC {
             const result = response.map(unpack)
             callback(this.onAriaResponse, ["system.multicall", [methods], result], silent)
             return result
-        } catch(error) {
+        } catch (error) {
             callback(this.onAriaError, ["system.multicall", [methods], error], silent)
             throw error
         }
     }
-    
+
     async getTasksAndStatus() {
         const methods = getAllTasksMethods.concat([{
             methodName: "aria2.getGlobalStat", args: []

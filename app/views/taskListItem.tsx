@@ -1,33 +1,37 @@
-import * as React from 'react'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Paper from '@material-ui/core/Paper'
+import Card from '@material-ui/core/Card'
 import Collapse from '@material-ui/core/Collapse'
-import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
-import PauseIcon from '@material-ui/icons/Pause'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import { createStyles, withStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import Typography from '@material-ui/core/Typography'
 import DeleteIcon from '@material-ui/icons/Delete'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
-import { withStyles, createStyles } from '@material-ui/core/styles'
-import { Theme } from '@material-ui/core/styles/createMuiTheme'
-import { sprintf } from 'sprintf-js'
+import PauseIcon from '@material-ui/icons/Pause'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import * as humanizeDuration from 'humanize-duration'
-
+import * as React from 'react'
+import { sprintf } from 'sprintf-js'
+import SmallTooltip from './smallTooltip'
 import TaskContextMenu from './taskContextMenu'
+import TaskDetailsView from './taskDetailsView'
+import AriaJsonRPC from '../model/rpc'
+import {
+    downloadComplete,
+    getName,
+    isBittorrent,
+    isHttp,
+    Task
+    } from '../model/task'
+
 
 // `import * as filesize` also works, but reported as error by tslint
 // `import filesize` passes lint, but triggers error at runtime
 import filesize = require('filesize')
 
-import SmallTooltip from './smallTooltip'
-import { Task, getName, isBittorrent, downloadComplete, isHttp } from '../model/task'
-import TaskDetailsView from './taskDetailsView'
-import ButtonBase from '@material-ui/core/ButtonBase'
-import Card from '@material-ui/core/Card'
-import AriaJsonRPC from '../model/rpc';
 
-const fsize = filesize.partial({spacer: ""})
+const fsize = filesize.partial({ spacer: "" })
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -138,11 +142,11 @@ class BasicInfo extends React.PureComponent<{
         const button = (tooltipText, icon, onClick) => (
             <SmallTooltip title={tooltipText}>
                 <IconButton
-                    classes={{root: classes.button}}
+                    classes={{ root: classes.button }}
                     onClick={onClick}
                     onMouseUp={this.onButtonMouseUp}
                 >
-                    { icon }
+                    {icon}
                 </IconButton>
             </SmallTooltip>
         )
@@ -152,44 +156,44 @@ class BasicInfo extends React.PureComponent<{
         const deleteTask = () => { this.props.deleteTask(rpc, gid) }
         const permDeleteTask = () => { this.props.permDeleteTask(rpc, gid) }
         const revealFile = () => { this.props.revealFile(path) }
-        
+
         const pauseButton = button("Pause", <PauseIcon />, pauseTask)
         const resumeButton = button("Resume", <PlayArrowIcon />, resumeTask)
-        
+
         const deleteButton =
             (status !== "error" && status !== "removed" && status !== "complete") ?
                 button("Delete", <DeleteIcon />, deleteTask) :
                 button("Delete forever", <DeleteForeverIcon />, permDeleteTask)
-        
+
         const openFolderButton = button("Open folder", <FolderIcon />, revealFile)
-        
+
         const buttons = (
             <>
                 {
-                status === "active" ?
-                    pauseButton :
-                status === "paused" ?
-                    resumeButton : ""
+                    status === "active" ?
+                        pauseButton :
+                        status === "paused" ?
+                            resumeButton : ""
                 }
-                { deleteButton }
-                { openFolderButton }
+                {deleteButton}
+                {openFolderButton}
             </>
         )
 
-        return  (
+        return (
             <div className={classes.flexContainer}>
                 <div className={classes.name}>
                     <Typography
                         variant="subtitle1"
                         align="left"
-                        classes={{root: classes.text}}
+                        classes={{ root: classes.text }}
                     >
                         {taskName}
                     </Typography>
                     <Typography
                         variant="body2"
                         align="left"
-                        classes={{root: classes.status}}
+                        classes={{ root: classes.status }}
                         component="span"
                     >
                         {status}
@@ -197,13 +201,13 @@ class BasicInfo extends React.PureComponent<{
                     <Typography
                         variant="caption"
                         align="left"
-                        classes={{root: classes.inline}}
+                        classes={{ root: classes.inline }}
                         component="span"
                     >
                         {`${fsize(totalLength)}`}
                     </Typography>
                 </div>
-                { buttons }
+                {buttons}
             </div>
         )
     }
@@ -250,7 +254,7 @@ class TaskListItem extends React.Component<Props, State> {
         />
         this.props.openContextMenu(menu, event)
     }
-    
+
     render() {
         const { classes, task } = this.props
         const { status } = task
@@ -295,21 +299,21 @@ class TaskListItem extends React.Component<Props, State> {
             Math.floor((totalLength - completedLength) / downloadSpeed) * 1000)
         const speedAndTimeRemaining = timeRemaining + " " + speedDescription
 
-        
+
 
         const progressText = (
             <div className={classes.flexContainer}>
                 <Typography
                     variant="caption"
                     align="left"
-                    classes={{root: classes.progressText}}
+                    classes={{ root: classes.progressText }}
                 >
                     {progressDescription}
                 </Typography>
                 <Typography
                     variant="caption"
                     align="right"
-                    classes={{root: classes.speedText}}
+                    classes={{ root: classes.speedText }}
                 >
                     {status === "active" ? speedAndTimeRemaining : ""}
                 </Typography>
@@ -355,18 +359,18 @@ class TaskListItem extends React.Component<Props, State> {
                         onExited={this.removeDetails}
                     >
                         {
-                        this.state.renderDetails ?
-                            <TaskDetailsView
-                                task={task}
-                                classes={{root: classes.detailsView}}
-                            /> : ""
+                            this.state.renderDetails ?
+                                <TaskDetailsView
+                                    task={task}
+                                    classes={{ root: classes.detailsView }}
+                                /> : ""
                         }
-                        
+
                     </Collapse>
-                    { (status === "active") ? progressText : "" }
+                    {(status === "active") ? progressText : ""}
                 </div>
-                
-                { (status === "active" && !downloadComplete(task)) ? progressBar : "" }
+
+                {(status === "active" && !downloadComplete(task)) ? progressBar : ""}
             </Card>
         )
     }

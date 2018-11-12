@@ -1,9 +1,9 @@
-import * as React from 'react'
 import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import withStyles from '@material-ui/core/styles/withStyles'
-import createStyles from '@material-ui/core/styles/createStyles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import createStyles from '@material-ui/core/styles/createStyles'
+import withStyles from '@material-ui/core/styles/withStyles'
+import Typography from '@material-ui/core/Typography'
+import * as React from 'react'
 
 import filesize = require('filesize')
 
@@ -29,7 +29,7 @@ class StatusBar extends React.Component<Props, {}> {
         const dl = filesize(totalDownloadSpeed)
         const ul = filesize(totalUploadSpeed)
         return (
-            <Paper classes={{root: classes.root}} elevation={4}>
+            <Paper classes={{ root: classes.root }} elevation={4}>
                 <Typography variant="body1">
                     {`Up: ${ul}/s Down: ${dl}/s`}
                 </Typography>

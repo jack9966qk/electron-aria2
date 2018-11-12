@@ -1,6 +1,6 @@
-import { connect } from "react-redux"
-import TaskList, { DispatchProps, StoreProps } from "../views/taskList"
-import { RootState } from "../reducer"
+import { connect } from 'react-redux'
+import { RootState } from '../reducer'
+import TaskList, { DispatchProps, StoreProps } from '../views/taskList'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {

@@ -1,23 +1,28 @@
-import * as React from 'react'
 import Popover from '@material-ui/core/Popover'
-import withStyles from '@material-ui/core/styles/withStyles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import createStyles from '@material-ui/core/styles/createStyles'
+import withStyles from '@material-ui/core/styles/withStyles'
+import * as Electron from 'electron'
 import { SnackbarProvider, withSnackbar } from 'notistack'
-import * as Electron from "electron"
-
-import AriaMessages from '../model/ariaMessages'
-import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
-import SettingsDialogWithState from '../containers/settingsDialogWithState'
+import * as React from 'react'
 import ConnectionDialog from './connectionDialog'
-import TaskListWithState from '../containers/taskListWithState'
 import StatusBar from './statusBar'
 import TopBar from './topBar'
+import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
+import SettingsDialogWithState from '../containers/settingsDialogWithState'
 import SideBarWithState from '../containers/sideBarWithState'
 import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import { TaskCategory, taskCategoryDescription, getName, Task } from '../model/task'
+import TaskListWithState from '../containers/taskListWithState'
+import AriaMessages from '../model/ariaMessages'
 import AriaJsonRPC from '../model/rpc'
-import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import {
+    getName,
+    Task,
+    TaskCategory,
+    taskCategoryDescription
+} from '../model/task'
 import { Server } from '../reducer'
+
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
@@ -70,7 +75,7 @@ export interface DispatchProps {
         onErr: Function,
         onConnErr: () => void,
         onConnSuccess: (AriaJsonRPC) => void
-        ) => void
+    ) => void
     connect: (
         url: string,
         secret: string,
@@ -79,10 +84,10 @@ export interface DispatchProps {
         onErr: Function,
         onConnErr: () => void,
         onConnSuccess: (AriaJsonRPC) => void
-        ) => void
+    ) => void
     disconnect: (
         rpc: AriaJsonRPC,
-        ) => void
+    ) => void
     purgeTasks: (AriaJsonRPC) => void
 }
 
@@ -99,7 +104,7 @@ interface State {
     sidebarOpen: boolean
     connectionDialogOpen: boolean
     contextMenuOpen: boolean
-    contextMenuPosition: {top: number, left: number}
+    contextMenuPosition: { top: number, left: number }
     contextMenu: JSX.Element | null
     category: TaskCategory
     snackbarText: string | null
@@ -116,36 +121,36 @@ class Control extends React.Component<Props, State> {
             sidebarOpen: false,
             connectionDialogOpen: false,
             contextMenuOpen: false,
-            contextMenuPosition: {top: 0, left: 0},
+            contextMenuPosition: { top: 0, left: 0 },
             contextMenu: null,
             snackbarText: null,
             category: TaskCategory.Active,
             startedConnecting: false
         }
     }
-    
+
     openDialog = () => {
         this.setState({ newTaskDialogOpen: true })
     }
-    
+
     closeDialog = () => {
         this.setState({ newTaskDialogOpen: false })
     }
 
     openSettings = () => {
-        this.setState({ settingsOpen: true })  
+        this.setState({ settingsOpen: true })
     }
 
     openConnectionDialog = () => {
-        this.setState({ connectionDialogOpen: true })  
+        this.setState({ connectionDialogOpen: true })
     }
 
     closeConnectionDialog = () => {
-        this.setState({ connectionDialogOpen: false })  
+        this.setState({ connectionDialogOpen: false })
     }
 
     closeSettings = () => {
-        this.setState({ settingsOpen: false })        
+        this.setState({ settingsOpen: false })
     }
 
     toggleSidebarOpen = () => {
@@ -171,7 +176,7 @@ class Control extends React.Component<Props, State> {
         this.setState({
             contextMenuOpen: true,
             contextMenu: menu,
-            contextMenuPosition: {top: event.clientY, left: event.clientX}
+            contextMenuPosition: { top: event.clientY, left: event.clientX }
         })
     }
 
@@ -288,7 +293,7 @@ class Control extends React.Component<Props, State> {
     onConnectionError = () => {
         this.openSnackbarWith(`Failed to connect to ${this.props.server.hostUrl}`)
     }
-    
+
     render() {
         const { server, classes } = this.props
         const title = taskCategoryDescription[this.state.category]
@@ -296,7 +301,7 @@ class Control extends React.Component<Props, State> {
             <>
                 <div className={classes.content} onMouseUp={this.onMouseUp}>
                     <TopBar
-                        classes={{root: classes.topBar}}
+                        classes={{ root: classes.topBar }}
                         showAddNewTask={this.openDialog}
                         showMenu={this.toggleSidebarOpen}
                         showSettings={this.openSettings}
@@ -312,19 +317,19 @@ class Control extends React.Component<Props, State> {
                         open={this.state.sidebarOpen}
                         onCategorySelected={this.onCategorySelected}
                         category={this.state.category}
-                        classes={{root: classes.sideBar}}
+                        classes={{ root: classes.sideBar }}
                     />
                     <TaskListWithState
                         rpc={this.state.rpc}
                         category={this.state.category}
-                        classes={{root: classes.taskList}}
+                        classes={{ root: classes.taskList }}
                         openContextMenu={this.openContextMenu}
                     />
 
                     <StatusBar
                         totalDownloadSpeed={parseInt(server.stat.downloadSpeed)}
                         totalUploadSpeed={parseInt(server.stat.uploadSpeed)}
-                        classes={{root: classes.statusBar}}
+                        classes={{ root: classes.statusBar }}
                     />
 
                     <Popover
@@ -366,7 +371,7 @@ const ControlWithSnackbarProvider: React.SFC<any> = (props) => (
     <SnackbarProvider maxSnack={3} classes={{
         root: props.classes.snackBar
     }}>
-        <ControlWithSnackbar {...props}/>
+        <ControlWithSnackbar {...props} />
     </SnackbarProvider>
 )
 

@@ -78,19 +78,19 @@ class TopBar extends React.Component<Props, {}> {
                     <SmallTooltip title="Server Connection">
                         <Button color="inherit" onClick={showConnectionDialog}>
                             {isLocalServer ?
-                                <LocalIcon classes={{root: classes.buttonIcon}}/> :
-                                <ServerIcon classes={{root: classes.buttonIcon}}/>}
+                                <LocalIcon classes={{ root: classes.buttonIcon }} /> :
+                                <ServerIcon classes={{ root: classes.buttonIcon }} />}
                             {isLocalServer ? "Local" : "Remote"}
                         </Button>
                     </SmallTooltip>
                     <SmallTooltip title="Settings">
                         <IconButton color="inherit" onClick={showSettings}>
-                            <SettingsIcon/>
+                            <SettingsIcon />
                         </IconButton>
                     </SmallTooltip>
                     <SmallTooltip title="New task">
                         <IconButton color="inherit" onClick={showAddNewTask}>
-                            <AddIcon/>
+                            <AddIcon />
                         </IconButton>
                     </SmallTooltip>
                 </Toolbar>

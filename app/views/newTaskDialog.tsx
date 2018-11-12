@@ -1,19 +1,19 @@
-import * as React from 'react'
-import { withStyles, createStyles } from '@material-ui/core/styles'
-import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Paper from '@material-ui/core/Paper'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import Tabs from '@material-ui/core/Tabs'
+import Paper from '@material-ui/core/Paper'
+import { createStyles, withStyles } from '@material-ui/core/styles'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import Tab from '@material-ui/core/Tab'
-
+import Tabs from '@material-ui/core/Tabs'
+import TextField from '@material-ui/core/TextField'
+import * as React from 'react'
 import OptionFields from './optionFields'
-import AriaJsonRPC from '../model/rpc'
-import { Options } from '../model/options'
 import ResponsiveDialog from './responsiveDialog'
+import { Options } from '../model/options'
+import AriaJsonRPC from '../model/rpc'
+
 
 const styles = (theme: Theme) => createStyles({
     dialogPaper: {
@@ -93,7 +93,7 @@ class NewTaskDialog extends React.Component<Props, State> {
         super(props)
         this.state = {
             uris: null,
-            files: null, 
+            files: null,
             tabValue: 0,
             options: {}
         }
@@ -131,18 +131,18 @@ class NewTaskDialog extends React.Component<Props, State> {
                 console.warn("invalid tabValue")
                 break
         }
-        
+
         this.props.onRequestClose()
     }
 
     submitTorrentFile = () => {
-        const getBase64 : (File) => Promise<string> =
-            (file) => new Promise( (res, rej) => {
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.onload = () => { res((reader.result as string).split(",")[1]) }
-            reader.onerror = (error) => { rej(error) }
-        })
+        const getBase64: (File) => Promise<string> =
+            (file) => new Promise((res, rej) => {
+                const reader = new FileReader()
+                reader.readAsDataURL(file)
+                reader.onload = () => { res((reader.result as string).split(",")[1]) }
+                reader.onerror = (error) => { rej(error) }
+            })
 
         const extension = (file) => file.name.split(".").pop()
 
@@ -172,7 +172,7 @@ class NewTaskDialog extends React.Component<Props, State> {
     }
 
     handleFileSelect = (event) => {
-        this.setState({ files: event.target.files })   
+        this.setState({ files: event.target.files })
     }
 
     onOptionChange = (options) => {
@@ -212,17 +212,17 @@ class NewTaskDialog extends React.Component<Props, State> {
                 />
                 <label htmlFor="file-input">
                     <Button
-                        classes={{root: classes.fileInputButton}}
+                        classes={{ root: classes.fileInputButton }}
                         variant="contained"
                         color="primary"
                         component="span"
                     >
                         {
-                        files === null ?
-                            "Select Torrent File" :
-                            files.length > 1 ?
-                                `Selected ${files.length} files` :
-                                `Selected ${files[0].name}`
+                            files === null ?
+                                "Select Torrent File" :
+                                files.length > 1 ?
+                                    `Selected ${files.length} files` :
+                                    `Selected ${files[0].name}`
                         }
                     </Button>
                 </label>
@@ -234,13 +234,13 @@ class NewTaskDialog extends React.Component<Props, State> {
                 open={open}
                 onClose={onRequestClose}
                 fullWidth={true}
-                classes={{paper: classes.dialogPaper}}
+                classes={{ paper: classes.dialogPaper }}
                 disableRestoreFocus // for tooltips: https://bit.ly/2z4suAV
             >
-                <Paper classes={{root: classes.dialogHeaderPaper}}>
+                <Paper classes={{ root: classes.dialogHeaderPaper }}>
                     <DialogTitle>New Task</DialogTitle>
                     <Tabs
-                        classes={{root: classes.tabs}}
+                        classes={{ root: classes.tabs }}
                         value={tabValue}
                         onChange={onChange}
                         fullWidth
@@ -249,16 +249,16 @@ class NewTaskDialog extends React.Component<Props, State> {
                         <Tab label="From File" />
                     </Tabs>
                 </Paper>
-                <DialogContent classes={{root: classes.dialogContent}}>
-                    { tabValue === 0 ? fromUrl : "" }
-                    { tabValue === 1 ? fromFile : "" }
+                <DialogContent classes={{ root: classes.dialogContent }}>
+                    {tabValue === 0 ? fromUrl : ""}
+                    {tabValue === 1 ? fromFile : ""}
                     <OptionFields
-                        classes={{root: classes.optionFields}}
+                        classes={{ root: classes.optionFields }}
                         defaultOptions={globalOptions}
                         onOptionChange={this.onOptionChange}
                     />
                 </DialogContent>
-                <Paper classes={{root: classes.dialogActionsPaper}}>
+                <Paper classes={{ root: classes.dialogActionsPaper }}>
                     <DialogActions>
                         <Button onClick={this.props.onRequestClose}>
                             Cancel
