@@ -24,7 +24,10 @@ import SmallTooltip from './smallTooltip'
 import { Task, getName, isBittorrent, downloadComplete, isHttp } from '../model/task'
 import TaskDetailsView from './taskDetailsView'
 import ButtonBase from '@material-ui/core/ButtonBase'
-import Card from '@material-ui/core/Card';
+import Card from '@material-ui/core/Card'
+import AriaJsonRPC from '../model/rpc';
+
+const fsize = filesize.partial({spacer: ""})
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -80,31 +83,151 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-interface TaskListItemProps {
+export interface ViewProps {
     classes: any
     task: Task
-    handlePauseTask: () => void
-    handleResumeTask: () => void
-    handleDeleteTask: () => void
-    handlePermDeleteTask: () => void
-    handleRevealFile: () => void
+    rpc: AriaJsonRPC
     openContextMenu: (menu: JSX.Element, event: React.MouseEvent) => void
 }
 
-interface TaskListItemState {
-    showDetails: boolean
+export interface DispatchProps {
+    pauseTask: (rpc: AriaJsonRPC, gid: string) => void
+    resumeTask: (rpc: AriaJsonRPC, gid: string) => void
+    deleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    permDeleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    revealFile: (string) => void
+    openFile: (string) => void
 }
 
-class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState> {
+type Props = ViewProps & DispatchProps
+
+interface State {
+    expanded: boolean
+    renderDetails: boolean
+}
+
+class BasicInfo extends React.PureComponent<{
+    classes: any
+    taskName: string
+    status: string
+    totalLength: number
+    path: string
+    rpc: AriaJsonRPC
+    gid: string
+    pauseTask: (rpc: AriaJsonRPC, gid: string) => void
+    resumeTask: (rpc: AriaJsonRPC, gid: string) => void
+    deleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    permDeleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    revealFile: (string) => void
+}> {
+    onButtonMouseUp = (event) => {
+        event.stopPropagation()
+    }
+
+    render() {
+        const {
+            classes,
+            taskName,
+            status,
+            totalLength,
+            path,
+            rpc,
+            gid
+        } = this.props
+
+        const button = (tooltipText, icon, onClick) => (
+            <SmallTooltip title={tooltipText}>
+                <IconButton
+                    classes={{root: classes.button}}
+                    onClick={onClick}
+                    onMouseUp={this.onButtonMouseUp}
+                >
+                    { icon }
+                </IconButton>
+            </SmallTooltip>
+        )
+
+        const pauseTask = () => { this.props.pauseTask(rpc, gid) }
+        const resumeTask = () => { this.props.resumeTask(rpc, gid) }
+        const deleteTask = () => { this.props.deleteTask(rpc, gid) }
+        const permDeleteTask = () => { this.props.permDeleteTask(rpc, gid) }
+        const revealFile = () => { this.props.revealFile(path) }
+        
+        const pauseButton = button("Pause", <PauseIcon />, pauseTask)
+        const resumeButton = button("Resume", <PlayArrowIcon />, resumeTask)
+        
+        const deleteButton =
+            (status !== "error" && status !== "removed" && status !== "complete") ?
+                button("Delete", <DeleteIcon />, deleteTask) :
+                button("Delete forever", <DeleteForeverIcon />, permDeleteTask)
+        
+        const openFolderButton = button("Open folder", <FolderIcon />, revealFile)
+        
+        const buttons = (
+            <>
+                {
+                status === "active" ?
+                    pauseButton :
+                status === "paused" ?
+                    resumeButton : ""
+                }
+                { deleteButton }
+                { openFolderButton }
+            </>
+        )
+
+        return  (
+            <div className={classes.flexContainer}>
+                <div className={classes.name}>
+                    <Typography
+                        variant="subtitle1"
+                        align="left"
+                        classes={{root: classes.text}}
+                    >
+                        {taskName}
+                    </Typography>
+                    <Typography
+                        variant="body2"
+                        align="left"
+                        classes={{root: classes.status}}
+                        component="span"
+                    >
+                        {status}
+                    </Typography>
+                    <Typography
+                        variant="caption"
+                        align="left"
+                        classes={{root: classes.inline}}
+                        component="span"
+                    >
+                        {`${fsize(totalLength)}`}
+                    </Typography>
+                </div>
+                { buttons }
+            </div>
+        )
+    }
+}
+
+class TaskListItem extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            showDetails: false
+            expanded: false,
+            renderDetails: false
         }
     }
 
     toggleDetailView = () => {
-        this.setState({ showDetails: !this.state.showDetails })
+        this.setState({ expanded: !this.state.expanded })
+    }
+
+    displayDetails = () => {
+        this.setState({ renderDetails: true })
+    }
+
+    removeDetails = () => {
+        // this.setState({ renderDetails: false })
     }
 
     onMouseUp = (event) => {
@@ -113,18 +236,17 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         }
     }
 
-    onButtonMouseUp = (event) => {
-        event.stopPropagation()
-    }
-
     onContext = (event: React.MouseEvent) => {
         const menu = <TaskContextMenu
-            task={this.props.task}
-            handlePauseTask={this.props.handlePauseTask}
-            handleResumeTask={this.props.handleResumeTask}
-            handleDeleteTask={this.props.handleDeleteTask}
-            handlePermDeleteTask={this.props.handlePermDeleteTask}
-            handleRevealFile={this.props.handleRevealFile}        
+            status={this.props.task.status}
+            path={this.props.task.files[0].path}
+            rpc={this.props.rpc}
+            gid={this.props.task.gid}
+            pauseTask={this.props.pauseTask}
+            resumeTask={this.props.resumeTask}
+            deleteTask={this.props.deleteTask}
+            permDeleteTask={this.props.permDeleteTask}
+            revealFile={this.props.revealFile}
         />
         this.props.openContextMenu(menu, event)
     }
@@ -133,14 +255,13 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
         const { classes, task } = this.props
         const { status } = task
 
+        const taskName = getName(task)
         const downloadSpeed = parseInt(task.downloadSpeed)
         const uploadSpeed = parseInt(task.uploadSpeed)
         const completedLength = parseInt(task.completedLength)
         const totalLength = parseInt(task.totalLength)
         const uploadLength = parseInt(task.uploadLength)
 
-        const fsize = filesize.partial({spacer: ""})
-        const taskName = getName(task)
         const progressPercentage = totalLength === 0 ? "" :
             sprintf("%.1f", 100 * completedLength / totalLength) + "%"
         const progressDescription = (downloadComplete(task)) ?
@@ -174,40 +295,7 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
             Math.floor((totalLength - completedLength) / downloadSpeed) * 1000)
         const speedAndTimeRemaining = timeRemaining + " " + speedDescription
 
-        const button = (tooltipText, icon, onClick) => (
-            <SmallTooltip title={tooltipText}>
-                <IconButton
-                    classes={{root: classes.button}}
-                    onClick={onClick}
-                    onMouseUp={this.onButtonMouseUp}
-                >
-                    { icon }
-                </IconButton>
-            </SmallTooltip>
-        )
-
-        const pauseButton = button("Pause", <PauseIcon />, this.props.handlePauseTask)
-        const resumeButton = button("Resume", <PlayArrowIcon />, this.props.handleResumeTask)
-
-        const deleteButton =
-            (status !== "error" && status !== "removed" && status !== "complete") ?
-                button("Delete", <DeleteIcon />, this.props.handleDeleteTask) :
-                button("Delete forever", <DeleteForeverIcon />, this.props.handlePermDeleteTask)
-
-        const openFolderButton = button("Open folder", <FolderIcon />, this.props.handleRevealFile)
-
-        const buttons = (
-            <>
-                {
-                status === "active" ?
-                    pauseButton :
-                status === "paused" ?
-                    resumeButton : ""
-                }
-                { deleteButton }
-                { openFolderButton }
-            </>
-        )
+        
 
         const progressText = (
             <div className={classes.flexContainer}>
@@ -238,49 +326,42 @@ class TaskListItem extends React.Component<TaskListItemProps, TaskListItemState>
                 variant="determinate"
                 value={completedLength * 100.0 / totalLength}
             />
-        
-        const basicInfo = (
-            <div className={classes.flexContainer}>
-                <div className={classes.name}>
-                    <Typography
-                        variant="subtitle1"
-                        align="left"
-                        classes={{root: classes.text}}
-                    >
-                        {taskName}
-                    </Typography>
-                    <Typography
-                        variant="body2"
-                        align="left"
-                        classes={{root: classes.status}}
-                        component="span"
-                    >
-                        {status}
-                    </Typography>
-                    <Typography
-                        variant="caption"
-                        align="left"
-                        classes={{root: classes.inline}}
-                        component="span"
-                    >
-                        {`${fsize(totalLength)}`}
-                    </Typography>
-                </div>
-                { buttons }
-            </div>
-        )
 
         return (
             <Card
-                raised={this.state.showDetails}
+                raised={this.state.expanded}
                 className={classes.root}
                 onContextMenu={this.onContext}
                 onMouseUp={this.onMouseUp}
             >
                 <div className={classes.mainArea}>
-                    { basicInfo }
-                    <Collapse in={this.state.showDetails}>
-                        <TaskDetailsView task={task} classes={{root: classes.detailsView}}/>
+                    <BasicInfo
+                        classes={classes}
+                        taskName={taskName}
+                        totalLength={totalLength}
+                        path={task.files[0].path}
+                        rpc={this.props.rpc}
+                        status={this.props.task.status}
+                        gid={this.props.task.gid}
+                        pauseTask={this.props.pauseTask}
+                        resumeTask={this.props.resumeTask}
+                        deleteTask={this.props.deleteTask}
+                        permDeleteTask={this.props.permDeleteTask}
+                        revealFile={this.props.revealFile}
+                    />
+                    <Collapse
+                        in={this.state.expanded}
+                        onEnter={this.displayDetails}
+                        onExited={this.removeDetails}
+                    >
+                        {
+                        this.state.renderDetails ?
+                            <TaskDetailsView
+                                task={task}
+                                classes={{root: classes.detailsView}}
+                            /> : ""
+                        }
+                        
                     </Collapse>
                     { (status === "active") ? progressText : "" }
                 </div>

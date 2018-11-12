@@ -45,8 +45,7 @@ interface Props {
 
 class TopBar extends React.Component<Props, {}> {
     shouldComponentUpdate(nextProps: Props) {
-        return this.props.tabs !== nextProps.tabs ||
-            this.props.title !== nextProps.title
+        return true
     }
 
     render() {

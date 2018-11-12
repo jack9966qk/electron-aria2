@@ -23,3 +23,7 @@ class App extends React.Component {
 ReactDOM.render( <App /> ,
     document.getElementById('content')
 )
+
+// for easier debug with shouldComponentUpdate
+import * as d from 'shallow-diff'
+window["diff"] = d

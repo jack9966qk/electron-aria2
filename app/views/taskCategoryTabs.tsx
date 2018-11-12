@@ -24,11 +24,7 @@ type Props =
     DispatchProps &
     StoreProps
 
-class TaskCategoryTabs extends React.Component<Props, {}> {
-    shouldComponentUpdate(nextProps) {
-        return this.props.category !== nextProps.category
-    }
-
+class TaskCategoryTabs extends React.PureComponent<Props, {}> {
     render() {
         const categories = [
             [TaskCategory.Active, FileDownloadIcon],

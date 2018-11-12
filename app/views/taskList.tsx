@@ -2,9 +2,9 @@ import * as React from 'react'
 import { withStyles, createStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 
-import TaskListItem from './taskListItem'
 import { Task, filterTasks, TaskCategory } from '../model/task'
 import AriaJsonRPC from '../model/rpc'
+import TaskListItemWithState from '../containers/taskListItemWithState';
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -20,12 +20,6 @@ interface ViewProps {
 }
 
 export interface DispatchProps {
-    pauseTask: Function
-    resumeTask: Function
-    deleteTask: Function
-    permDeleteTask: Function
-    revealFile: Function
-    openFile: Function
 }
 
 export interface StoreProps {
@@ -41,6 +35,10 @@ interface State {
 }
 
 class TaskList extends React.Component<Props, State> {
+    shouldComponentUpdate(nextProps) {
+        return true
+    }
+
     constructor(props) {
         super(props)
     }
@@ -52,25 +50,11 @@ class TaskList extends React.Component<Props, State> {
         <div className={root}>
             {
             tasks.map(task =>
-                <TaskListItem
+                <TaskListItemWithState
+                    rpc={this.props.rpc}
                     key={task.gid}
                     task={task}
-                    handlePauseTask={() => {
-                        this.props.pauseTask(this.props.rpc, task.gid)
-                    }}
-                    handleResumeTask={() => {
-                        this.props.resumeTask(this.props.rpc, task.gid)
-                    }}
-                    handleDeleteTask={() => {
-                        this.props.deleteTask(this.props.rpc, task.gid)
-                    }}
-                    handlePermDeleteTask={() => {
-                        this.props.permDeleteTask(this.props.rpc, task.gid)
-                    }}
-                    handleRevealFile={() => {
-                        this.props.revealFile(task.files[0].path)
-                    }}
-                    openContextMenu = {this.props.openContextMenu}
+                    openContextMenu={this.props.openContextMenu}
                 />
             )
             }

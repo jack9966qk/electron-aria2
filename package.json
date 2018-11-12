@@ -25,6 +25,7 @@
     "react-dom": "^16.6.0",
     "react-redux": "^5.0.7",
     "redux": "^4.0.1",
+    "shallow-diff": "0.0.5",
     "simple-jsonrpc-js": "0.0.10",
     "sprintf-js": "^1.1.1",
     "typesafe-actions": "^2.0.4",

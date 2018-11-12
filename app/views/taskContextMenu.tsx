@@ -10,65 +10,45 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import FolderIcon from '@material-ui/icons/Folder'
 
-
-import { Task } from '../model/task'
+import AriaJsonRPC from '../model/rpc';
 
 interface Props {
-    task: Task
-    handlePauseTask: () => void
-    handleResumeTask: () => void
-    handleDeleteTask: () => void
-    handlePermDeleteTask: () => void
-    handleRevealFile: () => void
+    status: string
+    path: string
+    rpc: AriaJsonRPC
+    gid: string
+    pauseTask: (rpc: AriaJsonRPC, gid: string) => void
+    resumeTask: (rpc: AriaJsonRPC, gid: string) => void
+    deleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    permDeleteTask: (rpc: AriaJsonRPC, gid: string) => void
+    revealFile: (path: string) => void
 }
 
-class TaskContextMenu extends React.Component<Props, {}> {
+class TaskContextMenu extends React.PureComponent<Props, {}> {
     render() {
-        const { status } = this.props.task
+        const { status, rpc, gid, path } = this.props
 
-        const pauseListItem = (
-            <MenuItem onClick={this.props.handlePauseTask}>
+        const menuItem = (label, icon, func) => (
+            <MenuItem onClick={func}>
                 <ListItemIcon>
-                    <PauseIcon />
+                    {icon}
                 </ListItemIcon>
-                <ListItemText inset primary="Pause" />
-            </MenuItem>
-        )
-        
-        const resumeListItem = (
-            <MenuItem onClick={this.props.handleResumeTask}>
-                <ListItemIcon>
-                    <PlayArrowIcon />
-                </ListItemIcon>
-                <ListItemText inset primary="Resume" />
-            </MenuItem>
-        )
-        
-        const deleteListItem = (
-            status !== "error" && status !== "removed" && status !== "complete" ?
-                (<MenuItem onClick={this.props.handleDeleteTask}>
-                    <ListItemIcon>
-                        <DeleteIcon />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Delete" />
-                </MenuItem>) :
-                (<MenuItem onClick={this.props.handlePermDeleteTask}>
-                    <ListItemIcon>
-                        <DeleteForeverIcon />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Delete forever" />
-                </MenuItem>)
-        )
-        
-        const openFolderListItem = (
-            <MenuItem onClick={this.props.handleRevealFile}>
-                <ListItemIcon>
-                    <FolderIcon />
-                </ListItemIcon>
-                <ListItemText inset primary="Open folder" />
+                <ListItemText inset primary={label} />
             </MenuItem>
         )
 
+        const pauseTask = () => { this.props.pauseTask(rpc, gid) }
+        const resumeTask = () => { this.props.resumeTask(rpc, gid) }
+        const deleteTask = () => { this.props.deleteTask(rpc, gid) }
+        const permDeleteTask = () => { this.props.permDeleteTask(rpc, gid) }
+        const revealFile = () => { this.props.revealFile(path) }
+
+        const pauseListItem = menuItem("Pause", <PauseIcon />, pauseTask)
+        const resumeListItem = menuItem("Resume", <PlayArrowIcon />, resumeTask)
+        const deleteListItem = status !== "error" && status !== "removed" && status !== "complete" ?
+            menuItem("Delete", <DeleteIcon />, deleteTask) :
+            menuItem("Delete forever", <DeleteForeverIcon />, permDeleteTask)
+        const openFolderListItem = menuItem("Open folder", <FolderIcon />, revealFile)
 
         return (
             <Paper>
