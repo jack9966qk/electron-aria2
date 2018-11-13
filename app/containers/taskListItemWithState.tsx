@@ -1,35 +1,23 @@
-import { shell } from 'electron'
 import { connect } from 'react-redux'
-import { receivedTasksAndStatus } from '../actions'
 import TaskListItem, { DispatchProps } from '../components/taskListItem'
-
+import creators from '../creators'
 
 function mapDispatchToProps(dispatch): DispatchProps {
-    const refreshList = (rpc) => {
-        rpc.getTasksAndStatus().then(({ tasks, stat }) => {
-            dispatch(receivedTasksAndStatus(tasks, stat))
-        })
-    }
-
+    const {
+        pauseTask,
+        resumeTask,
+        deleteTask,
+        permDeleteTask,
+        revealFile,
+        openFile
+    } = creators(dispatch)
     return {
-        pauseTask: (rpc, gid) => {
-            rpc.call("aria2.forcePause", [gid]).then(() => { refreshList(rpc) })
-        },
-        resumeTask: (rpc, gid) => {
-            rpc.call("aria2.unpause", [gid]).then(() => { refreshList(rpc) })
-        },
-        deleteTask: (rpc, gid) => {
-            rpc.call("aria2.forceRemove", [gid]).then(() => { refreshList(rpc) })
-        },
-        permDeleteTask: (rpc, gid) => {
-            rpc.call("aria2.removeDownloadResult", [gid]).then(() => { refreshList(rpc) })
-        },
-        revealFile: (path) => {
-            shell.showItemInFolder(path)
-        },
-        openFile: (path) => {
-            shell.openItem(path)
-        },
+        pauseTask,
+        resumeTask,
+        deleteTask,
+        permDeleteTask,
+        revealFile,
+        openFile
     }
 }
 
