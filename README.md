@@ -18,7 +18,7 @@ npm install
 npm start
 ```
 
-Assumes `aria2c` command to be available on platforms other than Windows.
+Assumes `aria2c` command to be available on platforms other than Windows or macOS.
 
 ## Known Issues & Future Improvements
 
