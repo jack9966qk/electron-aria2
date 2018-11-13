@@ -7,7 +7,8 @@ import creators from '../creators'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        server: state.server
+        server: state.server,
+        latestNotification: state.latestNotification
     }
 }
 

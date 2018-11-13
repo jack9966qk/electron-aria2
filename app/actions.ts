@@ -3,7 +3,7 @@
 import { action } from "typesafe-actions"
 import { Task } from "./model/task"
 import { Options } from "./model/options"
-import { Server } from "./reducer"
+import { Server, Notification } from "./reducer"
 import { GlobalStat } from "./model/globalStat";
 
 export const CONNECTED = "CONNECTED"
@@ -20,8 +20,13 @@ export const RECEIVED_OPTIONS = "RECEIVED_OPTIONS"
 export const receivedOptions = (options: Options) =>
     action(RECEIVED_OPTIONS, options)
 
+export const NEW_NOTIFICATION = "NEW_NOTIFICATION"
+export const newNotification = (notification: Notification) =>
+    action(NEW_NOTIFICATION, notification)
+
 export type RootAction =
     ReturnType<typeof connected> |
     ReturnType<typeof disconnected> |
     ReturnType<typeof receivedTasksAndStatus> |
-    ReturnType<typeof receivedOptions>
+    ReturnType<typeof receivedOptions> |
+    ReturnType<typeof newNotification>

@@ -6,9 +6,11 @@ import {
     disconnected,
     receivedOptions,
     receivedTasksAndStatus,
-    RootAction
+    RootAction,
+    newNotification
 } from './actions'
 import AriaJsonRPC from './model/rpc';
+import { Options } from './model/options';
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 let refreshLoopId: number
@@ -33,6 +35,10 @@ const creators = (dispatch: Dispatch<RootAction>) => {
                 secret: rpc.secret,
                 version, options, tasks, stat
             }))
+            dispatch(newNotification({
+                type: "success",
+                message: "Connected to aria2"
+            }))
             // get new task status every 500ms
             refreshLoopId = window.setInterval(() => { refreshTasks(rpc) }, 500)
         })
@@ -51,7 +57,15 @@ const creators = (dispatch: Dispatch<RootAction>) => {
         "aria2.onBtDownloadComplete": refreshTasks
     }
 
-    const connect = (url, secret, onRes, onNotif, onErr, onConnErr, onConnSuccess) => {
+    const connect = (
+        url: string,
+        secret: string,
+        onRes: Function,
+        onNotif: Function,
+        onErr: Function,
+        onConnErr: () => void,
+        onConnSuccess: Function
+    ) => {
         const rpc = new AriaJsonRPC(url, secret, onRes, onErr)
         // register handlers for notifications
         for (const event in eventHandlers) {
@@ -72,7 +86,13 @@ const creators = (dispatch: Dispatch<RootAction>) => {
     }
     
     return {
-        connectLocal: (onRes, onNotif, onErr, onConnErr, onConnSuccess) => {
+        connectLocal: (
+            onRes: Function,
+            onNotif: Function,
+            onErr: Function,
+            onConnErr: () => void,
+            onConnSuccess: Function
+        ) => {
             const { hostUrl, secret } = mainFuncs
             const launchAndRetry = () => {
                 mainFuncs.launchAria()
@@ -85,7 +105,7 @@ const creators = (dispatch: Dispatch<RootAction>) => {
             connect(hostUrl, secret, onRes, onNotif, onErr, launchAndRetry, onConnSuccess)
         },
         connect: connect,
-        disconnect: (rpc) => {
+        disconnect: (rpc: AriaJsonRPC) => {
             clearInterval(refreshLoopId)
             // need a unified approach on how to and when to shut down
             // rpc.call("aria2.shutdown", [])
@@ -94,21 +114,35 @@ const creators = (dispatch: Dispatch<RootAction>) => {
         purgeTasks: (rpc: AriaJsonRPC) => {
             rpc.call("aria2.purgeDownloadResult", []).then(() => { refreshTasks(rpc) })
         },
-        changeOptions: (rpc, options) => {
-            rpc.call("aria2.changeGlobalOption", [options], true)
+        changeOptions: (rpc: AriaJsonRPC, options: Options) => {
+            rpc.call("aria2.changeGlobalOption", [options])
                 .then((_) => rpc.call("aria2.getGlobalOption", []))
                 .then((options) => {
                     dispatch(receivedOptions(options))
+                    dispatch(newNotification({
+                        type: "success",
+                        message: "Global options updated"
+                    }))
                 })
         },
-        addUris: (rpc, uris, options) => {
+        addUris: (rpc: AriaJsonRPC, uris: string[], options: Options) => {
             const requests = uris
                 .map((uri) => rpc.call("aria2.addUri", [[uri], options]))
             Promise.all(requests)
                 .then(() => rpc.getTasksAndStatus())
-                .then(({ tasks, stat }) => { dispatch(receivedTasksAndStatus(tasks, stat)) })
+                .then(({ tasks, stat }) => {
+                    dispatch(receivedTasksAndStatus(tasks, stat))
+                    dispatch(newNotification({
+                        type: "success",
+                        message: `Added ${uris.length} task${uris.length > 1 ? "s": ""}`
+                    }))
+                })
         },
-        addFiles: (rpc, files, options) => {
+        addFiles: (
+            rpc: AriaJsonRPC,
+            files: {type: "torrent" | "metalink", content: string}[],
+            options: Options
+        ) => {
             const requests = files.map(({ type, content }) => {
                 switch (type) {
                     case "torrent":
@@ -124,24 +158,28 @@ const creators = (dispatch: Dispatch<RootAction>) => {
                 return rpc.getTasksAndStatus()
             }).then(({ tasks, stat }) => {
                 dispatch(receivedTasksAndStatus(tasks, stat))
+                dispatch(newNotification({
+                    type: "success",
+                    message: `Added ${files.length} task${files.length > 1 ? "s": ""}`
+                }))
             })
         },
-        pauseTask: (rpc, gid) => {
+        pauseTask: (rpc: AriaJsonRPC, gid: string) => {
             rpc.call("aria2.forcePause", [gid]).then(() => { refreshTasks(rpc) })
         },
-        resumeTask: (rpc, gid) => {
+        resumeTask: (rpc: AriaJsonRPC, gid: string) => {
             rpc.call("aria2.unpause", [gid]).then(() => { refreshTasks(rpc) })
         },
-        deleteTask: (rpc, gid) => {
+        deleteTask: (rpc: AriaJsonRPC, gid: string) => {
             rpc.call("aria2.forceRemove", [gid]).then(() => { refreshTasks(rpc) })
         },
-        permDeleteTask: (rpc, gid) => {
+        permDeleteTask: (rpc: AriaJsonRPC, gid: string) => {
             rpc.call("aria2.removeDownloadResult", [gid]).then(() => { refreshTasks(rpc) })
         },
-        revealFile: (path) => {
+        revealFile: (path: string) => {
             shell.showItemInFolder(path)
         },
-        openFile: (path) => {
+        openFile: (path: string) => {
             shell.openItem(path)
         },
     }

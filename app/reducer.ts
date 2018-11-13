@@ -7,7 +7,8 @@ import {
     CONNECTED,
     RECEIVED_TASKS_AND_STATUS,
     RECEIVED_OPTIONS,
-    DISCONNECTED
+    DISCONNECTED,
+    NEW_NOTIFICATION
 } from './actions'
 import { GlobalStat } from './model/globalStat'
 
@@ -20,12 +21,19 @@ export type Server = {
     readonly stat: GlobalStat
 }
 
+export type Notification = {
+    readonly message: string
+    readonly type: "success" | "error" | "warning" | "info"
+}
+
 export type RootState = {
     readonly server: Server | null
+    readonly latestNotification: Notification | null
 }
 
 export const initialState: RootState = {
-    server: null
+    server: null,
+    latestNotification: null
 }
 
 const reducer: Reducer<RootState, RootAction> =
@@ -46,6 +54,10 @@ const reducer: Reducer<RootState, RootAction> =
             break
         case RECEIVED_OPTIONS:
             return {...state, server: {...state.server, options: action.payload}}
+            break
+        case NEW_NOTIFICATION:
+            return {...state, latestNotification: action.payload}
+            break
         default:
             return state
             break

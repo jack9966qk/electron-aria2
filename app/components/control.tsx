@@ -21,7 +21,7 @@ import {
     TaskCategory,
     taskCategoryDescription
 } from '../model/task'
-import { Server } from '../reducer'
+import { Server, Notification } from '../reducer'
 
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
@@ -108,6 +108,7 @@ export interface DispatchProps {
 
 export interface StoreProps {
     server: Server
+    latestNotification: Notification | null
 }
 
 type Props = ViewProps & DispatchProps & StoreProps
@@ -226,6 +227,13 @@ class Control extends React.Component<Props, State> {
             this.onAriaError,
             this.onConnectionError,
             this.onConnectionSuccess)
+    }
+
+    componentDidUpdate({ latestNotification }) {
+        if (latestNotification !== this.props.latestNotification) {
+            const { message, type } = this.props.latestNotification
+            this.openSnackbarWith(message, type)
+        }
     }
 
     disconnect = () => {

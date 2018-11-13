@@ -8,8 +8,8 @@ type JsonRPC = any
 
 export type NotificationResponse = { gid: string }
 
-const callback = (func: Function, args: any[], silent) => {
-    if (!silent) { func(...args) }
+const callback = (func: Function, args: any[], notify) => {
+    if (notify) { func(...args) }
 }
 
 const getAllTasksMethods = [
@@ -81,18 +81,18 @@ export default class AriaJsonRPC {
         this.jrpc.on(event, callback)
     }
 
-    async call(method: MethodName, args: any[], silent = false): Promise<any> {
+    async call(method: MethodName, args: any[], notify = false): Promise<any> {
         try {
             const result = await this.jrpc.call(method, [`token:${this.secret}`].concat(args))
-            callback(this.onAriaResponse, [method, args, result], silent)
+            callback(this.onAriaResponse, [method, args, result], notify)
             return result
         } catch (error) {
-            callback(this.onAriaError, [method, args, error], silent)
+            callback(this.onAriaError, [method, args, error], notify)
             throw error
         }
     }
 
-    async multiCall(methods: { methodName: MethodName, args: any[] }[], silent = false): Promise<any> {
+    async multiCall(methods: { methodName: MethodName, args: any[] }[], notify = false): Promise<any> {
         const methodsWithSecret = methods.map(({ methodName, args }) => ({
             methodName, params: [`token:${this.secret}`].concat(args)
         }))
@@ -100,10 +100,10 @@ export default class AriaJsonRPC {
         try {
             const response = await this.jrpc.call("system.multicall", [methodsWithSecret])
             const result = response.map(unpack)
-            callback(this.onAriaResponse, ["system.multicall", [methods], result], silent)
+            callback(this.onAriaResponse, ["system.multicall", [methods], result], notify)
             return result
         } catch (error) {
-            callback(this.onAriaError, ["system.multicall", [methods], error], silent)
+            callback(this.onAriaError, ["system.multicall", [methods], error], notify)
             throw error
         }
     }
@@ -112,7 +112,7 @@ export default class AriaJsonRPC {
         const methods = getAllTasksMethods.concat([{
             methodName: "aria2.getGlobalStat", args: []
         }])
-        const [active, waiting, stopped, stat] = await this.multiCall(methods, true)
+        const [active, waiting, stopped, stat] = await this.multiCall(methods)
         const tasks: Map<string, Task> = new Map()
         for (const ts of [active, waiting, stopped]) {
             for (const t of ts) { tasks.set(t.gid, t) }
