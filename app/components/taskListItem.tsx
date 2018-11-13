@@ -266,8 +266,8 @@ class TaskListItem extends React.Component<Props, State> {
         const totalLength = parseInt(task.totalLength)
         const uploadLength = parseInt(task.uploadLength)
 
-        const progressPercentage = totalLength === 0 ? "" :
-            sprintf("%.1f", 100 * completedLength / totalLength) + "%"
+        const progressPercentage = totalLength === 0 ? "0.0%" :
+            sprintf("%.1f", Math.floor(1000 * completedLength / totalLength) / 10) + "%"
         const progressDescription = (downloadComplete(task)) ?
             `${fsize(uploadLength)} uploaded` : `${progressPercentage} downloaded`
         const speedDescription = isBittorrent(task) ?
