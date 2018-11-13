@@ -53,7 +53,22 @@ const styles = (theme: Theme) => createStyles({
         }
     },
     toolBar: theme.mixins.toolbar,
-    snackBar: {
+    snackBarCentered: {
+        [theme.breakpoints.up("sm")]: {
+            left: '50%',
+            right: 'auto',
+            transform: 'translateX(-50%)',
+        }
+    },
+    snackBarContent: {
+        [theme.breakpoints.up('sm')]: {
+            minWidth: 288,
+            maxWidth: 568,
+            borderRadius: theme.shape.borderRadius,
+        },
+        [theme.breakpoints.down('xs')]: {
+            flexGrow: 1,
+        },
     },
     statusBar: {
         zIndex: theme.zIndex.drawer - 1,
@@ -160,10 +175,12 @@ class Control extends React.Component<Props, State> {
     openSnackbarWith = (text: string, variant?: string) => {
         this.props.enqueueSnackbar(text, {
             variant: variant ? variant : "default",
-            autoHideDuration: 3000,
             anchorOrigin: {
                 vertical: "bottom",
                 horizontal: "center"
+            },
+            ContentProps: {
+                classes: { root: this.props.classes.snackBarContent }
             }
         })
     }
@@ -369,7 +386,7 @@ class Control extends React.Component<Props, State> {
 const ControlWithSnackbar = withSnackbar(Control)
 const ControlWithSnackbarProvider: React.SFC<any> = (props) => (
     <SnackbarProvider maxSnack={3} classes={{
-        root: props.classes.snackBar
+        anchorOriginBottomCenter: props.classes.snackBarCentered
     }}>
         <ControlWithSnackbar {...props} />
     </SnackbarProvider>
