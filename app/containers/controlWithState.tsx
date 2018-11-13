@@ -9,7 +9,7 @@ import {
 } from '../actions'
 import AriaJsonRPC from '../model/rpc'
 import { RootState } from '../reducer'
-import Control, { DispatchProps, StoreProps } from '../views/control'
+import Control, { DispatchProps, StoreProps } from '../components/control'
 
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")

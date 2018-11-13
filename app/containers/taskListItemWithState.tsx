@@ -1,7 +1,7 @@
 import { shell } from 'electron'
 import { connect } from 'react-redux'
 import { receivedTasksAndStatus } from '../actions'
-import TaskListItem, { DispatchProps } from '../views/taskListItem'
+import TaskListItem, { DispatchProps } from '../components/taskListItem'
 
 
 function mapDispatchToProps(dispatch): DispatchProps {

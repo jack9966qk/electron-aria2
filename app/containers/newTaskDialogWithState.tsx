@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { Dispatch } from 'redux'
 import { receivedTasksAndStatus, RootAction } from '../actions'
 import { RootState } from '../reducer'
-import NewTaskDialog, { DispatchProps, StoreProps } from '../views/newTaskDialog'
+import NewTaskDialog, { DispatchProps, StoreProps } from '../components/newTaskDialog'
 
 
 function mapStateToProps(state: RootState): StoreProps {

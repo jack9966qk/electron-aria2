@@ -2,7 +2,7 @@ import { isEqual } from 'lodash'
 import { connect } from 'react-redux'
 import { countCategory } from '../model/task'
 import { RootState } from '../reducer'
-import SideBar, { StoreProps } from '../views/sideBar'
+import SideBar, { StoreProps } from '../components/sideBar'
 
 
 var prevCount = undefined

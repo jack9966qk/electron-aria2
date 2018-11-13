@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { Dispatch } from 'redux'
 import { receivedOptions, RootAction } from '../actions'
 import { RootState } from '../reducer'
-import SettingsDialog, { DispatchProps, StoreProps } from '../views/settingsDialog'
+import SettingsDialog, { DispatchProps, StoreProps } from '../components/settingsDialog'
 
 
 function mapStateToProps(state: RootState): StoreProps {
