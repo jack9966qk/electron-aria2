@@ -25,8 +25,12 @@ module.exports.launchAria = () => {
     const dhtPath = path.join(__dirname, "save", "dht.dat")
     const sessionPath = path.join(__dirname, "save", "session")
     const downloadPath = app.getPath("downloads")
-    const ariaPath = process.platform === 'win32' ?
-        path.join(__dirname, "bin", "win64", "aria2c.exe") : "aria2c"
+    const ariaPath =
+        process.platform === 'win32' ?
+            path.join(__dirname, "bin", "win64", "aria2c.exe")
+        : process.platform === 'darwin' ?
+            path.join(__dirname, "bin", "macOS", "aria2c")
+        : "aria2c"
     const args = [
         `--dir=${downloadPath}`,
         "--enable-rpc=true",
