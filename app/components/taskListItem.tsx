@@ -13,9 +13,9 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import * as humanizeDuration from 'humanize-duration'
 import * as React from 'react'
 import { sprintf } from 'sprintf-js'
-import SmallTooltip from './smallTooltip'
-import TaskContextMenu from './taskContextMenu'
-import TaskDetailsView from './taskDetailsView'
+import SmallTooltip from './SmallTooltip'
+import TaskContextMenu from './TaskContextMenu'
+import TaskDetailsView from './TaskDetailsView'
 import AriaJsonRPC from '../model/rpc'
 import {
     downloadComplete,

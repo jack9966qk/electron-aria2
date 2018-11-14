@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { RootState } from '../reducer'
-import MultiSnackbar, { StoreProps } from '../components/multiSnackbar'
+import MultiSnackbar, { StoreProps } from '../components/MultiSnackbar'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {

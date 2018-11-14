@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import TaskListItem, { DispatchProps } from '../components/taskListItem'
+import TaskListItem, { DispatchProps } from '../components/TaskListItem'
 import creators from '../creators'
 
 function mapDispatchToProps(dispatch): DispatchProps {

@@ -1,7 +1,7 @@
 import { createStyles, withStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import * as React from 'react'
-import TaskListItemWithState from '../containers/taskListItemWithState'
+import TaskListItemWithState from '../containers/TaskListItemWithState'
 import AriaJsonRPC from '../model/rpc'
 import { filterTasks, Task, TaskCategory } from '../model/task'
 

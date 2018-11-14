@@ -13,7 +13,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import ServerIcon from '@material-ui/icons/Router'
 import LocalIcon from '@material-ui/icons/Computer'
 
-import SmallTooltip from './smallTooltip'
+import SmallTooltip from './SmallTooltip'
 
 const styles = (theme: Theme) => createStyles({
     root: {

@@ -4,24 +4,23 @@ import createStyles from '@material-ui/core/styles/createStyles'
 import withStyles from '@material-ui/core/styles/withStyles'
 import * as Electron from 'electron'
 import * as React from 'react'
-import ConnectionDialog from './connectionDialog'
-import StatusBar from './statusBar'
-import TopBar from './topBar'
-import NewTaskDialogWithState from '../containers/newTaskDialogWithState'
-import SettingsDialogWithState from '../containers/settingsDialogWithState'
-import SideBarWithState from '../containers/sideBarWithState'
-import TaskCategoryTabsWithState from '../containers/taskCategoryTabsWithState'
-import TaskListWithState from '../containers/taskListWithState'
+import ConnectionDialog from './ConnectionDialog'
+import StatusBar from './StatusBar'
+import TopBar from './TopBar'
+import NewTaskDialogWithState from '../containers/NewTaskDialogWithState'
+import SettingsDialogWithState from '../containers/SettingsDialogWithState'
+import SideBarWithState from '../containers/SideBarWithState'
+import TaskCategoryTabsWithState from '../containers/TaskCategoryTabsWithState'
+import TaskListWithState from '../containers/TaskListWithState'
 import AriaMessages from '../model/ariaMessages'
 import AriaJsonRPC from '../model/rpc'
 import {
     getName,
-    Task,
     TaskCategory,
     taskCategoryDescription
 } from '../model/task'
 import { Server, Notification } from '../reducer'
-import MultiSnackbarWithState from '../containers/multiSnackbarWithState';
+import MultiSnackbarWithState from '../containers/MultiSnackbarWithState';
 
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
