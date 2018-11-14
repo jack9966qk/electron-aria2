@@ -23,6 +23,7 @@
     "ps-tree": "^1.1.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
+    "react-fast-compare": "^2.0.4",
     "react-redux": "^5.0.7",
     "redux": "^4.0.1",
     "shallow-diff": "0.0.5",

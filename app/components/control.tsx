@@ -18,8 +18,10 @@ import {
     taskCategoryDescription
 } from '../model/task'
 import { Server, Notification } from '../reducer'
-import MultiSnackbarWithState from '../containers/MultiSnackbarWithState';
-
+import MultiSnackbarWithState from '../containers/MultiSnackbarWithState'
+import { memoize } from './Memoize'
+const TopBarMemoized = memoize(TopBar)
+const SidebarMemoized = memoize(SideBarWithState)
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
@@ -158,13 +160,14 @@ class Control extends React.Component<Props, State> {
         }
     }
 
+    
     render() {
         const { server, classes } = this.props
         const title = taskCategoryDescription[this.state.category]
         return server === null ? (<></>) : (
             <>
                 <div className={classes.content} onMouseUp={this.onMouseUp}>
-                    <TopBar
+                    <TopBarMemoized
                         classes={{ root: classes.topBar }}
                         showAddNewTask={this.openDialog}
                         showMenu={this.toggleSidebarOpen}
@@ -177,7 +180,7 @@ class Control extends React.Component<Props, State> {
                             category={this.state.category}
                         />}
                     />
-                    <SideBarWithState
+                    <SidebarMemoized
                         open={this.state.sidebarOpen}
                         onCategorySelected={this.onCategorySelected}
                         category={this.state.category}
