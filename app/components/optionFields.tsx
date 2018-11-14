@@ -185,6 +185,7 @@ class OptionFields extends React.Component<Props, State> {
                     sections.map(([optionNames, description, defaultExpanded]) =>
                         <Section
                             {...this.props}
+                            key={description}
                             optionNames={optionNames}
                             description={description}
                             defaultExpanded={defaultExpanded}

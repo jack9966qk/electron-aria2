@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { Dispatch } from 'redux'
 import { RootAction } from '../actions'
 import { RootState } from '../reducer'
-import Control, { DispatchProps, StoreProps } from '../components/Control'
+import RpcConnection, { DispatchProps, StoreProps } from '../components/AriaConnection'
 import creators from '../creators'
 
 function mapStateToProps(state: RootState): StoreProps {
@@ -12,8 +12,8 @@ function mapStateToProps(state: RootState): StoreProps {
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
-    const { displayNotification } = creators(dispatch)
-    return { displayNotification }
+    const { connectLocal, connect, disconnect, displayNotification } = creators(dispatch)
+    return { connectLocal, connect, disconnect, displayNotification }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Control)
+export default connect(mapStateToProps, mapDispatchToProps)(RpcConnection)

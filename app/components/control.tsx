@@ -12,10 +12,8 @@ import SettingsDialogWithState from '../containers/SettingsDialogWithState'
 import SideBarWithState from '../containers/SideBarWithState'
 import TaskCategoryTabsWithState from '../containers/TaskCategoryTabsWithState'
 import TaskListWithState from '../containers/TaskListWithState'
-import AriaMessages from '../model/ariaMessages'
 import AriaJsonRPC from '../model/rpc'
 import {
-    getName,
     TaskCategory,
     taskCategoryDescription
 } from '../model/task'
@@ -62,30 +60,11 @@ const styles = (theme: Theme) => createStyles({
 
 interface ViewProps {
     classes: any
-    enqueueSnackbar: Function
+    rpc: AriaJsonRPC
+    connect: (url: string, secret: string) => void
 }
 
 export interface DispatchProps {
-    connectLocal: (
-        onRes: Function,
-        onNotif: Function,
-        onErr: Function,
-        onConnErr: () => void,
-        onConnSuccess: (AriaJsonRPC) => void
-    ) => void
-    connect: (
-        url: string,
-        secret: string,
-        onRes: Function,
-        onNotif: Function,
-        onErr: Function,
-        onConnErr: () => void,
-        onConnSuccess: (AriaJsonRPC) => void
-    ) => void
-    disconnect: (
-        rpc: AriaJsonRPC,
-    ) => void
-    purgeTasks: (AriaJsonRPC) => void
     displayNotification: (
         message: Notification["message"],
         type?: Notification["type"]
@@ -99,7 +78,6 @@ export interface StoreProps {
 type Props = ViewProps & DispatchProps & StoreProps
 
 interface State {
-    rpc: AriaJsonRPC | null
     newTaskDialogOpen: boolean
     settingsOpen: boolean
     sidebarOpen: boolean
@@ -109,14 +87,12 @@ interface State {
     contextMenu: JSX.Element | null
     category: TaskCategory
     snackbarText: string | null
-    startedConnecting: boolean
 }
 
 class Control extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            rpc: null,
             newTaskDialogOpen: false,
             settingsOpen: false,
             sidebarOpen: false,
@@ -125,8 +101,7 @@ class Control extends React.Component<Props, State> {
             contextMenuPosition: { top: 0, left: 0 },
             contextMenu: null,
             snackbarText: null,
-            category: TaskCategory.Active,
-            startedConnecting: false
+            category: TaskCategory.Active
         }
     }
 
@@ -183,107 +158,6 @@ class Control extends React.Component<Props, State> {
         }
     }
 
-    getStatus = () => (
-        this.props.server !== null ?
-            "Connected" :
-            this.state.startedConnecting ?
-                "Connecting" :
-                "Disconnected"
-    )
-
-    componentDidMount() {
-        console.log("Control did mount")
-        this.props.connectLocal(
-            this.onAriaResponse,
-            this.onAriaNotification,
-            this.onAriaError,
-            this.onConnectionError,
-            this.onConnectionSuccess)
-    }
-
-    disconnect = () => {
-        if (this.state.rpc) {
-            this.props.disconnect(this.state.rpc)
-            this.setState({ rpc: null, startedConnecting: false })
-        }
-    }
-
-    connect = (hostUrl, secret) => {
-        this.disconnect()
-        this.props.connect(hostUrl, secret,
-            this.onAriaResponse,
-            this.onAriaNotification,
-            this.onAriaError,
-            this.onConnectionError,
-            this.onConnectionSuccess)
-    }
-
-    componentWillUnmount() {
-        console.log("Control will unmount")
-        if (this.state.rpc !== null) {
-            this.props.disconnect(this.state.rpc)
-        }
-    }
-
-    onAriaResponse = (method, args, response) => {
-        console.log(method)
-        console.log(response)
-        const func = AriaMessages[method]
-        if (func !== undefined) {
-            const message = func(args, response)
-            if (message !== null) {
-                this.props.displayNotification(message)
-            }
-        } else {
-            this.props.displayNotification(`${method.replace("aria2.", "")} succeeded`)
-        }
-    }
-
-    onAriaNotification = (method, response) => {
-        console.log(method)
-        console.log(response)
-        const { gid } = response
-        if (!this.props.server.tasks.has(gid)) {
-            console.warn(`task with gid ${gid} cannot be found`)
-        }
-        const task = this.props.server.tasks.get(gid)
-        const name = getName(task)
-        switch (method) {
-            case "aria2.onDownloadStart":
-                this.props.displayNotification(`Task "${name}" started`)
-                break
-            case "aria2.onDownloadPause":
-                this.props.displayNotification(`Task "${name}" paused`)
-                break
-            case "aria2.onDownloadStop":
-                this.props.displayNotification(`Task "${name}" stopped`)
-                break
-            case "aria2.onDownloadComplete":
-                this.props.displayNotification(`Task "${name}" completed`, "success")
-                break
-            case "aria2.onDownloadError":
-                this.props.displayNotification(`Task "${name}" has error`, "error")
-                break
-            case "aria2.onBtDownloadComplete":
-                this.props.displayNotification(`Task "${name}" completed`)
-                break
-            default:
-                break
-        }
-    }
-
-    onAriaError = (_method, _args, error) => {
-        this.props.displayNotification(`Error: ${error.message}`)
-    }
-
-    onConnectionSuccess = (rpc) => {
-        this.setState({ rpc })
-    }
-
-    onConnectionError = () => {
-        this.props.displayNotification(`Failed to connect to ${this.props.server.hostUrl}`)
-    }
-
     render() {
         const { server, classes } = this.props
         const title = taskCategoryDescription[this.state.category]
@@ -310,7 +184,7 @@ class Control extends React.Component<Props, State> {
                         classes={{ root: classes.sideBar }}
                     />
                     <TaskListWithState
-                        rpc={this.state.rpc}
+                        rpc={this.props.rpc}
                         category={this.state.category}
                         classes={{ root: classes.taskList }}
                         openContextMenu={this.openContextMenu}
@@ -337,17 +211,17 @@ class Control extends React.Component<Props, State> {
                     open={this.state.connectionDialogOpen}
                     server={server}
                     onRequestClose={this.closeConnectionDialog}
-                    onRequestConnect={this.connect}
+                    onRequestConnect={this.props.connect}
                 />
 
                 <NewTaskDialogWithState
-                    rpc={this.state.rpc}
+                    rpc={this.props.rpc}
                     open={this.state.newTaskDialogOpen}
                     onRequestClose={this.closeDialog}
                 />
                 <SettingsDialogWithState
                     title="Global Options"
-                    rpc={this.state.rpc}
+                    rpc={this.props.rpc}
                     open={this.state.settingsOpen}
                     onRequestClose={this.closeSettings}
                 />

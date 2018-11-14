@@ -6,7 +6,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
 import reducer, { initialState } from './reducer'
-import ControlWithState from './containers/controlWithState'
+import RpcConnectionWithState from './containers/AriaConnectionWithState'
 
 const store = createStore(reducer, initialState)
 
@@ -14,7 +14,7 @@ class App extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <ControlWithState />
+                <RpcConnectionWithState />
             </Provider>
         )
     }
