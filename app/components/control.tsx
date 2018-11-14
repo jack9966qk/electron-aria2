@@ -3,7 +3,6 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import createStyles from '@material-ui/core/styles/createStyles'
 import withStyles from '@material-ui/core/styles/withStyles'
 import * as Electron from 'electron'
-import { SnackbarProvider, withSnackbar } from 'notistack'
 import * as React from 'react'
 import ConnectionDialog from './connectionDialog'
 import StatusBar from './statusBar'
@@ -22,6 +21,7 @@ import {
     taskCategoryDescription
 } from '../model/task'
 import { Server, Notification } from '../reducer'
+import MultiSnackbarWithState from '../containers/multiSnackbarWithState';
 
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
@@ -53,23 +53,6 @@ const styles = (theme: Theme) => createStyles({
         }
     },
     toolBar: theme.mixins.toolbar,
-    snackBarCentered: {
-        [theme.breakpoints.up("sm")]: {
-            left: '50%',
-            right: 'auto',
-            transform: 'translateX(-50%)',
-        }
-    },
-    snackBarContent: {
-        [theme.breakpoints.up('sm')]: {
-            minWidth: 288,
-            maxWidth: 568,
-            borderRadius: theme.shape.borderRadius,
-        },
-        [theme.breakpoints.down('xs')]: {
-            flexGrow: 1,
-        },
-    },
     statusBar: {
         zIndex: theme.zIndex.drawer - 1,
         [theme.breakpoints.down("xs")]: {
@@ -104,11 +87,14 @@ export interface DispatchProps {
         rpc: AriaJsonRPC,
     ) => void
     purgeTasks: (AriaJsonRPC) => void
+    displayNotification: (
+        message: Notification["message"],
+        type?: Notification["type"]
+    ) => void
 }
 
 export interface StoreProps {
     server: Server
-    latestNotification: Notification | null
 }
 
 type Props = ViewProps & DispatchProps & StoreProps
@@ -173,19 +159,6 @@ class Control extends React.Component<Props, State> {
         this.setState({ sidebarOpen: !this.state.sidebarOpen })
     }
 
-    openSnackbarWith = (text: string, variant?: string) => {
-        this.props.enqueueSnackbar(text, {
-            variant: variant ? variant : "default",
-            anchorOrigin: {
-                vertical: "bottom",
-                horizontal: "center"
-            },
-            ContentProps: {
-                classes: { root: this.props.classes.snackBarContent }
-            }
-        })
-    }
-
     onCategorySelected = (category) => {
         this.setState({ category })
     }
@@ -229,13 +202,6 @@ class Control extends React.Component<Props, State> {
             this.onConnectionSuccess)
     }
 
-    componentDidUpdate({ latestNotification }) {
-        if (latestNotification !== this.props.latestNotification) {
-            const { message, type } = this.props.latestNotification
-            this.openSnackbarWith(message, type)
-        }
-    }
-
     disconnect = () => {
         if (this.state.rpc) {
             this.props.disconnect(this.state.rpc)
@@ -267,10 +233,10 @@ class Control extends React.Component<Props, State> {
         if (func !== undefined) {
             const message = func(args, response)
             if (message !== null) {
-                this.openSnackbarWith(message)
+                this.props.displayNotification(message)
             }
         } else {
-            this.openSnackbarWith(`${method.replace("aria2.", "")} succeeded`)
+            this.props.displayNotification(`${method.replace("aria2.", "")} succeeded`)
         }
     }
 
@@ -285,22 +251,22 @@ class Control extends React.Component<Props, State> {
         const name = getName(task)
         switch (method) {
             case "aria2.onDownloadStart":
-                this.openSnackbarWith(`Task "${name}" started`)
+                this.props.displayNotification(`Task "${name}" started`)
                 break
             case "aria2.onDownloadPause":
-                this.openSnackbarWith(`Task "${name}" paused`)
+                this.props.displayNotification(`Task "${name}" paused`)
                 break
             case "aria2.onDownloadStop":
-                this.openSnackbarWith(`Task "${name}" stopped`)
+                this.props.displayNotification(`Task "${name}" stopped`)
                 break
             case "aria2.onDownloadComplete":
-                this.openSnackbarWith(`Task "${name}" completed`, "success")
+                this.props.displayNotification(`Task "${name}" completed`, "success")
                 break
             case "aria2.onDownloadError":
-                this.openSnackbarWith(`Task "${name}" has error`, "error")
+                this.props.displayNotification(`Task "${name}" has error`, "error")
                 break
             case "aria2.onBtDownloadComplete":
-                this.openSnackbarWith(`Task "${name}" completed`)
+                this.props.displayNotification(`Task "${name}" completed`)
                 break
             default:
                 break
@@ -308,7 +274,7 @@ class Control extends React.Component<Props, State> {
     }
 
     onAriaError = (_method, _args, error) => {
-        this.openSnackbarWith(`Error: ${error.message}`)
+        this.props.displayNotification(`Error: ${error.message}`)
     }
 
     onConnectionSuccess = (rpc) => {
@@ -316,7 +282,7 @@ class Control extends React.Component<Props, State> {
     }
 
     onConnectionError = () => {
-        this.openSnackbarWith(`Failed to connect to ${this.props.server.hostUrl}`)
+        this.props.displayNotification(`Failed to connect to ${this.props.server.hostUrl}`)
     }
 
     render() {
@@ -386,18 +352,11 @@ class Control extends React.Component<Props, State> {
                     open={this.state.settingsOpen}
                     onRequestClose={this.closeSettings}
                 />
+
+                <MultiSnackbarWithState />
             </>
         )
     }
 }
 
-const ControlWithSnackbar = withSnackbar(Control)
-const ControlWithSnackbarProvider: React.SFC<any> = (props) => (
-    <SnackbarProvider maxSnack={3} classes={{
-        anchorOriginBottomCenter: props.classes.snackBarCentered
-    }}>
-        <ControlWithSnackbar {...props} />
-    </SnackbarProvider>
-)
-
-export default withStyles(styles)(ControlWithSnackbarProvider)
+export default withStyles(styles)(Control)

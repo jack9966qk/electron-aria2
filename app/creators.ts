@@ -9,8 +9,9 @@ import {
     RootAction,
     newNotification
 } from './actions'
-import AriaJsonRPC from './model/rpc';
-import { Options } from './model/options';
+import AriaJsonRPC from './model/rpc'
+import { Options } from './model/options'
+import { Notification } from './reducer'
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 let refreshLoopId: number
@@ -182,6 +183,15 @@ const creators = (dispatch: Dispatch<RootAction>) => {
         openFile: (path: string) => {
             shell.openItem(path)
         },
+        displayNotification: (
+            message: Notification["message"],
+            type?: Notification["type"]
+        ) => {
+            dispatch(newNotification({
+                message,
+                type: type === undefined ? "default" : type
+            }))
+        }
     }
 }
 

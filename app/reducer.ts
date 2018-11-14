@@ -23,7 +23,7 @@ export type Server = {
 
 export type Notification = {
     readonly message: string
-    readonly type: "success" | "error" | "warning" | "info"
+    readonly type: "success" | "error" | "warning" | "info" | "default"
 }
 
 export type RootState = {

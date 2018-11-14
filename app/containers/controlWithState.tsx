@@ -7,14 +7,13 @@ import creators from '../creators'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        server: state.server,
-        latestNotification: state.latestNotification
+        server: state.server
     }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
-    const { connectLocal, connect, disconnect, purgeTasks } = creators(dispatch)
-    return { connectLocal, connect, disconnect, purgeTasks }
+    const { connectLocal, connect, disconnect, purgeTasks, displayNotification } = creators(dispatch)
+    return { connectLocal, connect, disconnect, purgeTasks, displayNotification }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Control)

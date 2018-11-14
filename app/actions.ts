@@ -4,7 +4,7 @@ import { action } from "typesafe-actions"
 import { Task } from "./model/task"
 import { Options } from "./model/options"
 import { Server, Notification } from "./reducer"
-import { GlobalStat } from "./model/globalStat";
+import { GlobalStat } from "./model/globalStat"
 
 export const CONNECTED = "CONNECTED"
 export const connected = (server: Server) => action(CONNECTED, server)
