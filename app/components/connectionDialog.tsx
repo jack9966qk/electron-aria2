@@ -10,7 +10,8 @@ import { Server } from '../reducer'
 
 interface ViewProps {
     open: boolean
-    server: Server
+    defaultUrl: string
+    defaultSecret: string
     onRequestConnect: (hostUrl: string, secret: string) => void
     onRequestClose: () => void
 }
@@ -35,8 +36,8 @@ class ConnectionDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            hostUrl: this.props.server.hostUrl,
-            secret: this.props.server.secret
+            hostUrl: this.props.defaultUrl,
+            secret: this.props.defaultSecret
         }
     }
 

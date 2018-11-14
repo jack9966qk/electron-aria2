@@ -44,7 +44,11 @@ interface State {
     rpc: AriaJsonRPC | null
 }
 
-class RpcConnection extends React.Component<Props, State> {
+class AriaConnection extends React.Component<Props, State> {
+    shouldComponentUpdate(nextProps) {
+        return true
+    }
+
     constructor(props) {
         super(props)
         this.state = {
@@ -147,4 +151,4 @@ class RpcConnection extends React.Component<Props, State> {
     render = () => <ControlWithState rpc={this.state.rpc} connect={this.connect}/>
 }
 
-export default RpcConnection
+export default AriaConnection

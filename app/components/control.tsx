@@ -19,9 +19,9 @@ import {
 } from '../model/task'
 import { Server, Notification } from '../reducer'
 import MultiSnackbarWithState from '../containers/MultiSnackbarWithState'
-import { memoize } from './Memoize'
-const TopBarMemoized = memoize(TopBar)
-const SidebarMemoized = memoize(SideBarWithState)
+import { compare } from './Compare'
+const TopBarMemoized = compare(TopBar)
+const SidebarMemoized = compare(SideBarWithState)
 
 const mainFuncs = Electron.remote.require("./mainFuncs.js")
 
@@ -212,7 +212,8 @@ class Control extends React.Component<Props, State> {
 
                 <ConnectionDialog
                     open={this.state.connectionDialogOpen}
-                    server={server}
+                    defaultUrl={server.hostUrl}
+                    defaultSecret={server.secret}
                     onRequestClose={this.closeConnectionDialog}
                     onRequestConnect={this.props.connect}
                 />
