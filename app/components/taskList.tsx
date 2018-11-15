@@ -1,7 +1,7 @@
 import { createStyles, withStyles } from '@material-ui/core/styles'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import * as React from 'react'
-import TaskListItemWithState from '../containers/TaskListItemWithState'
+import TaskListItem from './TaskListItem'
 import AriaJsonRPC from '../model/rpc'
 import { filterTasks, Task, TaskCategory } from '../model/task'
 
@@ -50,7 +50,7 @@ class TaskList extends React.Component<Props, State> {
             <div className={root}>
                 {
                     tasks.map(task =>
-                        <TaskListItemWithState
+                        <TaskListItem
                             rpc={this.props.rpc}
                             key={task.gid}
                             task={task}

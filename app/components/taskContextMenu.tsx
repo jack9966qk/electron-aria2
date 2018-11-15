@@ -11,18 +11,25 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import * as React from 'react'
 import AriaJsonRPC from '../model/rpc'
 
-
-interface Props {
-    status: string
-    path: string
+export interface ViewProps {
     rpc: AriaJsonRPC
     gid: string
+}
+
+export interface StoreProps {
+    status: string
+    path: string
+}
+
+export interface DispatchProps {
     pauseTask: (rpc: AriaJsonRPC, gid: string) => void
     resumeTask: (rpc: AriaJsonRPC, gid: string) => void
     deleteTask: (rpc: AriaJsonRPC, gid: string) => void
     permDeleteTask: (rpc: AriaJsonRPC, gid: string) => void
     revealFile: (path: string) => void
 }
+
+type Props = ViewProps & StoreProps & DispatchProps
 
 class TaskContextMenu extends React.PureComponent<Props, {}> {
     render() {
