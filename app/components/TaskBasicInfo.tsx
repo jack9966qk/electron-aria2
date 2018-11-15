@@ -99,10 +99,10 @@ class TaskBasicInfo extends React.PureComponent<Props> {
         const pauseButton = button("Pause", <PauseIcon />, pauseTask)
         const resumeButton = button("Resume", <PlayArrowIcon />, resumeTask)
 
-        const deleteButton =
-            (status !== "error" && status !== "removed" && status !== "complete") ?
+        const deleteButton = status === "active" ?
                 button("Delete", <DeleteIcon />, deleteTask) :
-                button("Delete forever", <DeleteForeverIcon />, permDeleteTask)
+                button("Delete forever", <DeleteForeverIcon />,
+                    status === "paused" ? deleteTask : permDeleteTask)
 
         const openFolderButton = button("Open folder", <FolderIcon />, revealFile)
 

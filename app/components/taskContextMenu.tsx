@@ -52,9 +52,10 @@ class TaskContextMenu extends React.PureComponent<Props, {}> {
 
         const pauseListItem = menuItem("Pause", <PauseIcon />, pauseTask)
         const resumeListItem = menuItem("Resume", <PlayArrowIcon />, resumeTask)
-        const deleteListItem = status !== "error" && status !== "removed" && status !== "complete" ?
+        const deleteListItem = status === "active" ?
             menuItem("Delete", <DeleteIcon />, deleteTask) :
-            menuItem("Delete forever", <DeleteForeverIcon />, permDeleteTask)
+            menuItem("Delete forever", <DeleteForeverIcon />,
+                status === "paused" ? deleteTask : permDeleteTask)
         const openFolderListItem = menuItem("Open folder", <FolderIcon />, revealFile)
 
         return (
