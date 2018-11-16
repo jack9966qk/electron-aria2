@@ -11,7 +11,6 @@ import TaskDetailsView from './TaskDetailsView'
 import AriaJsonRPC from '../model/rpc'
 import {
     downloadComplete,
-    getName,
     isBittorrent,
     Task
 } from '../model/task'

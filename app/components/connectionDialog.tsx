@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField'
 import * as React from 'react'
 import ResponsiveDialog from './ResponsiveDialog'
 import { Server } from '../reducer'
+import { DialogContentText } from '@material-ui/core';
 
 
 interface ViewProps {
@@ -65,6 +66,9 @@ class ConnectionDialog extends React.Component<Props, State> {
             >
                 <DialogTitle>Aria2 Connection</DialogTitle>
                 <DialogContent>
+                    <DialogContentText>
+                        {`Currently connected to ${this.props.defaultUrl}.`}
+                    </DialogContentText>
                     <TextField
                         margin="dense"
                         id="name"

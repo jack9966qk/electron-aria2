@@ -196,6 +196,8 @@ class NewTaskDialog extends React.Component<Props, State> {
                     onChange={this.updateUri}
                     multiline
                     fullWidth
+                    variant="filled"
+                    helperText="HTTP/FTP/Magnet links, one link per line"
                 />
             </>
         )
@@ -219,7 +221,7 @@ class NewTaskDialog extends React.Component<Props, State> {
                     >
                         {
                             files === null ?
-                                "Select Torrent File" :
+                                "Select Torrent/Metalink File(s)" :
                                 files.length > 1 ?
                                     `Selected ${files.length} files` :
                                     `Selected ${files[0].name}`
