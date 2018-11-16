@@ -23,7 +23,9 @@ function createWindow() {
         width: 800,
         height: 600,
         minWidth: 360,
-        minHeight: 400 })
+        minHeight: 400
+        // titleBarStyle: "hiddenInset"
+    })
 
     // disable menu bar
     mainWindow.setMenuBarVisibility(false)

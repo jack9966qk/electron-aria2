@@ -1,64 +1,62 @@
 import { Reducer } from 'redux'
-import * as Electron from 'electron'
-
-import AriaJsonRPC from './model/rpc'
-import { updateTaskList } from './model/task'
+import { Task, updateTaskList } from './model/task'
+import { Options } from './model/options'
 
 import {
     RootAction,
     CONNECTED,
-    RECEIVED_VERSION,
-    RECEIVED_TASKS,
-    ARBITRARY_VAL_CHANGED,
-    SET_ARIA_REMOTE,
-    DISCONNECTED
+    RECEIVED_TASKS_AND_STATUS,
+    RECEIVED_OPTIONS,
+    DISCONNECTED,
+    NEW_NOTIFICATION
 } from './actions'
-import { Task } from './model/task';
+import { GlobalStat } from './model/globalStat'
 
-export type RootState = {
-    readonly rpc: AriaJsonRPC
+export type Server = {
     readonly hostUrl: string
     readonly secret: string
     readonly version: string
-    readonly defaultDir: string
     readonly tasks: Map<string, Task>
+    readonly options: Options
+    readonly stat: GlobalStat
+}
+
+export type Notification = {
+    readonly message: string
+    readonly type: "success" | "error" | "warning" | "info" | "default"
+}
+
+export type RootState = {
+    readonly server: Server | null
+    readonly latestNotification: Notification | null
 }
 
 export const initialState: RootState = {
-    rpc: undefined,
-    hostUrl: "ws://localhost:6800/jsonrpc",
-    secret: "secret",
-    version: undefined,
-    defaultDir: Electron.remote.app.getPath("downloads"),
-    tasks: new Map()
+    server: null,
+    latestNotification: null
 }
 
 const reducer: Reducer<RootState, RootAction> =
     (state=initialState, action) => {
     switch(action.type) {
         case CONNECTED:
-            return {...state, rpc: action.payload}
+            return {...state, server: action.payload}
             break
         case DISCONNECTED:
-            // if current rpc is what has been disconnected
-            // remove tasks and rpc object
-            return state.rpc === action.payload ?
-                {...state, rpc: undefined, tasks: new Map()} : state
+            // remove if current server is what has been disconnected
+            return state.server.hostUrl === action.payload ?
+                {...state, server: null} : state
             break
-        case RECEIVED_VERSION:
-            return {...state, version: action.payload}
+        case RECEIVED_TASKS_AND_STATUS:
+            const tasks = updateTaskList(state.server.tasks, action.payload.tasks)
+            const { stat } = action.payload
+            return {...state, server: {...state.server, tasks, stat}}
             break
-        case RECEIVED_TASKS:
-            const tasks = updateTaskList(state.tasks, action.payload)
-            return {...state, tasks}
+        case RECEIVED_OPTIONS:
+            return {...state, server: {...state.server, options: action.payload}}
             break
-        case ARBITRARY_VAL_CHANGED:
-            const {key, value} = action.payload
-            return {...state, [key]: value}
-            break
-        case SET_ARIA_REMOTE:
-            const {hostUrl, secret} = action.payload
-            return {...state, hostUrl, secret}
+        case NEW_NOTIFICATION:
+            return {...state, latestNotification: action.payload}
             break
         default:
             return state

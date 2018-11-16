@@ -1,4 +1,4 @@
-import { NotificationResponse } from "./rpc"
+import { NotificationResponse } from './rpc'
 
 const messages: { [key: string]: (args: any, response: any) => string | null } = {
     "aria2.getVersion": (_args, response) =>

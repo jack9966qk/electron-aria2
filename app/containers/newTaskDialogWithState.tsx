@@ -1,36 +1,19 @@
-import { connect } from "react-redux"
-import { Dispatch } from "redux"
-
-import NewTaskDialog, { DispatchProps, StoreProps } from "../views/newTaskDialog"
-import { receivedTasks, RootAction } from "../actions"
-import { RootState } from "../reducer"
+import { connect } from 'react-redux'
+import { Dispatch } from 'redux'
+import { RootAction } from '../actions'
+import { RootState } from '../reducer'
+import NewTaskDialog, { DispatchProps, StoreProps } from '../components/NewTaskDialog'
+import creators from '../creators'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        rpc: state.rpc,
-        defaultDir: state.defaultDir
+        globalOptions: state.server.options
     }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
-    return {
-        addTask: (rpc, uri, dir) => {
-            rpc.call("aria2.addUri", [[uri], {dir}]).then(gid => {
-                console.log("gid for new task: " + gid)
-                return rpc.getAllTasks()
-            }).then(tasks => {
-                dispatch(receivedTasks(tasks)) 
-            })
-        },
-        addTorrent: (rpc, torrent, dir) => {
-            rpc.call("aria2.addTorrent", [torrent, [], {dir}]).then(gid => {
-                console.log("gid for new task: " + gid)
-                return rpc.getAllTasks()
-            }).then(tasks => {
-                dispatch(receivedTasks(tasks))                
-            })
-        },
-    }
+    const { addUris, addFiles } = creators(dispatch)
+    return { addUris, addFiles }
 }
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(NewTaskDialog)

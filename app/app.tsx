@@ -6,7 +6,7 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
 import reducer, { initialState } from './reducer'
-import ControlWithState from './containers/controlWithState'
+import RpcConnectionWithState from './containers/AriaConnectionWithState'
 
 const store = createStore(reducer, initialState)
 
@@ -14,7 +14,7 @@ class App extends React.Component {
     render() {
         return (
             <Provider store={store}>
-                <ControlWithState />
+                <RpcConnectionWithState />
             </Provider>
         )
     }
@@ -23,3 +23,7 @@ class App extends React.Component {
 ReactDOM.render( <App /> ,
     document.getElementById('content')
 )
+
+// for easier debug with shouldComponentUpdate
+import * as d from 'shallow-diff'
+window["diff"] = d

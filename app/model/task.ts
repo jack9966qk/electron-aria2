@@ -66,7 +66,7 @@ export const taskCategoryDescription = {
 }
 
 export function getName(task: Task): string {
-    const {bittorrent, files, dir} = task
+    const { bittorrent, files, dir } = task
     return isHttp(task) ?
         (files[0].path === "" ?
             files[0].uris[0].uri :

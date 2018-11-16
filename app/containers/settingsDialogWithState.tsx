@@ -1,22 +1,19 @@
-import { connect } from "react-redux"
-import { Dispatch } from "redux"
-
-import SettingsDialog, { DispatchProps, StoreProps } from "../views/settingsDialog"
-import { arbitraryValChanged, RootAction } from "../actions"
-import { RootState } from "../reducer"
+import { connect } from 'react-redux'
+import { Dispatch } from 'redux'
+import { RootAction } from '../actions'
+import { RootState } from '../reducer'
+import SettingsDialog, { DispatchProps, StoreProps } from '../components/SettingsDialog'
+import creators from '../creators'
 
 function mapStateToProps(state: RootState): StoreProps {
     return {
-        defaultDir: state.defaultDir
+        options: state.server.options
     }
 }
 
 function mapDispatchToProps(dispatch: Dispatch<RootAction>): DispatchProps {
-    return {
-        setDefaultDir: (dir) => {
-            dispatch(arbitraryValChanged("defaultDir", dir))
-        }
-    }
+    const { changeOptions } = creators(dispatch)
+    return { changeOptions }
 }
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsDialog)

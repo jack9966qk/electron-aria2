@@ -1,7 +1,7 @@
 {
   "name": "electron-aria2",
   "productName": "Electron Aria2",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Aria2 Client",
   "main": "main.js",
   "private": true,
@@ -11,7 +11,6 @@
   "author": "Jack",
   "license": "GPL-3.0+",
   "dependencies": {
-    "aria2": "^4.0.3",
     "classnames": "^2.2.6",
     "electron": "^3.0.6",
     "electron-devtools-installer": "^2.2.4",
@@ -23,8 +22,10 @@
     "ps-tree": "^1.1.0",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
+    "react-fast-compare": "^2.0.4",
     "react-redux": "^5.0.7",
     "redux": "^4.0.1",
+    "shallow-diff": "0.0.5",
     "simple-jsonrpc-js": "0.0.10",
     "sprintf-js": "^1.1.1",
     "typesafe-actions": "^2.0.4",
