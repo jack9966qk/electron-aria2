@@ -103,7 +103,6 @@ class TaskListItem extends React.Component<Props, State> {
         const { classes, task } = this.props
         const { status } = task
 
-        const taskName = getName(task)
         const downloadSpeed = parseInt(task.downloadSpeed)
         const uploadSpeed = parseInt(task.uploadSpeed)
         const completedLength = parseInt(task.completedLength)

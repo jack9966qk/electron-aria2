@@ -1,7 +1,7 @@
 import Paper from '@material-ui/core/Paper'
 import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import createStyles from '@material-ui/core/styles/createStyles'
-import withStyles from '@material-ui/core/styles/withStyles'
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles'
 import Typography from '@material-ui/core/Typography'
 import * as React from 'react'
 
@@ -14,14 +14,24 @@ const styles = (theme: Theme) => createStyles({
         padding: `${theme.spacing.unit}px`,
         paddingRight: `${theme.spacing.unit * 1.5}px`,
         borderRadius: `0px`
+    },
+    up: {
+        minWidth: 80,
+    },
+    speed: {
+        textAlign: "right",
+        minWidth: 80,
+    },
+    down: {
+        minWidth: 50,
+        marginLeft: 20
     }
 })
 
-interface Props {
+type Props = {
     totalDownloadSpeed: number
     totalUploadSpeed: number
-    classes: any
-}
+} & WithStyles<typeof styles>
 
 class StatusBar extends React.Component<Props, {}> {
     render() {
@@ -30,8 +40,17 @@ class StatusBar extends React.Component<Props, {}> {
         const ul = filesize(totalUploadSpeed)
         return (
             <Paper classes={{ root: classes.root }} elevation={4}>
-                <Typography variant="body1">
-                    {`Up: ${ul}/s Down: ${dl}/s`}
+                <Typography variant="body1" classes={{ root: classes.up }}>
+                    Up:
+                </Typography>
+                <Typography variant="body1" classes={{ root: classes.speed }}>
+                    {`${ul}/s`}
+                </Typography>
+                <Typography variant="body1" classes={{ root: classes.down }}>
+                    Down:
+                </Typography>
+                <Typography variant="body1" classes={{ root: classes.speed }}>
+                    {`${dl}/s`}
                 </Typography>
             </Paper>
         )
