@@ -82,8 +82,7 @@ class TaskBasicInfo extends React.PureComponent<Props> {
             <SmallTooltip title={tooltipText}>
                 <IconButton
                     classes={{ root: classes.button }}
-                    onClick={onClick}
-                    onMouseUp={this.onButtonMouseUp}
+                    onClick={(e) => { e.stopPropagation; onClick() }}
                 >
                     {icon}
                 </IconButton>
@@ -100,9 +99,9 @@ class TaskBasicInfo extends React.PureComponent<Props> {
         const resumeButton = button("Resume", <PlayArrowIcon />, resumeTask)
 
         const deleteButton = status === "active" ?
-                button("Delete", <DeleteIcon />, deleteTask) :
-                button("Delete forever", <DeleteForeverIcon />,
-                    status === "paused" ? deleteTask : permDeleteTask)
+            button("Delete", <DeleteIcon />, deleteTask) :
+            button("Delete forever", <DeleteForeverIcon />,
+                status === "paused" ? deleteTask : permDeleteTask)
 
         const openFolderButton = button("Open folder", <FolderIcon />, revealFile)
 

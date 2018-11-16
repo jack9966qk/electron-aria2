@@ -84,7 +84,7 @@ class TaskListItem extends React.Component<Props, State> {
         // this.setState({ renderDetails: false })
     }
 
-    onMouseUp = (event) => {
+    onClick = (event) => {
         if (event.button === 0) {
             this.toggleDetailView()
         }
@@ -160,7 +160,7 @@ class TaskListItem extends React.Component<Props, State> {
                 raised={this.state.expanded}
                 className={classes.root}
                 onContextMenu={this.onContext}
-                onMouseUp={this.onMouseUp}
+                onClick={this.onClick}
             >
                 <div className={classes.mainArea}>
                     <TaskBasicInfoWithState
