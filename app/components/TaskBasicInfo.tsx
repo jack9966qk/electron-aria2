@@ -13,7 +13,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme'
 import { filesize as fsize } from "../model/utility"
 
 const styles = (theme: Theme) => createStyles({
-    flexContainer: {
+    root: {
         display: "flex",
         alignItems: "center"
     },
@@ -120,7 +120,7 @@ class TaskBasicInfo extends React.PureComponent<Props> {
         )
 
         return (
-            <div className={classes.flexContainer}>
+            <div className={classes.root}>
                 <div className={classes.name}>
                     <Typography
                         variant="subtitle1"

@@ -16,7 +16,7 @@ const styles = (theme: Theme) => createStyles({
         borderRadius: `0px`
     },
     up: {
-        minWidth: 80,
+        minWidth: 50,
     },
     speed: {
         textAlign: "right",
