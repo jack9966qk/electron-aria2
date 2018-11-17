@@ -38,7 +38,7 @@ function createWindow() {
     }))
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function () {
@@ -54,9 +54,9 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     // add react developer tools to chromium
-    // installExtension(REACT_DEVELOPER_TOOLS)
-    //     .then((name) => console.log(`Added Extension:  ${name}`))
-    //     .catch((err) => console.log('An error occurred: ', err))
+    installExtension(REACT_DEVELOPER_TOOLS)
+        .then((name) => console.log(`Added Extension:  ${name}`))
+        .catch((err) => console.log('An error occurred: ', err))
 
     // start main application
     createWindow()

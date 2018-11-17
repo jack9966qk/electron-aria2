@@ -66,9 +66,11 @@ interface State {
 const sectionStyles = (theme: Theme) => createStyles({
     root: {},
     heading: {
+        flexBasis: "50%",
         fontSize: theme.typography.pxToRem(15),
     },
     secondaryHeading: {
+        marginLeft: theme.spacing.unit * 2,
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
     },
@@ -134,16 +136,12 @@ class Section extends React.Component<
                 CollapseProps={{ onEnter: this.onEnter }}
             >
                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                    <div className={classes.column}>
-                        <Typography className={classes.heading}>
-                            {description}
-                        </Typography>
-                    </div>
-                    <div className={classes.column}>
-                        <Typography className={classes.secondaryHeading}>
-                            {`${numOptions} Option${numOptions < 2 ? "" : "s"}`}
-                        </Typography>
-                    </div>
+                    <Typography className={classes.heading}>
+                        {description}
+                    </Typography>
+                    <Typography className={classes.secondaryHeading}>
+                        {`${numOptions} Option${numOptions < 2 ? "" : "s"}`}
+                    </Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails
                     classes={{ root: classes.expansionDetails }}

@@ -1,18 +1,27 @@
 import Button from '@material-ui/core/Button'
+import { Theme } from '@material-ui/core/styles/createMuiTheme'
+import createStyles from '@material-ui/core/styles/createStyles'
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import TextField from '@material-ui/core/TextField'
 import * as React from 'react'
 import ResponsiveDialog from './ResponsiveDialog'
-import { Server } from '../reducer'
-import { DialogContentText } from '@material-ui/core';
+import { DialogContentText } from '@material-ui/core'
 
+const styles = (theme: Theme) => createStyles({
+    root: {},
+    marginButtom: {
+        marginBottom: theme.spacing.unit
+    },
+    marginTop: {
+        marginTop: theme.spacing.unit * 3
+    }
+})
 
 interface ViewProps {
     open: boolean
-    defaultUrl: string
-    defaultSecret: string
     onRequestConnect: (hostUrl: string, secret: string) => void
     onRequestClose: () => void
 }
@@ -21,39 +30,44 @@ export interface DispatchProps {
 }
 
 export interface StoreProps {
+    hostUrl: string
+    secret: string
+    version: string
+    enabledFeatures: string[]
 }
 
 type Props =
     ViewProps &
     DispatchProps &
-    StoreProps
+    StoreProps &
+    WithStyles<typeof styles>
 
 interface State {
-    hostUrl: string
-    secret: string
+    newUrl: string
+    newSecret: string
 }
 
 class ConnectionDialog extends React.Component<Props, State> {
     constructor(props) {
         super(props)
         this.state = {
-            hostUrl: this.props.defaultUrl,
-            secret: this.props.defaultSecret
+            newUrl: this.props.hostUrl,
+            newSecret: this.props.secret
         }
     }
 
     connect = () => {
-        const { hostUrl, secret } = this.state
-        this.props.onRequestConnect(hostUrl, secret)
+        const { newUrl, newSecret } = this.state
+        this.props.onRequestConnect(newUrl, newSecret)
         this.props.onRequestClose()
     }
 
-    updateHostUrl = (hostUrl) => {
-        this.setState({ hostUrl })
+    updateHostUrl = (newUrl) => {
+        this.setState({ newUrl })
     }
 
-    updateSecret = (secret) => {
-        this.setState({ secret })
+    updateSecret = (newSecret) => {
+        this.setState({ newSecret })
     }
 
     render() {
@@ -66,15 +80,24 @@ class ConnectionDialog extends React.Component<Props, State> {
             >
                 <DialogTitle>Aria2 Connection</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        {`Currently connected to ${this.props.defaultUrl}.`}
+                    <DialogContentText classes={{root: this.props.classes.marginButtom}}>
+                        Currently connected to {this.props.hostUrl}.
+                    </DialogContentText>
+                    <DialogContentText classes={{root: this.props.classes.marginButtom}}>
+                        Version: {this.props.version}
+                    </DialogContentText>
+                    <DialogContentText classes={{root: this.props.classes.marginButtom}}>
+                        Enabled features: {this.props.enabledFeatures.join(", ")}
+                    </DialogContentText>
+                    <DialogContentText classes={{root: this.props.classes.marginTop}}>
+                        Connect to new server:
                     </DialogContentText>
                     <TextField
                         margin="dense"
                         id="name"
                         label="Host URL"
                         type="url"
-                        value={this.state.hostUrl}
+                        value={this.state.newUrl}
                         onChange={this.updateHostUrl}
                         fullWidth
                     />
@@ -83,7 +106,7 @@ class ConnectionDialog extends React.Component<Props, State> {
                         id="name"
                         label="Secret"
                         type="password"
-                        value={this.state.secret}
+                        value={this.state.newSecret}
                         onChange={this.updateSecret}
                         fullWidth
                     />
@@ -101,4 +124,4 @@ class ConnectionDialog extends React.Component<Props, State> {
     }
 }
 
-export default ConnectionDialog
+export default withStyles(styles)(ConnectionDialog)

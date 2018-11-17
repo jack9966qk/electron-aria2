@@ -104,7 +104,7 @@ class SettingsDialog extends React.Component<Props, State> {
 
                 <DialogContent classes={{ root: classes.dialogContent }}>
                     <DialogContentText>
-                        These settings will be applied for new tasks.
+                        These settings will be applied to new tasks.
                     </DialogContentText>
                     <OptionFields
                         classes={{ root: classes.optionFields }}

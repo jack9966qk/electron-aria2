@@ -16,6 +16,7 @@ export type Server = {
     readonly hostUrl: string
     readonly secret: string
     readonly version: string
+    readonly enabledFeatures: string[]
     readonly tasks: Map<string, Task>
     readonly options: Options
     readonly stat: GlobalStat

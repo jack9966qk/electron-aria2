@@ -4,7 +4,6 @@ import createStyles from '@material-ui/core/styles/createStyles'
 import withStyles from '@material-ui/core/styles/withStyles'
 import * as Electron from 'electron'
 import * as React from 'react'
-import ConnectionDialog from './ConnectionDialog'
 import StatusBar from './StatusBar'
 import TopBar from './TopBar'
 import NewTaskDialogWithState from '../containers/NewTaskDialogWithState'
@@ -20,6 +19,7 @@ import {
 import { Server, Notification } from '../reducer'
 import MultiSnackbarWithState from '../containers/MultiSnackbarWithState'
 import { compare } from './Compare'
+import ConnectionDialogWithState from '../containers/ConnectionDialogWithState';
 const TopBarMemoized = compare(TopBar)
 const SidebarMemoized = compare(SideBarWithState)
 
@@ -210,7 +210,7 @@ class Control extends React.Component<Props, State> {
                     </Popover>
                 </div>
 
-                <ConnectionDialog
+                <ConnectionDialogWithState
                     open={this.state.connectionDialogOpen}
                     defaultUrl={server.hostUrl}
                     defaultSecret={server.secret}

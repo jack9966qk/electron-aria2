@@ -30,11 +30,12 @@ const creators = (dispatch: Dispatch<RootAction>) => {
             rpc.call("aria2.getVersion", []),
             rpc.call("aria2.getGlobalOption", []),
             rpc.getTasksAndStatus()
-        ]).then(([version, options, { tasks, stat }]) => {
+        ]).then(([{version, enabledFeatures}, options, { tasks, stat }]) => {
             dispatch(connected({
                 hostUrl: rpc.url,
                 secret: rpc.secret,
-                version, options, tasks, stat
+                version, enabledFeatures,
+                options, tasks, stat
             }))
             dispatch(newNotification({
                 type: "success",
