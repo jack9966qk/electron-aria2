@@ -6,7 +6,7 @@ A simple download utility that aims to deliver the performance and features of A
 
 Full sized window, using built-in Aria2, with 2 HTTP tasks and 1 BitTorrent task, running on macOS 10.14:
 
-![screenshot](./img/screenshot.png)
+<img src="./img/screenshot.png" alt="screenshot" width="800"/>
 
 ## Download
 
