@@ -62,12 +62,12 @@ class ConnectionDialog extends React.Component<Props, State> {
         this.props.onRequestClose()
     }
 
-    updateHostUrl = (newUrl) => {
-        this.setState({ newUrl })
+    updateHostUrl = (event) => {
+        this.setState({ newUrl: event.target.value })
     }
 
-    updateSecret = (newSecret) => {
-        this.setState({ newSecret })
+    updateSecret = (event) => {
+        this.setState({ newSecret: event.target.value })
     }
 
     render() {

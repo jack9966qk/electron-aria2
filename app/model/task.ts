@@ -92,7 +92,8 @@ export function downloadComplete(task: Task): boolean {
         const completed = parseInt(task.completedLength)
         const total = parseInt(task.totalLength)
         if (completed === total) {
-            if (isMetadata(task)) {
+            if (total === 0) {
+                // tasks that are not yet started have 0 total length
                 return false
             } else {
                 // for torrent tasks that have completed
